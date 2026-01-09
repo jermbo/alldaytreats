@@ -1,24 +1,40 @@
-import './style.css'
-import javascriptLogo from './javascript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.js'
+import './style.css';
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
+// Category filtering
+const tabs = document.querySelectorAll('.menu__tab');
+const menuItems = document.querySelectorAll('.menu__item');
 
-setupCounter(document.querySelector('#counter'))
+tabs.forEach((tab) => {
+  tab.addEventListener('click', () => {
+    const filter = tab.dataset.filter;
+
+    // Update active tab
+    tabs.forEach((t) => {
+      t.classList.remove('menu__tab--active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    tab.classList.add('menu__tab--active');
+    tab.setAttribute('aria-selected', 'true');
+
+    // Filter menu items
+    menuItems.forEach((item) => {
+      if (filter === 'all' || item.dataset.category === filter) {
+        item.removeAttribute('hidden');
+      } else {
+        item.setAttribute('hidden', '');
+      }
+    });
+  });
+});
+
+// Smooth scroll for "View Menu" button
+const viewMenuLink = document.querySelector('.hero__cta');
+if (viewMenuLink) {
+  viewMenuLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    const menuSection = document.querySelector('#menu');
+    if (menuSection) {
+      menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+}
