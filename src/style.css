@@ -238,26 +238,168 @@ html {
 	background: rgba(255, 255, 255, 0.05);
 	border-radius: 0.5rem;
 	overflow: hidden;
-	transition: transform 0.2s, opacity 0.2s;
+	transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+		box-shadow 0.3s ease;
 	contain: layout;
+	transform-origin: center center;
+}
+
+/* Pseudo-random animation values using nth-child patterns */
+/* Exit rotations - varied patterns */
+.menu__item:nth-child(3n + 1) {
+	--exit-rotate: -18deg;
+	--exit-rotate-mid: -9deg;
+}
+.menu__item:nth-child(3n + 2) {
+	--exit-rotate: 22deg;
+	--exit-rotate-mid: 11deg;
+}
+.menu__item:nth-child(3n + 3) {
+	--exit-rotate: -15deg;
+	--exit-rotate-mid: -7.5deg;
+}
+
+/* Entrance rotations - more varied patterns */
+.menu__item:nth-child(4n + 1) {
+	--entrance-rotate-start: 16deg;
+	--entrance-rotate-mid: -4.8deg;
+	--entrance-rotate-wiggle: 1.5deg;
+	--entrance-rotate-settle: -0.75deg;
+}
+.menu__item:nth-child(4n + 2) {
+	--entrance-rotate-start: -12deg;
+	--entrance-rotate-mid: 3.6deg;
+	--entrance-rotate-wiggle: -1.2deg;
+	--entrance-rotate-settle: 0.6deg;
+}
+.menu__item:nth-child(4n + 3) {
+	--entrance-rotate-start: 20deg;
+	--entrance-rotate-mid: -6deg;
+	--entrance-rotate-wiggle: 2deg;
+	--entrance-rotate-settle: -1deg;
+}
+.menu__item:nth-child(4n + 4) {
+	--entrance-rotate-start: -14deg;
+	--entrance-rotate-mid: 4.2deg;
+	--entrance-rotate-wiggle: -0.8deg;
+	--entrance-rotate-settle: 0.4deg;
+}
+
+/* Horizontal translations - varied patterns */
+.menu__item:nth-child(5n + 1) {
+	--entrance-translate-x-start: 12px;
+	--entrance-translate-x-mid: -6px;
+	--entrance-translate-x-wiggle: 2px;
+	--entrance-translate-x-settle: -1px;
+}
+.menu__item:nth-child(5n + 2) {
+	--entrance-translate-x-start: -15px;
+	--entrance-translate-x-mid: 7px;
+	--entrance-translate-x-wiggle: -2.5px;
+	--entrance-translate-x-settle: 1.2px;
+}
+.menu__item:nth-child(5n + 3) {
+	--entrance-translate-x-start: 8px;
+	--entrance-translate-x-mid: -4px;
+	--entrance-translate-x-wiggle: 1.5px;
+	--entrance-translate-x-settle: -0.8px;
+}
+.menu__item:nth-child(5n + 4) {
+	--entrance-translate-x-start: -10px;
+	--entrance-translate-x-mid: 5px;
+	--entrance-translate-x-wiggle: -1.8px;
+	--entrance-translate-x-settle: 0.9px;
+}
+.menu__item:nth-child(5n + 5) {
+	--entrance-translate-x-start: 14px;
+	--entrance-translate-x-mid: -7px;
+	--entrance-translate-x-wiggle: 2.2px;
+	--entrance-translate-x-settle: -1.1px;
+}
+
+/* Vertical translations - varied patterns */
+.menu__item:nth-child(6n + 1) {
+	--entrance-translate-y-start: 22px;
+	--entrance-translate-y-mid: -6px;
+	--entrance-translate-y-wiggle: 2.5px;
+	--entrance-translate-y-settle: -1.2px;
+}
+.menu__item:nth-child(6n + 2) {
+	--entrance-translate-y-start: 18px;
+	--entrance-translate-y-mid: 5px;
+	--entrance-translate-y-wiggle: -2px;
+	--entrance-translate-y-settle: 1px;
+}
+.menu__item:nth-child(6n + 3) {
+	--entrance-translate-y-start: 25px;
+	--entrance-translate-y-mid: -7px;
+	--entrance-translate-y-wiggle: 3px;
+	--entrance-translate-y-settle: -1.5px;
+}
+.menu__item:nth-child(6n + 4) {
+	--entrance-translate-y-start: 20px;
+	--entrance-translate-y-mid: 4px;
+	--entrance-translate-y-wiggle: -1.8px;
+	--entrance-translate-y-settle: 0.9px;
+}
+.menu__item:nth-child(6n + 5) {
+	--entrance-translate-y-start: 24px;
+	--entrance-translate-y-mid: -5px;
+	--entrance-translate-y-wiggle: 2.8px;
+	--entrance-translate-y-settle: -1.4px;
+}
+.menu__item:nth-child(6n + 6) {
+	--entrance-translate-y-start: 19px;
+	--entrance-translate-y-mid: 6px;
+	--entrance-translate-y-wiggle: -2.2px;
+	--entrance-translate-y-settle: 1.1px;
+}
+
+/* Hover rotations - varied patterns */
+.menu__item:nth-child(7n + 1) {
+	--hover-rotate: 2.5deg;
+}
+.menu__item:nth-child(7n + 2) {
+	--hover-rotate: -1.8deg;
+}
+.menu__item:nth-child(7n + 3) {
+	--hover-rotate: 3deg;
+}
+.menu__item:nth-child(7n + 4) {
+	--hover-rotate: -2.2deg;
+}
+.menu__item:nth-child(7n + 5) {
+	--hover-rotate: 1.5deg;
+}
+.menu__item:nth-child(7n + 6) {
+	--hover-rotate: -2.8deg;
+}
+.menu__item:nth-child(7n + 7) {
+	--hover-rotate: 2deg;
 }
 
 /* Fallback animation for browsers without View Transitions support */
 @supports not (view-transition-name: none) {
 	.menu__item {
-		transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-			opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+			opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+			filter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+		transform-origin: center center;
 	}
 
 	.menu__item[hidden] {
 		display: none;
 		opacity: 0;
-		transform: scale(0.95);
+		transform: scale(0.6) rotate(-15deg);
+		filter: blur(4px);
 	}
 }
 
 .menu__item:hover {
-	transform: translateY(-4px);
+	transform: translateY(-8px) scale(1.02)
+		rotate(calc(var(--hover-rotate, 1deg)));
+	box-shadow: 0 12px 24px rgba(155, 89, 182, 0.3),
+		0 0 20px rgba(135, 206, 235, 0.2);
 }
 
 .menu__item-image {
@@ -312,23 +454,81 @@ html {
 	display: none;
 }
 
+/* Keyframe animations for menu item transitions */
+@keyframes dramatic-exit {
+	0% {
+		opacity: 1;
+		transform: scale(1) rotate(0deg);
+		filter: blur(0px);
+	}
+	50% {
+		transform: scale(0.9) rotate(calc(var(--exit-rotate-mid, -8deg)));
+		filter: blur(2px);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(0.6) rotate(calc(var(--exit-rotate, -15deg)));
+		filter: blur(4px);
+	}
+}
+
+@keyframes spring-entrance {
+	0% {
+		opacity: 0;
+		transform: scale(0.5) rotate(calc(var(--entrance-rotate-start, 12deg)))
+			translate(
+				calc(var(--entrance-translate-x-start, 0px)),
+				calc(var(--entrance-translate-y-start, 20px))
+			);
+		filter: blur(4px);
+	}
+	40% {
+		opacity: 0.8;
+		transform: scale(1.08) rotate(calc(var(--entrance-rotate-mid, -3deg)))
+			translate(
+				calc(var(--entrance-translate-x-mid, 0px)),
+				calc(var(--entrance-translate-y-mid, -5px))
+			);
+		filter: blur(1px);
+	}
+	60% {
+		transform: scale(0.96) rotate(calc(var(--entrance-rotate-wiggle, 1deg)))
+			translate(
+				calc(var(--entrance-translate-x-wiggle, 0px)),
+				calc(var(--entrance-translate-y-wiggle, 2px))
+			);
+		filter: blur(0px);
+	}
+	80% {
+		transform: scale(1.02) rotate(calc(var(--entrance-rotate-settle, -0.5deg)))
+			translate(
+				calc(var(--entrance-translate-x-settle, 0px)),
+				calc(var(--entrance-translate-y-settle, -1px))
+			);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1) rotate(0deg) translate(0, 0);
+		filter: blur(0px);
+	}
+}
+
 /* Smooth, natural animations for menu item transitions only */
 /* Apply to all transitions except root (which is disabled above) */
 ::view-transition-group(*) {
-	animation-duration: 0.35s;
+	animation-duration: 0.5s;
 	animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	perspective: 1000px;
 }
 
 ::view-transition-old(*) {
-	animation-duration: 0.35s;
-	animation-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
-	animation-fill-mode: both;
+	animation: dramatic-exit 0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19) both;
+	transform-origin: center center;
 }
 
 ::view-transition-new(*) {
-	animation-duration: 0.35s;
-	animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-	animation-fill-mode: both;
+	animation: spring-entrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	transform-origin: center center;
 }
 
 /* Footer */
