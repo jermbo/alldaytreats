@@ -32,13 +32,13 @@ flowchart TD
 
 ### Core Components
 
-| Component                    | Status              | Location          | Responsibilities                                                                                                  |
-| ---------------------------- | ------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Product Catalog**          | Implemented         | `src/products.js` | Product definitions with pricing, images, categories                                                              |
-| **Shopping Cart**            | New                 | `src/cart/`       | Client-side state management, add/remove items, quantity management, price calculations, localStorage persistence |
-| **Checkout Form**            | New                 | `src/checkout/`   | Customer information collection, order review/summary, order submission                                           |
-| **Order Submission Service** | New                 | `src/services/`   | Format order data, send to storage backend, handle errors and retries                                             |
-| **Order Storage Backend**    | Serverless Function | External service  | Receives and stores order data, provides access to business owner                                                 |
+| Component                    | Status      | Responsibilities                                                                                     |
+| ---------------------------- | ----------- | ---------------------------------------------------------------------------------------------------- |
+| **Product Catalog**          | Implemented | Product definitions with pricing, images, categories                                                 |
+| **Shopping Cart**            | New         | Client-side state management, add/remove items, quantity management, price calculations, persistence |
+| **Checkout Form**            | New         | Customer information collection, order review/summary, order submission                              |
+| **Order Submission Service** | New         | Format order data, send to storage backend, handle errors and retries                                |
+| **Order Storage Backend**    | New         | Receives and stores order data, provides access to business owner                                    |
 
 ## Architecture: Serverless Function with Google Sheets + Email
 
@@ -105,68 +105,24 @@ sequenceDiagram
 - **Easy tracking** - Google Sheets provides structured data
 - **Notifications** - Email alerts for new orders
 
-**Order Data Structure:**
+**Order Data Requirements:**
 
-```javascript
-/**
- * Order payload sent from checkout form to serverless function
- * @typedef {Object} Order
- * @property {string} id - Generated client-side (UUID or timestamp-based)
- * @property {string} timestamp - ISO 8601 format
- * @property {Object} customer
- * @property {string} customer.fullName - Full name
- * @property {string} customer.email - Email address
- * @property {string} customer.phone - Phone number
- * @property {string} customer.deliveryAddress - Delivery address
- * @property {Array<OrderItem>} items
- * @property {number} subtotal
- * @property {number} estimatedTotal - May vary based on customization
- * @property {string} [notes] - Optional order notes
- */
+The order payload must include:
 
-/**
- * @typedef {Object} OrderItem
- * @property {string} productId
- * @property {string} productName
- * @property {number} quantity
- * @property {number} pricePerUnit
- * @property {number} totalPrice
- * @property {string[]} [customizations] - Optional customizations
- */
-```
+- Unique order identifier
+- Timestamp
+- Customer information (full name, email, phone, delivery address)
+- Order items (product details, quantities, prices)
+- Order totals (subtotal, estimated total)
+- Optional order notes
 
 **Serverless Function Responsibilities:**
 
-1. **Input Validation**
-
-   - Validate all required fields
-   - Sanitize user input
-   - Check email format
-   - Verify phone number format
-
-2. **Spam Prevention**
-
-   - Rate limiting (per IP or email)
-   - Optional: CAPTCHA verification
-   - Check for suspicious patterns
-   - Block known spam domains
-
-3. **Google Sheets Integration**
-
-   - Authenticate with Google Sheets API
-   - Append order row to spreadsheet
-   - Include: timestamp, customer info, items, totals
-
-4. **Email Notification**
-
-   - Format order data for email
-   - Send to business owner
-   - Include order summary and customer details
-
-5. **Error Handling**
-   - Log errors for debugging
-   - Return appropriate error messages
-   - Retry failed operations
+1. **Input Validation** - Validate and sanitize all user input
+2. **Spam Prevention** - Rate limiting, pattern detection, bot prevention
+3. **Google Sheets Integration** - Store order data in structured format
+4. **Email Notification** - Send order notification to business owner
+5. **Error Handling** - Graceful error handling and logging
 
 **Spam Prevention Strategies (Security by Default):**
 
@@ -239,136 +195,53 @@ sequenceDiagram
 
 **Total Monthly Cost: $0** (for typical small business usage)
 
-### Implementation Details
+**Configuration Requirements:**
 
-**Serverless Function Example Structure:**
+The serverless function will require:
 
-```javascript
-// api/submit-order.js (Vercel/Netlify serverless function)
-export default async function handler(req, res) {
-	// Only allow POST requests
-	if (req.method !== "POST") {
-		return res.status(405).json({ error: "Method not allowed" });
-	}
+- Google Sheets API credentials
+- Email service API credentials
+- Business email address for notifications
+- Rate limiting configuration (optional)
 
-	try {
-		// 1. Validate input
-		const order = validateOrder(req.body);
+**Data Storage Structure:**
 
-		// 2. Rate limiting check
-		await checkRateLimit(req);
+Orders will be stored in Google Sheets with columns for:
 
-		// 3. Write to Google Sheets
-		await appendToGoogleSheet(order);
-
-		// 4. Send email notification
-		await sendOrderEmail(order);
-
-		// 5. Return success
-		return res.status(200).json({
-			success: true,
-			orderId: order.id,
-		});
-	} catch (error) {
-		// Error handling
-		console.error("Order submission error:", error);
-		return res.status(500).json({
-			error: "Failed to submit order",
-		});
-	}
-}
-```
-
-**Required Environment Variables:**
-
-- `GOOGLE_SHEETS_API_KEY` - Google Sheets API key
-- `GOOGLE_SHEET_ID` - ID of the target spreadsheet
-- `EMAIL_API_KEY` - Email service API key (SendGrid, Resend, etc.)
-- `BUSINESS_EMAIL` - Email address to receive notifications
-- `RATE_LIMIT_SECRET` - Secret for rate limiting (optional)
-
-**Google Sheets Structure:**
-
-| Timestamp        | Order ID | Full Name | Email            | Phone    | Address     | Items      | Subtotal | Total  | Notes          |
-| ---------------- | -------- | --------- | ---------------- | -------- | ----------- | ---------- | -------- | ------ | -------------- |
-| 2026-01-15 10:30 | abc123   | John Doe  | john@example.com | 555-1234 | 123 Main St | JSON array | $45.00   | $50.00 | Birthday party |
+- Timestamp
+- Order ID
+- Customer information (name, email, phone, address)
+- Order items
+- Totals
+- Notes
 
 ---
 
-## Component Design
+## Frontend Components
 
-### Shopping Cart Component
+### Shopping Cart
 
-**Responsibilities:**
+**Purpose:** Allow customers to collect items before checkout
 
-- Manage cart state (add, remove, update quantities)
+**Key Requirements:**
+
+- Add/remove items
+- Update quantities
 - Calculate totals
-- Persist to localStorage
-- Display cart summary/badge
+- Persist cart state across sessions
+- Display cart summary
 
-**State Management:**
+### Checkout Form
 
-```javascript
-/**
- * @typedef {Object} CartItem
- * @property {string} productId
- * @property {number} quantity
- * @property {Object} selectedPriceOption
- * @property {number} selectedPriceOption.count
- * @property {number} selectedPriceOption.price
- * @property {string[]} customizations
- */
+**Purpose:** Collect customer information and submit order
 
-/**
- * @typedef {Object} CartState
- * @property {CartItem[]} items
- * @property {string} lastUpdated - ISO 8601 timestamp
- */
-```
+**Key Requirements:**
 
-**Storage:** localStorage with key `alldaytreats-cart`
-
-### Checkout Form Component
-
-**Responsibilities:**
-
-- Display order summary (items, quantities, price totals)
-- Collect customer information
-- Validate form inputs
+- Display order summary
+- Collect customer information (name, email, phone, address)
+- Validate input before submission
 - Submit order to serverless function
-- Show confirmation/loading states
-
-**Form Fields:**
-
-- Full Name (required, text)
-- Email Address (required, email, validation)
-- Phone Number (required, tel, validation)
-- Delivery Address (required, textarea)
-- Order Notes (optional, textarea)
-
-**Validation:**
-
-- Client-side validation before submission
-- Email format validation
-- Phone number format validation
-- Required field checks
-- Display inline error messages
-
-### Order Submission Service
-
-**Responsibilities:**
-
-- Format order data as JSON
-- Send POST request to serverless function endpoint
-- Handle errors and retries
-- Provide user feedback
-
-**Error Handling:**
-
-- Network failures: Retry with exponential backoff (max 2 retries)
-- Validation errors: Show user-friendly messages from server
-- Rate limiting: Inform user to try again later
-- Server errors: Show contact information as fallback
+- Handle submission states (loading, success, error)
 
 ---
 
@@ -382,16 +255,15 @@ export default async function handler(req, res) {
 
 ### API Key Security
 
-- **Google Sheets API:** API key stored server-side in environment variables
-- **Email Service API:** API key stored server-side in environment variables
-- **Environment Variables:** Use `.env` for development, build-time injection for production
-- **Never Exposed:** All API keys remain on server, never sent to client
+- All API keys must be stored server-side
+- API keys must never be exposed to the client
+- Environment variables required for configuration
 
 ### Input Validation
 
-- **Client-Side:** Prevent malicious input, validate formats (UX improvement)
-- **Server-Side:** Full validation and sanitization (security requirement)
-- **Sanitization:** Escape HTML in user inputs, prevent injection attacks
+- Client-side validation for user experience
+- Server-side validation required for security
+- All user input must be sanitized before processing
 
 ---
 
@@ -399,20 +271,20 @@ export default async function handler(req, res) {
 
 ### Cart Persistence
 
-- **localStorage:** Fast, synchronous, 5-10MB limit
-- **Session Storage:** Alternative if cart should not persist across sessions
-- **IndexedDB:** Overkill for cart data
+- Cart state must persist across browser sessions
+- Storage solution should be fast and reliable
+- Must handle storage limitations gracefully
 
 ### Order Submission
 
-- **Async/Await:** Non-blocking submission
-- **Loading States:** Show progress during submission
-- **Optimistic UI:** Update UI immediately, handle errors gracefully
+- Submission must be non-blocking
+- User feedback required during submission
+- Error handling must not degrade user experience
 
 ### Bundle Size
 
-- **No Client-Side SDKs:** Uses native `fetch` API
-- **Total Impact:** Zero additional bundle size
+- Minimize additional JavaScript dependencies
+- Prefer native browser APIs where possible
 
 ---
 
@@ -420,71 +292,30 @@ export default async function handler(req, res) {
 
 ### Cart Flow
 
-```mermaid
-stateDiagram-v2
-    [*] --> Browsing
-    Browsing --> AddToCart: Click "Add to Cart"
-    AddToCart --> CartView: Show cart
-    CartView --> ModifyCart: Change quantity/remove
-    ModifyCart --> CartView: Update cart
-    CartView --> Checkout: Click "Checkout"
-    CartView --> Browsing: Continue shopping
-    Checkout --> [*]
-```
-
-**Steps:**
-
 1. User browses products
-2. Clicks "Add to Cart" on product
-3. Cart icon shows item count
-4. User can view cart (slide-out or page)
-5. User can modify quantities or remove items
-6. Cart persists across page refreshes
+2. User adds items to cart
+3. Cart persists across page refreshes
+4. User can view and modify cart contents
+5. User proceeds to checkout
 
 ### Checkout Flow
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant C as Cart
-    participant F as Checkout Form
-    participant S as Serverless Function
-
-    U->>C: Click "Checkout"
-    C->>F: Navigate to checkout
-    F->>F: Display order summary
-    F->>F: Show customer form
-    U->>F: Fill form & submit
-    F->>F: Validate inputs
-    F->>S: POST order data
-    S->>S: Validate & process
-    S->>S: Write to Google Sheets
-    S->>S: Send email notification
-    S->>F: Return success response
-    F->>C: Clear cart
-    F->>U: Display success message
-```
-
-**Steps:**
-
-1. User clicks "Checkout" from cart
-2. Checkout page shows:
-   - Order summary (items, quantities, prices)
-   - Customer information form
-   - Estimated total
-3. User fills form and submits
-4. Loading state shown
-5. Success confirmation displayed
-6. Cart cleared
-7. Option to return to menu
+1. User reviews order summary
+2. User enters customer information
+3. User submits order
+4. System processes order (validates, stores, notifies)
+5. User receives confirmation
 
 ### Error Handling
 
-| Error Type           | User Message                                                             | Action                      |
-| -------------------- | ------------------------------------------------------------------------ | --------------------------- |
-| **Network Error**    | "Unable to submit order. Please try again or contact us directly."       | Retry button + contact info |
-| **Validation Error** | Inline field errors                                                      | Highlight invalid fields    |
-| **Service Limit**    | "We're experiencing high volume. Please contact us directly at [email]." | Show contact information    |
+The system must handle:
+
+- Network failures
+- Validation errors
+- Rate limiting
+- Server errors
+
+All errors should provide clear user feedback and fallback options.
 
 ---
 
@@ -514,16 +345,6 @@ sequenceDiagram
 
 ---
 
-## Next Steps
-
-1. **5k Documentation:** Break down into specific implementation tasks
-2. **Setup:** Configure serverless function environment (Vercel/Netlify)
-3. **Google Sheets Setup:** Create spreadsheet and configure API access
-4. **Email Service Setup:** Configure email service (SendGrid/Resend)
-5. **Prototype:** Build MVP with serverless function
-6. **Test:** Validate with sample orders
-7. **Iterate:** Add enhancements based on usage
-
 ---
 
 ## Related Documents
@@ -536,7 +357,7 @@ sequenceDiagram
 
 ### Architecture & Design
 
-- [Implementation Plan](./ordering-system-5k.md) - Detailed implementation tasks (to be created)
+- [Ordering System Feature](./ordering-system-feature.md) - Feature overview and user stories
 - [Component Specifications](./components/) - Individual component designs (to be created)
 
 ### Documentation Standards
