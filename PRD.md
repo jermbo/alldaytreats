@@ -155,7 +155,7 @@ The website solves the problem of visibility and accessibility for a word-of-mou
 
 ## Open Questions / Future Decisions
 
-1. **Cart Implementation**: How should the future "add to cart" feature work? (Client-side only, email generation, etc.)
+1. ~~**Cart Implementation**: How should the future "add to cart" feature work? (Client-side only, email generation, etc.)~~ **Resolved** - See [Ordering System Architecture](docs/architecture/ordering-system.md)
 2. **Product Updates**: What's the process for updating product information? (Direct code edits vs. content management)
 3. **Analytics**: Should we add basic analytics? (Privacy-focused, no external services)
 4. **SEO**: What keywords should we optimize for? (Local searches)
@@ -164,5 +164,12 @@ The website solves the problem of visibility and accessibility for a word-of-mou
 
 ## Related Documents
 
+### Project Documentation
+
 - [README.md](README.md) - Project overview and setup instructions
-- [docs/coding_with_vibes/30k_documentation_guidelines.md](docs/coding_with_vibes/30k_documentation_guidelines.md) - Documentation methodology
+- [Ordering System Architecture](docs/architecture/ordering-system.md) - Architecture and design for ordering functionality
+
+### Documentation Standards
+
+- [Documentation Guidelines](docs/coding_with_vibes/README.md) - V.I.B.E.S. documentation methodology
+- [Architecture Guidelines](docs/coding_with_vibes/15k_documentation_guidelines.md) - Architecture documentation standards

@@ -45,11 +45,18 @@ Planned features (not yet implemented):
 - Email-based order submission
 - Client-side cart that generates order summaries
 
-These features will be implemented without adding backend services or monthly costs.
+These features will be implemented without adding backend services or monthly costs. See [Ordering System Architecture](docs/architecture/ordering-system.md) for detailed design.
 
 ## Related Documentation
 
+### Project Documentation
+
 - [PRD.md](PRD.md) - Product Requirements Document
+- [Ordering System Architecture](docs/architecture/ordering-system.md) - Architecture and design for ordering functionality
+
+### Documentation Standards
+
+- [Documentation Guidelines](docs/coding_with_vibes/README.md) - V.I.B.E.S. documentation methodology
 
 ## License
 
