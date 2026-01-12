@@ -204,6 +204,25 @@ body:has(.product-modal[open]) {
 	outline-offset: 2px;
 }
 
+.product-modal__char-count {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: var(--spacing-sm);
+	font-size: var(--font-size-xs);
+	color: var(--color-text-light);
+	opacity: 0.7;
+	transition: color var(--transition-fast);
+}
+
+.product-modal__char-count--warning {
+	color: var(--color-accent-pink);
+	opacity: 1;
+}
+
+.product-modal__char-count-value {
+	font-weight: 600;
+}
+
 .product-modal__add-btn {
 	width: 100%;
 	background: var(--color-accent-blue);

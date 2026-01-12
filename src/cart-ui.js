@@ -202,35 +202,61 @@ const renderCartItem = (item) => {
 	const lineTotal = unitPrice * quantity;
 
 	itemEl.innerHTML = `
-		<img class="cart__item-image" src="${escapeHtml(
-			productImage
-		)}" alt="${escapeHtml(item.name)}" loading="lazy" />
-		<div class="cart__item-content">
-			<h3 class="cart__item-name">${escapeHtml(item.name)}</h3>
-			<p class="cart__item-option">${unitCount}ct</p>
+		<div class="cart__item-main">
+			<img class="cart__item-image" src="${escapeHtml(
+				productImage
+			)}" alt="${escapeHtml(item.name)}" loading="lazy" />
+			<div class="cart__item-content">
+				<div class="cart__item-header">
+					<h3 class="cart__item-name">${escapeHtml(item.name)}</h3>
+					<button type="button" class="cart__item-edit" aria-label="Edit ${escapeHtml(
+						item.name
+					)}" title="Edit item">
+						✏️
+					</button>
+				</div>
+				<p class="cart__item-option">${unitCount}ct $${unitPrice.toFixed(2)}</p>
+				${
+					item.specialInstructions
+						? `<p class="cart__item-instructions">${escapeHtml(
+								item.specialInstructions
+						  )}</p>`
+						: ""
+				}
+			</div>
 		</div>
-		<div class="cart__item-quantity">
-			<button type="button" class="cart__quantity-btn cart__quantity-btn--minus" aria-label="Decrease quantity">
-				−
-			</button>
-			<span class="cart__quantity-value">${quantity}</span>
-			<button type="button" class="cart__quantity-btn cart__quantity-btn--plus" aria-label="Increase quantity">
-				+
+		<div class="cart__item-actions">
+			<div class="cart__item-quantity">
+				<button type="button" class="cart__quantity-btn cart__quantity-btn--minus" aria-label="Decrease quantity">
+					−
+				</button>
+				<span class="cart__quantity-value">${quantity}</span>
+				<button type="button" class="cart__quantity-btn cart__quantity-btn--plus" aria-label="Increase quantity">
+					+
+				</button>
+			</div>
+			<div class="cart__item-price">$${lineTotal.toFixed(2)}</div>
+			<button type="button" class="cart__item-remove" aria-label="Remove ${escapeHtml(
+				item.name
+			)}">
+				🗑️
 			</button>
 		</div>
-		<div class="cart__item-price">$${lineTotal.toFixed(2)}</div>
-		<button type="button" class="cart__item-remove" aria-label="Remove ${escapeHtml(
-			item.name
-		)}">
-			🗑️
-		</button>
 	`;
 
 	// Attach event listeners
+	const editBtn = itemEl.querySelector(".cart__item-edit");
 	const removeBtn = itemEl.querySelector(".cart__item-remove");
 	const minusBtn = itemEl.querySelector(".cart__quantity-btn--minus");
 	const plusBtn = itemEl.querySelector(".cart__quantity-btn--plus");
 	const quantityValue = itemEl.querySelector(".cart__quantity-value");
+
+	if (editBtn) {
+		editBtn.addEventListener("click", (e) => {
+			e.stopPropagation();
+			handleEditItem(item);
+		});
+	}
 
 	if (removeBtn) {
 		removeBtn.addEventListener("click", () => handleRemoveItem(item.id));
@@ -326,12 +352,18 @@ const renderEmptyState = (itemsContainer, emptyState, cartContent, footer) => {
 const renderCartTotals = () => {
 	if (!cartPanel) return;
 
+	const subtotalEl = cartPanel.querySelector(".cart__subtotal-value");
 	const totalEl = cartPanel.querySelector(".cart__total-value");
 
-	const total = getCartSubtotal();
+	const subtotal = getCartSubtotal();
+	const estimatedTotal = subtotal; // No taxes/fees yet
+
+	if (subtotalEl) {
+		subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+	}
 
 	if (totalEl) {
-		totalEl.textContent = `$${total.toFixed(2)}`;
+		totalEl.textContent = `$${estimatedTotal.toFixed(2)}`;
 	}
 };
 

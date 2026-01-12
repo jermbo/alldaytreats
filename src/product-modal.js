@@ -15,6 +15,42 @@ export const initProductModal = (dialogElement) => {
 	const instructionsInput = dialogElement.querySelector(
 		".product-modal__instructions"
 	);
+	const charCountValue = dialogElement.querySelector(
+		".product-modal__char-count-value"
+	);
+
+	// Character counter update function
+	const updateCharCount = () => {
+		if (charCountValue && instructionsInput) {
+			const length = instructionsInput.value.length;
+			charCountValue.textContent = length;
+
+			// Add warning class if approaching limit
+			const charCountContainer = charCountValue.closest(
+				".product-modal__char-count"
+			);
+			if (charCountContainer) {
+				if (length > 200) {
+					charCountContainer.classList.add(
+						"product-modal__char-count--warning"
+					);
+				} else {
+					charCountContainer.classList.remove(
+						"product-modal__char-count--warning"
+					);
+				}
+			}
+		}
+	};
+
+	// Update character count on input
+	if (instructionsInput) {
+		instructionsInput.addEventListener("input", updateCharCount);
+		instructionsInput.addEventListener("paste", (e) => {
+			// Handle paste to ensure maxlength is respected
+			setTimeout(updateCharCount, 0);
+		});
+	}
 
 	// Close button handler
 	if (closeBtn) {
@@ -36,7 +72,7 @@ export const initProductModal = (dialogElement) => {
 			if (!currentProduct || !selectedPriceOption) return;
 
 			const instructions = instructionsInput
-				? instructionsInput.value.trim()
+				? instructionsInput.value.trim().slice(0, 250)
 				: "";
 
 			if (editingItemId) {
@@ -135,9 +171,47 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 	// Reset add button
 	updateAddButton(addBtn, preSelectedOption?.price || 0, editingItemId !== null);
 
-	// Pre-fill instructions if editing
+	// Pre-fill instructions if editing and update character count
+	const charCountValue = dialogElement.querySelector(
+		".product-modal__char-count-value"
+	);
 	if (instructionsInput) {
-		instructionsInput.value = editData?.specialInstructions || "";
+		const instructions = editData?.specialInstructions || "";
+		instructionsInput.value = instructions.slice(0, 250);
+
+		// Update character count
+		if (charCountValue) {
+			charCountValue.textContent = instructionsInput.value.length;
+		}
+
+		// Update warning state
+		const charCountContainer = charCountValue?.closest(
+			".product-modal__char-count"
+		);
+		if (charCountContainer) {
+			if (instructionsInput.value.length > 200) {
+				charCountContainer.classList.add(
+					"product-modal__char-count--warning"
+				);
+			} else {
+				charCountContainer.classList.remove(
+					"product-modal__char-count--warning"
+				);
+			}
+		}
+	} else {
+		// Reset character count if no instructions input
+		if (charCountValue) {
+			charCountValue.textContent = "0";
+		}
+		const charCountContainer = charCountValue?.closest(
+			".product-modal__char-count"
+		);
+		if (charCountContainer) {
+			charCountContainer.classList.remove(
+				"product-modal__char-count--warning"
+			);
+		}
 	}
 
 	// Attach event listeners to new quantity options

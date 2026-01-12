@@ -387,9 +387,15 @@
 						</div>
 					</div>
 					<footer class="cart__footer" hidden>
-						<div class="cart__total-row">
-							<span class="cart__total-label">Total</span>
-							<span class="cart__total-value">$0.00</span>
+						<div class="cart__totals">
+							<div class="cart__subtotal-row">
+								<span class="cart__subtotal-label">Subtotal</span>
+								<span class="cart__subtotal-value">$0.00</span>
+							</div>
+							<div class="cart__total-row">
+								<span class="cart__total-label">Estimated Total</span>
+								<span class="cart__total-value">$0.00</span>
+							</div>
 						</div>
 						<div class="cart__actions">
 							<button type="button" class="cart__checkout-btn">
@@ -431,14 +437,18 @@
 							for="product-instructions"
 							class="product-modal__section-label"
 						>
-							Special Instructions (optional)
+							Special Instructions (optional, max 250 characters)
 						</label>
 						<textarea
 							id="product-instructions"
 							class="product-modal__instructions"
 							placeholder="Colors, themes, or special requests..."
 							rows="4"
+							maxlength="250"
 						></textarea>
+						<div class="product-modal__char-count">
+							<span class="product-modal__char-count-value">0</span> / 250
+						</div>
 					</section>
 					<button type="button" class="product-modal__add-btn" disabled>
 						<span class="product-modal__add-text">Add to Cart - $0</span>
