@@ -4,7 +4,7 @@ export const products = [
 		name: "Candy Grapes",
 		description:
 			"Fresh grapes coated in a sweet candy shell with colorful sprinkles",
-		image: candyGrapes,
+		image: "/src/images/candy-grapes-new.jpg",
 		priceOptions: [
 			{ count: 6, price: 10 },
 			{ count: 8, price: 15 },
@@ -17,7 +17,7 @@ export const products = [
 		id: "candy-pineapple",
 		name: "Candy Pineapple Rings/Chunks",
 		description: "Sweet pineapple rings and chunks with candy coating",
-		image: candyPineapple,
+		image: "/src/images/candy-pineapple-rings.jpg",
 		priceOptions: [
 			{ count: 6, price: 12 },
 			{ count: 8, price: 17 },
@@ -30,7 +30,7 @@ export const products = [
 		id: "candy-strawberries",
 		name: "Candy Strawberries",
 		description: "Juicy strawberries with a vibrant candy coating",
-		image: candyStrawberries,
+		image: "/src/images/candy-strawberries.jpg",
 		priceOptions: [
 			{ count: 6, price: 10 },
 			{ count: 8, price: 15 },
@@ -43,7 +43,7 @@ export const products = [
 		id: "chocolate-strawberries",
 		name: "Chocolate Covered Strawberries",
 		description: "Premium strawberries dipped in rich chocolate with drizzle",
-		image: chocolateStrawberries,
+		image: "/src/images/chocolate-strawberries-new.jpg",
 		priceOptions: [
 			{ count: 6, price: 10 },
 			{ count: 8, price: 15 },
@@ -56,7 +56,7 @@ export const products = [
 		id: "cake-pops",
 		name: "Cake Pops / Cakesicles",
 		description: "Delicious cake pops with colorful candy coating",
-		image: cakePops,
+		image: "/src/images/cake-pops.jpg",
 		priceOptions: [
 			{ count: 6, price: 10 },
 			{ count: 8, price: 17 },
@@ -69,7 +69,7 @@ export const products = [
 		id: "chocolate-oreos",
 		name: "Chocolate Covered Oreos",
 		description: "Classic Oreos dipped in chocolate with decorative drizzle",
-		image: chocolateOreos,
+		image: "/src/images/chocolate-oreos.jpg",
 		priceOptions: [
 			{ count: 6, price: 10 },
 			{ count: 8, price: 15 },
@@ -82,7 +82,7 @@ export const products = [
 		id: "chocolate-pretzels",
 		name: "Chocolate Covered Pretzels",
 		description: "Crunchy pretzels with chocolate coating and sprinkles",
-		image: chocolatePretzels,
+		image: "/src/images/chocolate-pretzels.jpg",
 		priceOptions: [
 			{ count: 6, price: 10 },
 			{ count: 8, price: 15 },
@@ -95,7 +95,7 @@ export const products = [
 		id: "chocolate-rice-krispies",
 		name: "Chocolate Covered Rice Krispies",
 		description: "Crispy Rice Krispie treats with chocolate coating",
-		image: chocolateRiceKrispies,
+		image: "/src/images/chocolate-rice-krispies.jpg",
 		priceOptions: [
 			{ count: 6, price: 15 },
 			{ count: 8, price: 15 },
@@ -108,7 +108,7 @@ export const products = [
 		id: "party-platter",
 		name: "Party Platter",
 		description: "Assorted treats perfect for any occasion",
-		image: platter,
+		image: "/src/images/party-platter.jpg",
 		priceOptions: [
 			{ count: 1, price: 45 },
 			{ count: 2, price: 55 },
@@ -119,7 +119,7 @@ export const products = [
 	},
 ];
 
-export const toppings: Topping[] = [
+export const toppings = [
 	{ id: "jolly-ranchers", name: "Jolly Ranchers", price: 0 },
 	{ id: "nerds", name: "Nerds", price: 0 },
 	{ id: "starburst", name: "Starburst", price: 0 },

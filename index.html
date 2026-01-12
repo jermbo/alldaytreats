@@ -9,6 +9,7 @@
 			content="Handcrafted candy-coated fruits, chocolate-covered treats, and party platters made with love in Omaha, NE"
 		/>
 		<title>All Day Treats - Omaha, NE</title>
+		<link rel="stylesheet" href="/src/style.css" />
 	</head>
 	<body>
 		<header class="header">
@@ -23,6 +24,19 @@
 						<h1 class="header__title">ALL DAY TREATS</h1>
 						<p class="header__location">Omaha, NE</p>
 					</div>
+				</div>
+				<div class="header__actions">
+					<button
+						type="button"
+						class="header__cart-btn"
+						aria-label="View cart"
+						id="cart-btn"
+					>
+						<span class="header__cart-icon" aria-hidden="true">🛒</span>
+						<span class="header__cart-badge" id="cart-badge" aria-hidden="true"
+							>0</span
+						>
+					</button>
 				</div>
 				<nav class="header__contact" aria-label="Contact information">
 					<a
@@ -341,6 +355,50 @@
 				<p>&copy; 2026 All Day Treats. All rights reserved.</p>
 			</div>
 		</footer>
+
+		<!-- Product Details Modal Template -->
+		<template id="product-modal-template">
+			<dialog class="product-modal" aria-labelledby="product-modal-title">
+				<header class="product-modal__header">
+					<h2 class="product-modal__title" id="product-modal-title">
+						PRODUCT NAME
+					</h2>
+					<button
+						type="button"
+						class="product-modal__close"
+						aria-label="Close modal"
+					>
+						<span class="product-modal__close-icon" aria-hidden="true">x</span>
+					</button>
+				</header>
+				<div class="product-modal__body">
+					<img class="product-modal__image" src="" alt="" loading="lazy" />
+					<p class="product-modal__description"></p>
+					<section class="product-modal__section">
+						<label class="product-modal__section-label">Select Quantity</label>
+						<div class="product-modal__quantity-options"></div>
+					</section>
+					<section class="product-modal__section">
+						<label
+							for="product-instructions"
+							class="product-modal__section-label"
+						>
+							Special Instructions (optional)
+						</label>
+						<textarea
+							id="product-instructions"
+							class="product-modal__instructions"
+							placeholder="Colors, themes, or special requests..."
+							rows="4"
+						></textarea>
+					</section>
+					<button type="button" class="product-modal__add-btn" disabled>
+						<span class="product-modal__add-text">Add to Cart - $0</span>
+						<span class="product-modal__checkmark">✓</span>
+					</button>
+				</div>
+			</dialog>
+		</template>
 
 		<script type="module" src="/src/main.js"></script>
 	</body>
