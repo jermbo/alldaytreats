@@ -11,6 +11,17 @@ import { openProductModal } from "./product-modal.js";
 let cartPanel = null;
 let productModal = null;
 
+// Cached DOM references
+let itemsContainer = null;
+let emptyState = null;
+let cartContent = null;
+let footer = null;
+let subtotalEl = null;
+let totalEl = null;
+
+// Track item count to detect add/remove vs quantity changes
+let lastItemCount = 0;
+
 /**
  * Initialize cart UI
  * @param {HTMLElement} panelElement - Cart panel element
@@ -22,6 +33,14 @@ export const initCartUI = (panelElement, modalElement) => {
 	productModal = modalElement;
 
 	if (!cartPanel) return;
+
+	// Cache DOM references
+	itemsContainer = cartPanel.querySelector(".cart__items");
+	emptyState = cartPanel.querySelector(".cart__empty");
+	cartContent = cartPanel.querySelector(".cart__content");
+	footer = cartPanel.querySelector(".cart__footer");
+	subtotalEl = cartPanel.querySelector(".cart__subtotal-value");
+	totalEl = cartPanel.querySelector(".cart__total-value");
 
 	const closeBtn = cartPanel.querySelector(".cart__close");
 	const backdrop = cartPanel.querySelector(".cart__backdrop");
@@ -51,6 +70,11 @@ export const initCartUI = (panelElement, modalElement) => {
 		});
 	}
 
+	// Event delegation for cart item actions
+	if (itemsContainer) {
+		itemsContainer.addEventListener("click", handleItemAction);
+	}
+
 	// Close on ESC key
 	document.addEventListener("keydown", (e) => {
 		if (e.key === "Escape" && isCartOpen()) {
@@ -60,6 +84,7 @@ export const initCartUI = (panelElement, modalElement) => {
 
 	// Initial render
 	renderCart();
+	lastItemCount = getCartItems().length;
 };
 
 /**
@@ -108,58 +133,50 @@ const isCartOpen = () => {
 };
 
 /**
+ * Toggle cart state between empty and has items
+ * @param {boolean} isEmpty - Whether cart is empty
+ * @returns {void}
+ */
+const toggleCartState = (isEmpty) => {
+	if (isEmpty) {
+		if (emptyState) emptyState.hidden = false;
+		if (cartContent) cartContent.hidden = true;
+		if (footer) footer.hidden = true;
+	} else {
+		if (emptyState) emptyState.hidden = true;
+		if (cartContent) cartContent.hidden = false;
+		if (footer) footer.hidden = false;
+	}
+};
+
+/**
  * Render entire cart
  * @returns {void}
  */
 const renderCart = () => {
-	if (!cartPanel) return;
+	if (!cartPanel || !itemsContainer) return;
 
 	const items = getCartItems();
-	const itemsContainer = cartPanel.querySelector(".cart__items");
-	const emptyState = cartPanel.querySelector(".cart__empty");
-	const cartContent = cartPanel.querySelector(".cart__content");
-	const footer = cartPanel.querySelector(".cart__footer");
-
-	// Ensure we have all required elements
-	if (!itemsContainer || !emptyState || !cartContent || !footer) {
-		return;
-	}
+	lastItemCount = items.length;
 
 	if (items.length === 0) {
-		renderEmptyState(itemsContainer, emptyState, cartContent, footer);
+		toggleCartState(true);
+		if (itemsContainer) {
+			itemsContainer.innerHTML = "";
+		}
 	} else {
-		renderCartItems(itemsContainer, emptyState, cartContent, footer);
-		renderCartTotals();
+		toggleCartState(false);
+		renderCartItems();
+		updateCartTotals();
 	}
 };
 
 /**
  * Render cart items
- * @param {HTMLElement} itemsContainer - Container for cart items
- * @param {HTMLElement} emptyState - Empty state element
- * @param {HTMLElement} cartContent - Cart content wrapper
- * @param {HTMLElement} footer - Cart footer
  * @returns {void}
  */
-const renderCartItems = (itemsContainer, emptyState, cartContent, footer) => {
+const renderCartItems = () => {
 	if (!itemsContainer) return;
-
-	// Hide empty state, show content and footer FIRST
-	if (emptyState) {
-		emptyState.hidden = true;
-		emptyState.setAttribute("hidden", "");
-		emptyState.style.display = "none";
-	}
-	if (cartContent) {
-		cartContent.hidden = false;
-		cartContent.removeAttribute("hidden");
-		cartContent.style.display = "";
-	}
-	if (footer) {
-		footer.hidden = false;
-		footer.removeAttribute("hidden");
-		footer.style.display = "";
-	}
 
 	// Clear existing items
 	itemsContainer.innerHTML = "";
@@ -167,17 +184,17 @@ const renderCartItems = (itemsContainer, emptyState, cartContent, footer) => {
 	// Render each item
 	const items = getCartItems();
 	items.forEach((item) => {
-		const itemElement = renderCartItem(item);
+		const itemElement = createCartItemElement(item);
 		itemsContainer.appendChild(itemElement);
 	});
 };
 
 /**
- * Render single cart item
+ * Create single cart item element
  * @param {Object} item - Cart item
  * @returns {HTMLElement}
  */
-const renderCartItem = (item) => {
+const createCartItemElement = (item) => {
 	const itemEl = document.createElement("article");
 	itemEl.className = "cart__item";
 	itemEl.setAttribute("data-item-id", item.id);
@@ -211,7 +228,7 @@ const renderCartItem = (item) => {
 					<h3 class="cart__item-name">${escapeHtml(item.name)}</h3>
 					<button type="button" class="cart__item-edit" aria-label="Edit ${escapeHtml(
 						item.name
-					)}" title="Edit item">
+					)}" title="Edit item" data-action="edit">
 						✏️
 					</button>
 				</div>
@@ -227,74 +244,81 @@ const renderCartItem = (item) => {
 		</div>
 		<div class="cart__item-actions">
 			<div class="cart__item-quantity">
-				<button type="button" class="cart__quantity-btn cart__quantity-btn--minus" aria-label="Decrease quantity">
+				<button type="button" class="cart__quantity-btn cart__quantity-btn--minus" aria-label="Decrease quantity" data-action="decrease">
 					−
 				</button>
 				<span class="cart__quantity-value">${quantity}</span>
-				<button type="button" class="cart__quantity-btn cart__quantity-btn--plus" aria-label="Increase quantity">
+				<button type="button" class="cart__quantity-btn cart__quantity-btn--plus" aria-label="Increase quantity" data-action="increase">
 					+
 				</button>
 			</div>
 			<div class="cart__item-price">$${lineTotal.toFixed(2)}</div>
 			<button type="button" class="cart__item-remove" aria-label="Remove ${escapeHtml(
 				item.name
-			)}">
+			)}" data-action="remove">
 				🗑️
 			</button>
 		</div>
 	`;
 
-	// Attach event listeners
-	const editBtn = itemEl.querySelector(".cart__item-edit");
-	const removeBtn = itemEl.querySelector(".cart__item-remove");
-	const minusBtn = itemEl.querySelector(".cart__quantity-btn--minus");
-	const plusBtn = itemEl.querySelector(".cart__quantity-btn--plus");
-	const quantityValue = itemEl.querySelector(".cart__quantity-value");
-
-	if (editBtn) {
-		editBtn.addEventListener("click", (e) => {
-			e.stopPropagation();
-			handleEditItem(item);
-		});
-	}
-
-	if (removeBtn) {
-		removeBtn.addEventListener("click", () => handleRemoveItem(item.id));
-	}
-
-	if (minusBtn && quantityValue) {
-		minusBtn.addEventListener("click", () => {
-			const currentQty = parseInt(quantityValue.textContent) || 1;
-			const newQty = currentQty - 1;
-			quantityValue.textContent = newQty;
-			updateCartItemQuantity(item.id, newQty);
-		});
-	}
-
-	if (plusBtn && quantityValue) {
-		plusBtn.addEventListener("click", () => {
-			const currentQty = parseInt(quantityValue.textContent) || 1;
-			const newQty = currentQty + 1;
-			quantityValue.textContent = newQty;
-			updateCartItemQuantity(item.id, newQty);
-		});
-	}
-
 	return itemEl;
 };
 
 /**
- * Update cart item quantity
- * @param {string} itemId - Cart item ID
- * @param {number} quantity - New quantity
+ * Handle cart item actions via event delegation
+ * @param {Event} e - Click event
  * @returns {void}
  */
-const updateCartItemQuantity = (itemId, quantity) => {
+const handleItemAction = (e) => {
+	const button = e.target.closest("button[data-action]");
+	if (!button) return;
+
+	const itemElement = button.closest("[data-item-id]");
+	if (!itemElement) return;
+
+	const itemId = itemElement.getAttribute("data-item-id");
+	const action = button.getAttribute("data-action");
+
+	const item = getCartItems().find((i) => i.id === itemId);
+	if (!item) return;
+
+	switch (action) {
+		case "edit":
+			e.stopPropagation();
+			handleEditItem(item);
+			break;
+		case "remove":
+			handleRemoveItem(itemId);
+			break;
+		case "increase":
+		case "decrease": {
+			const quantityEl = itemElement.querySelector(".cart__quantity-value");
+			if (!quantityEl) return;
+
+			const currentQty = parseInt(quantityEl.textContent) || 1;
+			const newQty = action === "increase" ? currentQty + 1 : currentQty - 1;
+
+			// Store active element for focus restoration
+			const activeElement = document.activeElement;
+
+			updateCartItemQuantity(itemId, newQty, activeElement);
+			break;
+		}
+	}
+};
+
+/**
+ * Update cart item quantity with incremental DOM updates
+ * @param {string} itemId - Cart item ID
+ * @param {number} quantity - New quantity
+ * @param {HTMLElement} activeElement - Element to restore focus to
+ * @returns {void}
+ */
+const updateCartItemQuantity = (itemId, quantity, activeElement) => {
 	const item = getCartItems().find((i) => i.id === itemId);
 	if (!item) return;
 
 	if (quantity <= 0) {
-		// Remove item if quantity is 0 or less
 		handleRemoveItem(itemId);
 		return;
 	}
@@ -310,61 +334,61 @@ const updateCartItemQuantity = (itemId, quantity) => {
 		unitPrice: unitPrice,
 	});
 
-	renderCart();
+	// Update DOM incrementally
+	updateCartItemElement(itemId, {
+		quantity: quantity,
+		unitPrice: unitPrice,
+	});
+
+	// Update totals
+	updateCartTotals();
+
+	// Restore focus after DOM updates complete
+	// Use requestAnimationFrame to ensure DOM is updated
+	requestAnimationFrame(() => {
+		if (activeElement && document.contains(activeElement)) {
+			activeElement.focus();
+		}
+	});
 };
 
 /**
- * Render empty state
- * @param {HTMLElement} itemsContainer - Container for cart items
- * @param {HTMLElement} emptyState - Empty state element
- * @param {HTMLElement} cartContent - Cart content wrapper
- * @param {HTMLElement} footer - Cart footer
+ * Update cart item element incrementally
+ * @param {string} itemId - Cart item ID
+ * @param {Object} itemData - Updated item data
  * @returns {void}
  */
-const renderEmptyState = (itemsContainer, emptyState, cartContent, footer) => {
-	// Clear items container first
-	if (itemsContainer) {
-		itemsContainer.innerHTML = "";
+const updateCartItemElement = (itemId, itemData) => {
+	if (!itemsContainer) return;
+
+	const itemElement = itemsContainer.querySelector(`[data-item-id="${itemId}"]`);
+	if (!itemElement) return;
+
+	const quantityEl = itemElement.querySelector(".cart__quantity-value");
+	const priceEl = itemElement.querySelector(".cart__item-price");
+
+	if (quantityEl) {
+		quantityEl.textContent = itemData.quantity;
 	}
 
-	// Show empty state, hide content and footer
-	if (emptyState) {
-		emptyState.hidden = false;
-		emptyState.removeAttribute("hidden");
-		emptyState.style.display = "";
-	}
-	if (cartContent) {
-		cartContent.hidden = true;
-		cartContent.setAttribute("hidden", "");
-		cartContent.style.display = "none";
-	}
-	if (footer) {
-		footer.hidden = true;
-		footer.setAttribute("hidden", "");
-		footer.style.display = "none";
+	if (priceEl) {
+		const lineTotal = itemData.unitPrice * itemData.quantity;
+		priceEl.textContent = `$${lineTotal.toFixed(2)}`;
 	}
 };
 
 /**
- * Render cart totals
+ * Update cart totals
  * @returns {void}
  */
-const renderCartTotals = () => {
-	if (!cartPanel) return;
-
-	const subtotalEl = cartPanel.querySelector(".cart__subtotal-value");
-	const totalEl = cartPanel.querySelector(".cart__total-value");
+const updateCartTotals = () => {
+	if (!subtotalEl || !totalEl) return;
 
 	const subtotal = getCartSubtotal();
 	const estimatedTotal = subtotal; // No taxes/fees yet
 
-	if (subtotalEl) {
-		subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-	}
-
-	if (totalEl) {
-		totalEl.textContent = `$${estimatedTotal.toFixed(2)}`;
-	}
+	subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+	totalEl.textContent = `$${estimatedTotal.toFixed(2)}`;
 };
 
 /**
@@ -381,22 +405,16 @@ const handleEditItem = (item) => {
 
 	// Find matching price option
 	const priceOption = product.priceOptions.find(
-		(opt) => opt.count === item.count && opt.price === item.price
+		(opt) => opt.count === item.count && opt.price === item.unitPrice
 	);
 
-	// Close cart first
-	closeCart();
-
-	// Open product modal with item data for editing
-	// We'll need to modify openProductModal to accept edit data
-	setTimeout(() => {
-		openProductModal(productModal, product, {
-			itemId: item.id,
-			count: item.count,
-			price: item.price,
-			specialInstructions: item.specialInstructions,
-		});
-	}, 300);
+	// Open product modal with item data for editing (cart stays open)
+	openProductModal(productModal, product, {
+		itemId: item.id,
+		count: item.count,
+		price: item.unitPrice || item.price,
+		specialInstructions: item.specialInstructions,
+	});
 };
 
 /**
@@ -430,8 +448,16 @@ const escapeHtml = (text) => {
 };
 
 // Listen for cart updates to re-render
+// Only re-render if item count changed (add/remove), not on quantity updates
 document.addEventListener("cartUpdate", () => {
-	if (isCartOpen()) {
+	if (!isCartOpen()) return;
+
+	const currentItemCount = getCartItems().length;
+
+	// Only re-render if items were added or removed
+	// Quantity updates are handled incrementally
+	if (currentItemCount !== lastItemCount) {
 		renderCart();
+		lastItemCount = currentItemCount;
 	}
 });

@@ -28,10 +28,7 @@ const isValidCartItem = (item) => {
 		typeof item.id === "string" &&
 		typeof item.productId === "string" &&
 		typeof item.name === "string" &&
-		typeof item.count === "number" &&
-		typeof item.price === "number" &&
-		typeof item.specialInstructions === "string" &&
-		(typeof item.quantity === "undefined" || typeof item.quantity === "number")
+		typeof item.price === "number"
 	);
 };
 
@@ -42,6 +39,20 @@ const isValidCartItem = (item) => {
  */
 const isValidCartData = (data) => {
 	return Array.isArray(data) && data.every(isValidCartItem);
+};
+
+/**
+ * Normalize cart item to ensure required fields
+ * @param {Object} item - Cart item
+ * @returns {Object} - Normalized cart item
+ */
+const normalizeCartItem = (item) => {
+	return {
+		...item,
+		quantity: item.quantity || 1,
+		unitPrice: item.unitPrice !== undefined ? item.unitPrice : item.price / (item.quantity || 1),
+		specialInstructions: item.specialInstructions || "",
+	};
 };
 
 /**
@@ -61,16 +72,7 @@ const loadCartFromStorage = () => {
 
 		const parsed = JSON.parse(stored);
 		if (isValidCartData(parsed)) {
-			// Migrate old cart items to include quantity and unitPrice
-			return parsed.map((item) => {
-				if (item.quantity === undefined) {
-					item.quantity = 1;
-				}
-				if (item.unitPrice === undefined) {
-					item.unitPrice = item.price;
-				}
-				return item;
-			});
+			return parsed.map(normalizeCartItem);
 		}
 
 		// Invalid data, clear it
@@ -78,11 +80,7 @@ const loadCartFromStorage = () => {
 		return [];
 	} catch {
 		// Corrupted data or parse error, clear it
-		try {
-			localStorage.removeItem(STORAGE_KEY);
-		} catch {
-			// Ignore errors when clearing
-		}
+		localStorage.removeItem(STORAGE_KEY);
 		return [];
 	}
 };
@@ -99,10 +97,7 @@ const saveCartToStorage = () => {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
 	} catch (error) {
-		// Handle quota exceeded or other errors silently
-		// Cart continues to work in memory
 		if (error.name === "QuotaExceededError") {
-			// Storage full, but cart still works in memory
 			console.warn(
 				"Cart storage quota exceeded. Cart will work in memory only."
 			);
@@ -116,7 +111,7 @@ const saveCartToStorage = () => {
  * @returns {void}
  */
 export const addToCart = (item) => {
-	cartItems.push({
+	const normalizedItem = normalizeCartItem({
 		id: `${item.productId}-${Date.now()}-${Math.random()}`,
 		productId: item.productId,
 		name: item.name,
@@ -124,9 +119,13 @@ export const addToCart = (item) => {
 		price: item.price,
 		specialInstructions: item.specialInstructions || "",
 		quantity: item.quantity || 1,
-		unitPrice: item.price, // Store original unit price
+		unitPrice: item.price,
 	});
 
+	// Calculate total price
+	normalizedItem.price = normalizedItem.unitPrice * normalizedItem.quantity;
+
+	cartItems.push(normalizedItem);
 	saveCartToStorage();
 	dispatchCartUpdate();
 };
@@ -177,7 +176,7 @@ export const clearCart = () => {
 /**
  * Update cart item by ID
  * @param {string} itemId - Cart item ID
- * @param {Object} updates - Updates to apply (productId, name, count, price, specialInstructions, quantity, unitPrice)
+ * @param {Object} updates - Updates to apply
  * @returns {boolean} - True if item was updated, false if not found
  */
 export const updateCartItem = (itemId, updates) => {
@@ -186,35 +185,22 @@ export const updateCartItem = (itemId, updates) => {
 		return false;
 	}
 
-	if (updates.productId !== undefined) {
-		item.productId = updates.productId;
-	}
-	if (updates.name !== undefined) {
-		item.name = updates.name;
-	}
-	if (updates.count !== undefined) {
-		item.count = updates.count;
-	}
-	if (updates.price !== undefined) {
-		item.price = updates.price;
-	}
+	// Update fields
+	if (updates.productId !== undefined) item.productId = updates.productId;
+	if (updates.name !== undefined) item.name = updates.name;
+	if (updates.count !== undefined) item.count = updates.count;
 	if (updates.specialInstructions !== undefined) {
 		item.specialInstructions = updates.specialInstructions;
 	}
-	if (updates.quantity !== undefined) {
-		item.quantity = updates.quantity;
-		// Update price based on quantity and unit price
-		if (item.unitPrice !== undefined) {
-			item.price = item.unitPrice * item.quantity;
-		}
-	}
-	if (updates.unitPrice !== undefined) {
-		item.unitPrice = updates.unitPrice;
-		// Recalculate price if quantity exists
-		if (item.quantity !== undefined) {
-			item.price = updates.unitPrice * item.quantity;
-		}
-	}
+	if (updates.quantity !== undefined) item.quantity = updates.quantity;
+	if (updates.unitPrice !== undefined) item.unitPrice = updates.unitPrice;
+
+	// Ensure normalized structure
+	const normalized = normalizeCartItem(item);
+	Object.assign(item, normalized);
+
+	// Always recalculate price from unitPrice * quantity
+	item.price = item.unitPrice * item.quantity;
 
 	saveCartToStorage();
 	dispatchCartUpdate();
@@ -237,10 +223,7 @@ export const getCartItemById = (itemId) => {
  */
 export const getCartSubtotal = () => {
 	return cartItems.reduce((total, item) => {
-		// If quantity exists, use it; otherwise treat as 1
-		const quantity = item.quantity || 1;
-		const itemPrice = item.unitPrice !== undefined ? item.unitPrice * quantity : item.price;
-		return total + itemPrice;
+		return total + (item.unitPrice * item.quantity);
 	}, 0);
 };
 
