@@ -1,7 +1,7 @@
-@import "./variables.css";
-@import "./base.css";
-@import "./header.css";
-@import "./hero.css";
-@import "./menu.css";
-@import "./animations.css";
-@import "./footer.css";
+@import "./styles/variables.css";
+@import "./styles/base.css";
+@import "./styles/header.css";
+@import "./styles/hero.css";
+@import "./styles/menu.css";
+@import "./styles/animations.css";
+@import "./styles/footer.css";
