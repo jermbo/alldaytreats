@@ -1,6 +1,7 @@
 import { products } from "./products.js";
 import { getCartItemCount } from "./cart.js";
 import { initProductModal, openProductModal } from "./product-modal.js";
+import { initCartUI, openCart } from "./cart-ui.js";
 
 // Initialize product modal from template
 const productModalTemplate = document.getElementById("product-modal-template");
@@ -73,6 +74,28 @@ menuItems.forEach((item) => {
 
 // Export productModal for use in other modules if needed
 export { productModal };
+
+// Initialize cart UI
+const cartTemplate = document.getElementById("cart-template");
+let cartPanel = null;
+
+if (cartTemplate) {
+	const templateContent = cartTemplate.content.cloneNode(true);
+	cartPanel = templateContent.querySelector(".cart");
+	document.body.appendChild(cartPanel);
+
+	if (cartPanel && productModal) {
+		initCartUI(cartPanel, productModal);
+	}
+}
+
+// Wire up cart button
+const cartBtn = document.getElementById("cart-btn");
+if (cartBtn) {
+	cartBtn.addEventListener("click", () => {
+		openCart();
+	});
+}
 
 // Category filtering with View Transitions API
 const tabs = document.querySelectorAll(".menu__tab");

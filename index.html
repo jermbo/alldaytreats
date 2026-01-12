@@ -359,6 +359,51 @@
 			</div>
 		</footer>
 
+		<!-- Cart Panel Template -->
+		<template id="cart-template">
+			<div class="cart" role="dialog" aria-labelledby="cart-title" aria-modal="true" hidden>
+				<div class="cart__backdrop"></div>
+				<div class="cart__panel">
+					<header class="cart__header">
+						<div class="cart__title-wrapper">
+							<span class="cart__icon" aria-hidden="true">🛒</span>
+							<h2 class="cart__title" id="cart-title">YOUR CART</h2>
+						</div>
+						<button
+							type="button"
+							class="cart__close"
+							aria-label="Close cart"
+						>
+							<span class="cart__close-icon" aria-hidden="true">×</span>
+						</button>
+					</header>
+					<div class="cart__body">
+						<div class="cart__empty" hidden>
+							<p class="cart__empty-message">Your cart is empty</p>
+							<p class="cart__empty-subtext">Add some treats to get started!</p>
+						</div>
+						<div class="cart__content" hidden>
+							<div class="cart__items"></div>
+						</div>
+					</div>
+					<footer class="cart__footer" hidden>
+						<div class="cart__total-row">
+							<span class="cart__total-label">Total</span>
+							<span class="cart__total-value">$0.00</span>
+						</div>
+						<div class="cart__actions">
+							<button type="button" class="cart__checkout-btn">
+								Proceed to Checkout
+							</button>
+							<button type="button" class="cart__clear-btn">
+								Clear Cart
+							</button>
+						</div>
+					</footer>
+				</div>
+			</div>
+		</template>
+
 		<!-- Product Details Modal Template -->
 		<template id="product-modal-template">
 			<dialog class="product-modal" aria-labelledby="product-modal-title">

@@ -30,7 +30,8 @@ const isValidCartItem = (item) => {
 		typeof item.name === "string" &&
 		typeof item.count === "number" &&
 		typeof item.price === "number" &&
-		typeof item.specialInstructions === "string"
+		typeof item.specialInstructions === "string" &&
+		(typeof item.quantity === "undefined" || typeof item.quantity === "number")
 	);
 };
 
@@ -60,7 +61,16 @@ const loadCartFromStorage = () => {
 
 		const parsed = JSON.parse(stored);
 		if (isValidCartData(parsed)) {
-			return parsed;
+			// Migrate old cart items to include quantity and unitPrice
+			return parsed.map((item) => {
+				if (item.quantity === undefined) {
+					item.quantity = 1;
+				}
+				if (item.unitPrice === undefined) {
+					item.unitPrice = item.price;
+				}
+				return item;
+			});
 		}
 
 		// Invalid data, clear it
@@ -113,6 +123,8 @@ export const addToCart = (item) => {
 		count: item.count,
 		price: item.price,
 		specialInstructions: item.specialInstructions || "",
+		quantity: item.quantity || 1,
+		unitPrice: item.price, // Store original unit price
 	});
 
 	saveCartToStorage();
@@ -133,6 +145,103 @@ export const getCartItemCount = () => {
  */
 export const getCartItems = () => {
 	return [...cartItems];
+};
+
+/**
+ * Remove item from cart by ID
+ * @param {string} itemId - Cart item ID
+ * @returns {boolean} - True if item was removed, false if not found
+ */
+export const removeFromCart = (itemId) => {
+	const index = cartItems.findIndex((item) => item.id === itemId);
+	if (index === -1) {
+		return false;
+	}
+
+	cartItems.splice(index, 1);
+	saveCartToStorage();
+	dispatchCartUpdate();
+	return true;
+};
+
+/**
+ * Clear all items from cart
+ * @returns {void}
+ */
+export const clearCart = () => {
+	cartItems = [];
+	saveCartToStorage();
+	dispatchCartUpdate();
+};
+
+/**
+ * Update cart item by ID
+ * @param {string} itemId - Cart item ID
+ * @param {Object} updates - Updates to apply (productId, name, count, price, specialInstructions, quantity, unitPrice)
+ * @returns {boolean} - True if item was updated, false if not found
+ */
+export const updateCartItem = (itemId, updates) => {
+	const item = cartItems.find((item) => item.id === itemId);
+	if (!item) {
+		return false;
+	}
+
+	if (updates.productId !== undefined) {
+		item.productId = updates.productId;
+	}
+	if (updates.name !== undefined) {
+		item.name = updates.name;
+	}
+	if (updates.count !== undefined) {
+		item.count = updates.count;
+	}
+	if (updates.price !== undefined) {
+		item.price = updates.price;
+	}
+	if (updates.specialInstructions !== undefined) {
+		item.specialInstructions = updates.specialInstructions;
+	}
+	if (updates.quantity !== undefined) {
+		item.quantity = updates.quantity;
+		// Update price based on quantity and unit price
+		if (item.unitPrice !== undefined) {
+			item.price = item.unitPrice * item.quantity;
+		}
+	}
+	if (updates.unitPrice !== undefined) {
+		item.unitPrice = updates.unitPrice;
+		// Recalculate price if quantity exists
+		if (item.quantity !== undefined) {
+			item.price = updates.unitPrice * item.quantity;
+		}
+	}
+
+	saveCartToStorage();
+	dispatchCartUpdate();
+	return true;
+};
+
+/**
+ * Get cart item by ID
+ * @param {string} itemId - Cart item ID
+ * @returns {Object|null} - Cart item or null if not found
+ */
+export const getCartItemById = (itemId) => {
+	const item = cartItems.find((item) => item.id === itemId);
+	return item ? { ...item } : null;
+};
+
+/**
+ * Calculate cart subtotal
+ * @returns {number}
+ */
+export const getCartSubtotal = () => {
+	return cartItems.reduce((total, item) => {
+		// If quantity exists, use it; otherwise treat as 1
+		const quantity = item.quantity || 1;
+		const itemPrice = item.unitPrice !== undefined ? item.unitPrice * quantity : item.price;
+		return total + itemPrice;
+	}, 0);
 };
 
 /**

@@ -1,7 +1,8 @@
-import { addToCart } from "./cart.js";
+import { addToCart, updateCartItem } from "./cart.js";
 
 let currentProduct = null;
 let selectedPriceOption = null;
+let editingItemId = null;
 
 /**
  * Initialize product modal (one-time setup)
@@ -38,13 +39,26 @@ export const initProductModal = (dialogElement) => {
 				? instructionsInput.value.trim()
 				: "";
 
-			addToCart({
-				productId: currentProduct.id,
-				name: currentProduct.name,
-				count: selectedPriceOption.count,
-				price: selectedPriceOption.price,
-				specialInstructions: instructions,
-			});
+			if (editingItemId) {
+				// Update existing item
+				updateCartItem(editingItemId, {
+					productId: currentProduct.id,
+					name: currentProduct.name,
+					count: selectedPriceOption.count,
+					unitPrice: selectedPriceOption.price,
+					specialInstructions: instructions,
+				});
+			} else {
+				// Add new item
+				addToCart({
+					productId: currentProduct.id,
+					name: currentProduct.name,
+					count: selectedPriceOption.count,
+					price: selectedPriceOption.price,
+					specialInstructions: instructions,
+					quantity: 1,
+				});
+			}
 
 			// Close modal and reset
 			closeModal(dialogElement);
@@ -58,11 +72,13 @@ export const initProductModal = (dialogElement) => {
  * Open modal with product data
  * @param {HTMLElement} dialogElement - The dialog element
  * @param {Object} product - Product data from products.js
+ * @param {Object} editData - Optional edit data with itemId, count, price, specialInstructions
  * @returns {void}
  */
-export const openProductModal = (dialogElement, product) => {
+export const openProductModal = (dialogElement, product, editData = null) => {
 	currentProduct = product;
 	selectedPriceOption = null;
+	editingItemId = editData?.itemId || null;
 
 	// Update modal content
 	const titleEl = dialogElement.querySelector(".product-modal__title");
@@ -108,12 +124,20 @@ export const openProductModal = (dialogElement, product) => {
 		});
 	}
 
-	// Reset add button
-	updateAddButton(addBtn, 0);
+	// Pre-select option if editing
+	let preSelectedOption = null;
+	if (editData) {
+		preSelectedOption = product.priceOptions.find(
+			(opt) => opt.count === editData.count && opt.price === editData.price
+		);
+	}
 
-	// Clear instructions
+	// Reset add button
+	updateAddButton(addBtn, preSelectedOption?.price || 0, editingItemId !== null);
+
+	// Pre-fill instructions if editing
 	if (instructionsInput) {
-		instructionsInput.value = "";
+		instructionsInput.value = editData?.specialInstructions || "";
 	}
 
 	// Attach event listeners to new quantity options
@@ -121,6 +145,15 @@ export const openProductModal = (dialogElement, product) => {
 		".product-modal__quantity-option"
 	);
 	newQuantityOptions.forEach((option) => {
+		const count = parseInt(option.dataset.count);
+		const price = parseFloat(option.dataset.price);
+
+		// Pre-select if editing
+		if (preSelectedOption && count === preSelectedOption.count && price === preSelectedOption.price) {
+			option.classList.add("product-modal__quantity-option--selected");
+			selectedPriceOption = { count, price };
+		}
+
 		option.addEventListener("click", () => {
 			// Remove selected class from all options
 			newQuantityOptions.forEach((opt) => {
@@ -131,12 +164,10 @@ export const openProductModal = (dialogElement, product) => {
 			option.classList.add("product-modal__quantity-option--selected");
 
 			// Get price option data
-			const count = parseInt(option.dataset.count);
-			const price = parseFloat(option.dataset.price);
 			selectedPriceOption = { count, price };
 
 			// Update add button
-			updateAddButton(addBtn, price);
+			updateAddButton(addBtn, price, editingItemId !== null);
 		});
 	});
 
@@ -155,22 +186,25 @@ export const openProductModal = (dialogElement, product) => {
  * Update add button text and state
  * @param {HTMLElement} addBtn - Add button element
  * @param {number} price - Selected price
+ * @param {boolean} isEditing - Whether in edit mode
  * @returns {void}
  */
-const updateAddButton = (addBtn, price) => {
+const updateAddButton = (addBtn, price, isEditing = false) => {
 	if (!addBtn) return;
 
 	const checkmark = addBtn.querySelector(".product-modal__checkmark");
 	const textSpan = addBtn.querySelector(".product-modal__add-text");
 
+	const buttonText = isEditing ? "Update Cart" : "Add to Cart";
+
 	if (price > 0) {
 		addBtn.disabled = false;
 		if (textSpan) {
-			textSpan.textContent = `Add to Cart - $${price}`;
+			textSpan.textContent = `${buttonText} - $${price}`;
 		} else {
 			const newTextSpan = document.createElement("span");
 			newTextSpan.className = "product-modal__add-text";
-			newTextSpan.textContent = `Add to Cart - $${price}`;
+			newTextSpan.textContent = `${buttonText} - $${price}`;
 			if (checkmark) {
 				addBtn.insertBefore(newTextSpan, checkmark);
 			} else {
@@ -180,11 +214,11 @@ const updateAddButton = (addBtn, price) => {
 	} else {
 		addBtn.disabled = true;
 		if (textSpan) {
-			textSpan.textContent = "Add to Cart - $0";
+			textSpan.textContent = `${buttonText} - $0`;
 		} else {
 			const newTextSpan = document.createElement("span");
 			newTextSpan.className = "product-modal__add-text";
-			newTextSpan.textContent = "Add to Cart - $0";
+			newTextSpan.textContent = `${buttonText} - $0`;
 			addBtn.appendChild(newTextSpan);
 		}
 	}
@@ -211,4 +245,5 @@ const closeModal = (dialogElement) => {
 const resetModal = () => {
 	currentProduct = null;
 	selectedPriceOption = null;
+	editingItemId = null;
 };
