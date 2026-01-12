@@ -12,32 +12,9 @@
 		<link rel="stylesheet" href="/src/style.css" />
 	</head>
 	<body>
+		<div class=".header__top-container"></div>
 		<header class="header">
-			<div class="header__container">
-				<div class="header__brand">
-					<img
-						src="/src/images/logo.jpeg"
-						alt="All Day Treats Logo"
-						class="header__logo"
-					/>
-					<div class="header__brand-text">
-						<h1 class="header__title">ALL DAY TREATS</h1>
-						<p class="header__location">Omaha, NE</p>
-					</div>
-				</div>
-				<div class="header__actions">
-					<button
-						type="button"
-						class="header__cart-btn"
-						aria-label="View cart"
-						id="cart-btn"
-					>
-						<span class="header__cart-icon" aria-hidden="true">🛒</span>
-						<span class="header__cart-badge" id="cart-badge" aria-hidden="true"
-							>0</span
-						>
-					</button>
-				</div>
+			<div class="header__top-container">
 				<nav class="header__contact" aria-label="Contact information">
 					<a
 						href="tel:555-555-5555"
@@ -66,6 +43,40 @@
 						<span>@all_day_treats</span>
 					</a>
 				</nav>
+			</div>
+			<div class="header__container">
+				<div class="header__brand">
+					<img
+						src="/src/images/logo.jpeg"
+						alt="All Day Treats Logo"
+						class="header__logo"
+					/>
+					<div class="header__brand-text">
+						<h1 class="header__title">ALL DAY TREATS</h1>
+						<p class="header__location">Omaha, NE</p>
+					</div>
+				</div>
+				<div class="header__actions">
+					<button
+						type="button"
+						class="header__track-btn"
+						aria-label="Track order"
+					>
+						<span class="header__track-icon" aria-hidden="true">📦</span>
+						<span>Track Order</span>
+					</button>
+					<button
+						type="button"
+						class="header__cart-btn"
+						aria-label="View cart"
+						id="cart-btn"
+					>
+						<span class="header__cart-icon" aria-hidden="true">🛒</span>
+						<span class="header__cart-badge" id="cart-badge" aria-hidden="true"
+							>0</span
+						>
+					</button>
+				</div>
 			</div>
 		</header>
 
