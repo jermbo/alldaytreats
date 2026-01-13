@@ -22,6 +22,9 @@ let totalEl = null;
 // Track item count to detect add/remove vs quantity changes
 let lastItemCount = 0;
 
+// Track which items need refreshing (for edits that don't change quantity)
+let itemsToRefresh = new Set();
+
 /**
  * Initialize cart UI
  * @param {HTMLElement} panelElement - Cart panel element
@@ -361,7 +364,9 @@ const updateCartItemQuantity = (itemId, quantity, activeElement) => {
 const updateCartItemElement = (itemId, itemData) => {
 	if (!itemsContainer) return;
 
-	const itemElement = itemsContainer.querySelector(`[data-item-id="${itemId}"]`);
+	const itemElement = itemsContainer.querySelector(
+		`[data-item-id="${itemId}"]`
+	);
 	if (!itemElement) return;
 
 	const quantityEl = itemElement.querySelector(".cart__quantity-value");
@@ -373,6 +378,72 @@ const updateCartItemElement = (itemId, itemData) => {
 
 	if (priceEl) {
 		const lineTotal = itemData.unitPrice * itemData.quantity;
+		priceEl.textContent = `$${lineTotal.toFixed(2)}`;
+	}
+};
+
+/**
+ * Refresh cart item element when item is edited (special instructions, count, etc.)
+ * @param {string} itemId - Cart item ID
+ * @returns {void}
+ */
+const refreshCartItemElement = (itemId) => {
+	if (!itemsContainer) return;
+
+	const item = getCartItems().find((i) => i.id === itemId);
+	if (!item) return;
+
+	const itemElement = itemsContainer.querySelector(
+		`[data-item-id="${itemId}"]`
+	);
+	if (!itemElement) return;
+
+	// Find product to get image and price option
+	const product = products.find((p) => p.id === item.productId);
+	const priceOption = product?.priceOptions.find(
+		(opt) =>
+			opt.count === item.count &&
+			(opt.price === item.unitPrice || opt.price === item.price)
+	);
+	const unitCount = priceOption?.count || item.count;
+	const unitPrice = item.unitPrice !== undefined ? item.unitPrice : item.price;
+	const quantity = item.quantity || 1;
+	const lineTotal = unitPrice * quantity;
+
+	// Update quantity option display
+	const optionEl = itemElement.querySelector(".cart__item-option");
+	if (optionEl) {
+		optionEl.textContent = `${unitCount}ct $${unitPrice.toFixed(2)}`;
+	}
+
+	// Update special instructions
+	const instructionsEl = itemElement.querySelector(".cart__item-instructions");
+	const contentEl = itemElement.querySelector(".cart__item-content");
+
+	if (item.specialInstructions) {
+		if (instructionsEl) {
+			instructionsEl.textContent = item.specialInstructions;
+		} else if (contentEl) {
+			// Create instructions element if it doesn't exist
+			const newInstructionsEl = document.createElement("p");
+			newInstructionsEl.className = "cart__item-instructions";
+			newInstructionsEl.textContent = item.specialInstructions;
+			contentEl.appendChild(newInstructionsEl);
+		}
+	} else if (instructionsEl) {
+		// Remove instructions element if instructions are cleared
+		instructionsEl.remove();
+	}
+
+	// Update quantity and price
+	const quantityEl = itemElement.querySelector(".cart__quantity-value");
+	const priceEl = itemElement.querySelector(".cart__item-price");
+
+	if (quantityEl) {
+		quantityEl.textContent = quantity;
+	}
+
+	if (priceEl) {
 		priceEl.textContent = `$${lineTotal.toFixed(2)}`;
 	}
 };
@@ -447,6 +518,9 @@ const escapeHtml = (text) => {
 	return div.innerHTML;
 };
 
+// Track updated items to refresh their display
+let updatedItemIds = new Set();
+
 // Listen for cart updates to re-render
 // Only re-render if item count changed (add/remove), not on quantity updates
 document.addEventListener("cartUpdate", () => {
@@ -459,5 +533,16 @@ document.addEventListener("cartUpdate", () => {
 	if (currentItemCount !== lastItemCount) {
 		renderCart();
 		lastItemCount = currentItemCount;
+		updatedItemIds.clear();
+	} else {
+		// Refresh all items to ensure they reflect any edits (e.g., special instructions, count, price)
+		// This is safe because we're only updating content, not destroying/recreating elements
+		const currentItems = getCartItems();
+		currentItems.forEach((item) => {
+			refreshCartItemElement(item.id);
+		});
+		// Update totals in case prices changed
+		updateCartTotals();
+		updatedItemIds.clear();
 	}
 });
