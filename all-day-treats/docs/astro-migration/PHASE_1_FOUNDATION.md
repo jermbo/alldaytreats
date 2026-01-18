@@ -1,7 +1,7 @@
 # Phase 1: Foundation Setup - User Stories
 
 **Phase:** 1 of 8
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 **Dependencies:** None
 **Last Updated:** 2026-01-18
 
@@ -17,7 +17,7 @@ Establish the Astro project structure and content collection infrastructure. Thi
 
 **Priority:** P0 (Critical)
 **Estimate:** 2 hours
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 ### Story
 
@@ -27,22 +27,22 @@ Establish the Astro project structure and content collection infrastructure. Thi
 
 ### Acceptance Criteria
 
-- [ ] Astro project initialized in `all-day-treats/` directory
-- [ ] `package.json` includes Astro dependencies
-- [ ] `astro.config.mjs` properly configured
-- [ ] `tsconfig.json` configured for TypeScript support
-- [ ] `npm run dev` starts Astro dev server successfully
-- [ ] Dev server accessible at `http://localhost:4321`
-- [ ] Directory structure created:
-  - [ ] `src/components/`
-  - [ ] `src/content/`
-  - [ ] `src/layouts/`
-  - [ ] `src/pages/`
-  - [ ] `src/scripts/`
-  - [ ] `src/styles/`
-  - [ ] `src/assets/images/`
-  - [ ] `public/`
-- [ ] `.gitignore` includes Astro build artifacts
+- [x] Astro project initialized in `all-day-treats/` directory
+- [x] `package.json` includes Astro dependencies
+- [x] `astro.config.mjs` properly configured
+- [x] `tsconfig.json` configured for TypeScript support
+- [x] `npm run dev` starts Astro dev server successfully
+- [x] Dev server accessible at `http://localhost:4321`
+- [x] Directory structure created:
+  - [x] `src/components/`
+  - [x] `src/content/`
+  - [x] `src/layouts/`
+  - [x] `src/pages/`
+  - [x] `src/scripts/`
+  - [x] `src/styles/`
+  - [x] `src/assets/images/`
+  - [x] `public/`
+- [x] `.gitignore` includes Astro build artifacts
 
 ### Implementation Notes
 
@@ -93,7 +93,7 @@ None
 
 **Priority:** P0 (Critical)
 **Estimate:** 1 hour
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 **Depends On:** US-001
 
 ### Story
@@ -104,20 +104,20 @@ None
 
 ### Acceptance Criteria
 
-- [ ] `src/content/config.ts` file created
-- [ ] Zod schema defined for products collection
-- [ ] Schema includes all required fields:
-  - [ ] `id: string`
-  - [ ] `name: string`
-  - [ ] `category: enum['candy', 'chocolate', 'platter']`
-  - [ ] `image: image()`
-  - [ ] `priceFrom: number (positive)`
-  - [ ] `priceOptions: array of {count, price}`
-  - [ ] `extraAddOns: number (default 5)`
-  - [ ] `order: number (default 999)`
-- [ ] Content collection registered in exports
-- [ ] `getCollection('products')` returns empty array (no errors)
-- [ ] TypeScript types generated correctly
+- [x] `src/content/config.ts` file created
+- [x] Zod schema defined for products collection
+- [x] Schema includes all required fields:
+  - [x] `id: string`
+  - [x] `name: string`
+  - [x] `category: enum['candy', 'chocolate', 'platter']`
+  - [x] `image: image()`
+  - [x] `priceFrom: number (positive)`
+  - [x] `priceOptions: array of {count, price}`
+  - [x] `extraAddOns: number (default 5)`
+  - [x] `order: number (default 999)`
+- [x] Content collection registered in exports
+- [x] `getCollection('products')` returns empty array (no errors)
+- [x] TypeScript types generated correctly
 
 ### Implementation Notes
 
