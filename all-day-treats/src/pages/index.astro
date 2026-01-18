@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
@@ -7,6 +8,19 @@ import Footer from '../components/Footer.astro';
 import CartPanel from '../components/CartPanel.astro';
 import ProductModal from '../components/ProductModal.astro';
 import CheckoutPanel from '../components/CheckoutPanel.astro';
+
+// Get products from content collection and serialize for client-side use
+const products = await getCollection('products');
+const productsData = products.map((p: any) => ({
+  id: p.data.id,
+  name: p.data.name,
+  category: p.data.category,
+  image: p.data.image.src,
+  priceFrom: p.data.priceFrom,
+  priceOptions: p.data.priceOptions,
+  extraAddOns: p.data.extraAddOns,
+  description: p.body,
+}));
 ---
 
 <Layout
@@ -24,4 +38,12 @@ import CheckoutPanel from '../components/CheckoutPanel.astro';
   <CartPanel />
   <ProductModal />
   <CheckoutPanel />
+
+  <!-- Serialize product data for client-side JavaScript -->
+  <script define:vars={{ productsData }}>
+    window.PRODUCTS = productsData;
+  </script>
+
+  <!-- Initialize interactive features -->
+  <script src="../scripts/main.ts"></script>
 </Layout>
