@@ -223,10 +223,34 @@ const setupFieldValidation = (form) => {
 		});
 	}
 
-	// Trim notes field on blur (even though it's optional)
+	// Character counter for notes field
+	const charCountValue = form.querySelector(".checkout__char-count-value");
+	const updateCharCount = () => {
+		if (charCountValue && notesField) {
+			const length = notesField.value.length;
+			charCountValue.textContent = length;
+
+			// Add warning class if approaching limit
+			const charCountContainer = charCountValue.closest(".checkout__char-count");
+			if (charCountContainer) {
+				if (length > 400) {
+					charCountContainer.classList.add("checkout__char-count--warning");
+				} else {
+					charCountContainer.classList.remove("checkout__char-count--warning");
+				}
+			}
+		}
+	};
+
+	// Trim notes field on blur and update character count on input
 	if (notesField) {
 		notesField.addEventListener("blur", () => {
 			trimFieldValue(notesField);
+		});
+
+		notesField.addEventListener("input", updateCharCount);
+		notesField.addEventListener("paste", () => {
+			setTimeout(updateCharCount, 0);
 		});
 	}
 

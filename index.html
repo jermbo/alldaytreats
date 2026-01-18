@@ -564,18 +564,22 @@
 										<div class="checkout__error" id="checkout-address-error" role="alert" aria-live="polite"></div>
 									</div>
 
-									<div class="checkout__form-group">
-										<label for="checkout-notes" class="checkout__label">
-											Order Notes (optional)
-										</label>
-										<textarea
-											id="checkout-notes"
-											name="notes"
-											class="checkout__input checkout__textarea"
-											rows="3"
-											placeholder="Any additional instructions..."
-										></textarea>
+								<div class="checkout__form-group">
+									<label for="checkout-notes" class="checkout__label">
+										Order Notes (optional, max 500 characters)
+									</label>
+									<textarea
+										id="checkout-notes"
+										name="notes"
+										class="checkout__input checkout__textarea"
+										rows="3"
+										placeholder="Any additional instructions..."
+										maxlength="500"
+									></textarea>
+									<div class="checkout__char-count">
+										<span class="checkout__char-count-value">0</span> / 500
 									</div>
+								</div>
 
 									<!-- Honeypot field for spam prevention -->
 									<input
