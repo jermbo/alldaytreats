@@ -196,7 +196,7 @@
 	}
 
 	.header__track-btn span:not(.header__track-icon),
-	.header__cart-btn span:not(.header__cart-icon) {
+	.header__cart-btn span:not(.header__cart-icon):not(.header__cart-badge) {
 		display: none;
 	}
 
