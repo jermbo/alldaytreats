@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import ProductCard from './ProductCard.astro';
+
+const products = await getCollection('products');
+const sortedProducts = products.sort((a, b) => a.data.order - b.data.order);
+---
+
+<section id="menu" class="menu">
+  <div class="menu__container">
+    <h2 class="menu__title">OUR MENU</h2>
+    <p class="menu__disclaimer">
+      All treats are made fresh to order. Prices may vary based on
+      customization.
+    </p>
+
+    <div
+      class="menu__tabs"
+      role="tablist"
+      aria-label="Product categories"
+    >
+      <button
+        type="button"
+        class="menu__tab menu__tab--active"
+        data-filter="all"
+        role="tab"
+        aria-selected="true"
+        aria-controls="menu-grid"
+      >
+        All Treats
+      </button>
+      <button
+        type="button"
+        class="menu__tab"
+        data-filter="candy"
+        role="tab"
+        aria-selected="false"
+        aria-controls="menu-grid"
+      >
+        Candy Coated
+      </button>
+      <button
+        type="button"
+        class="menu__tab"
+        data-filter="chocolate"
+        role="tab"
+        aria-selected="false"
+        aria-controls="menu-grid"
+      >
+        Chocolate Covered
+      </button>
+      <button
+        type="button"
+        class="menu__tab"
+        data-filter="platter"
+        role="tab"
+        aria-selected="false"
+        aria-controls="menu-grid"
+      >
+        Platters
+      </button>
+    </div>
+
+    <div id="menu-grid" class="menu__grid" role="tabpanel">
+      {sortedProducts.map(product => (
+        <ProductCard product={product} />
+      ))}
+    </div>
+  </div>
+</section>
