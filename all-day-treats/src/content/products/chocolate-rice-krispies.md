@@ -2,7 +2,7 @@
 id: chocolate-rice-krispies
 name: Chocolate Covered Rice Krispies
 category: chocolate
-image: ../../assets/images/chocolate-rice-krispies.jpg
+image: /images/chocolate-rice-krispies.jpg
 priceFrom: 15
 priceOptions:
   - count: 6

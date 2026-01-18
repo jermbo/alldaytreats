@@ -2,7 +2,7 @@
 id: chocolate-oreos
 name: Chocolate Covered Oreos
 category: chocolate
-image: ../../assets/images/chocolate-oreos.jpg
+image: /images/chocolate-oreos.jpg
 priceFrom: 10
 priceOptions:
   - count: 6

@@ -2,7 +2,7 @@
 id: chocolate-pretzels
 name: Chocolate Covered Pretzels
 category: chocolate
-image: ../../assets/images/chocolate-pretzels.jpg
+image: /images/chocolate-pretzels.jpg
 priceFrom: 10
 priceOptions:
   - count: 6

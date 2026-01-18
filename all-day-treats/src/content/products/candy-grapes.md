@@ -2,7 +2,7 @@
 id: candy-grapes
 name: Candy Grapes
 category: candy
-image: ../../assets/images/candy-grapes-new.jpg
+image: /images/candy-grapes-new.jpg
 priceFrom: 10
 priceOptions:
   - count: 6

@@ -2,7 +2,7 @@
 id: party-platter
 name: Party Platter
 category: platter
-image: ../../assets/images/party-platter.jpg
+image: /images/party-platter.jpg
 priceFrom: 45
 priceOptions:
   - count: 1

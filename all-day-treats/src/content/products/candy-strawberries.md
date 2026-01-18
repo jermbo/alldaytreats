@@ -2,7 +2,7 @@
 id: candy-strawberries
 name: Candy Strawberries
 category: candy
-image: ../../assets/images/candy-strawberries.jpg
+image: /images/candy-strawberries.jpg
 priceFrom: 10
 priceOptions:
   - count: 6

@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -8,7 +7,7 @@ interface Props {
 
 const { product } = Astro.props;
 const { name, image, priceFrom, category, id } = product.data;
-const { Content } = await product.render();
+const description = product.body;
 ---
 
 <article
@@ -16,19 +15,17 @@ const { Content } = await product.render();
   data-category={category}
   data-product-id={id}
 >
-  <Image
+  <img
     src={image}
     alt={name}
     class="menu__item-image"
-    width={400}
-    height={400}
+    width="400"
+    height="400"
     loading="lazy"
   />
   <div class="menu__item-content">
     <h3 class="menu__item-title">{name.toUpperCase()}</h3>
-    <p class="menu__item-description">
-      <Content />
-    </p>
+    <p class="menu__item-description">{description}</p>
     <p class="menu__item-price">From ${priceFrom}</p>
   </div>
 </article>

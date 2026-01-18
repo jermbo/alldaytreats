@@ -2,7 +2,7 @@
 id: chocolate-strawberries
 name: Chocolate Covered Strawberries
 category: chocolate
-image: ../../assets/images/chocolate-strawberries-new.jpg
+image: /images/chocolate-strawberries-new.jpg
 priceFrom: 10
 priceOptions:
   - count: 6

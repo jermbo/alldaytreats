@@ -2,7 +2,7 @@
 id: candy-pineapple
 name: Candy Pineapple Rings/Chunks
 category: candy
-image: ../../assets/images/candy-pineapple-rings.jpg
+image: /images/candy-pineapple-rings.jpg
 priceFrom: 12
 priceOptions:
   - count: 6

@@ -2,11 +2,11 @@ import { defineCollection, z } from 'astro:content';
 
 const products = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image }) => z.object({
     id: z.string(),
     name: z.string(),
     category: z.enum(['candy', 'chocolate', 'platter']),
-    image: z.string(),
+    image: image(),
     priceFrom: z.number().positive(),
     priceOptions: z.array(z.object({
       count: z.number().positive(),
