@@ -1,0 +1,174 @@
+---
+// No props needed - JS manages state
+---
+
+<div class="checkout" role="dialog" aria-labelledby="checkout-title" aria-modal="true" hidden>
+  <div class="checkout__backdrop"></div>
+  <div class="checkout__panel">
+    <header class="checkout__header">
+      <h2 class="checkout__title" id="checkout-title">CHECKOUT</h2>
+      <button
+        type="button"
+        class="checkout__close"
+        aria-label="Close checkout"
+      >
+        <span class="checkout__close-icon" aria-hidden="true">×</span>
+      </button>
+    </header>
+    <div class="checkout__body">
+      <div class="checkout__content">
+        <section class="checkout__section checkout__section--summary">
+          <h3 class="checkout__section-title">Order Summary</h3>
+          <div class="checkout__summary-items"></div>
+          <div class="checkout__summary-totals">
+            <div class="checkout__summary-row">
+              <span>Subtotal</span>
+              <span class="checkout__summary-subtotal">$0.00</span>
+            </div>
+            <div class="checkout__summary-row checkout__summary-row--total">
+              <span>Estimated Total</span>
+              <span class="checkout__summary-total">$0.00</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="checkout__section checkout__section--form">
+          <h3 class="checkout__section-title">Customer Information</h3>
+          <form class="checkout__form" id="checkout-form" novalidate>
+            <div class="checkout__form-group">
+              <label for="checkout-name" class="checkout__label">
+                Full Name <span class="checkout__required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="checkout-name"
+                name="name"
+                class="checkout__input"
+                autocomplete="name"
+                required
+                aria-required="true"
+                aria-describedby="checkout-name-error"
+              />
+              <div class="checkout__error" id="checkout-name-error" role="alert" aria-live="polite"></div>
+            </div>
+
+            <div class="checkout__form-group">
+              <label for="checkout-email" class="checkout__label">
+                Email Address <span class="checkout__required" aria-label="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="checkout-email"
+                name="email"
+                class="checkout__input"
+                autocomplete="email"
+                required
+                aria-required="true"
+                aria-describedby="checkout-email-error"
+              />
+              <div class="checkout__error" id="checkout-email-error" role="alert" aria-live="polite"></div>
+            </div>
+
+            <div class="checkout__form-group">
+              <label for="checkout-phone" class="checkout__label">
+                Phone Number <span class="checkout__required" aria-label="required">*</span>
+              </label>
+              <input
+                type="tel"
+                id="checkout-phone"
+                name="phone"
+                class="checkout__input"
+                autocomplete="tel"
+                pattern="\(\d{3}\) \d{3}-\d{4}"
+                placeholder="(555) 555-5555"
+                required
+                aria-required="true"
+                aria-describedby="checkout-phone-error"
+              />
+              <div class="checkout__error" id="checkout-phone-error" role="alert" aria-live="polite"></div>
+            </div>
+
+            <div class="checkout__form-group">
+              <label for="checkout-address" class="checkout__label">
+                Delivery Address <span class="checkout__required" aria-label="required">*</span>
+              </label>
+              <textarea
+                id="checkout-address"
+                name="address"
+                class="checkout__input checkout__textarea"
+                autocomplete="street-address"
+                minlength="10"
+                rows="3"
+                required
+                aria-required="true"
+                aria-describedby="checkout-address-error"
+              ></textarea>
+              <div class="checkout__error" id="checkout-address-error" role="alert" aria-live="polite"></div>
+            </div>
+
+            <div class="checkout__form-group">
+              <label for="checkout-notes" class="checkout__label">
+                Order Notes (optional, max 500 characters)
+              </label>
+              <textarea
+                id="checkout-notes"
+                name="notes"
+                class="checkout__input checkout__textarea"
+                rows="3"
+                placeholder="Any additional instructions..."
+                maxlength="500"
+              ></textarea>
+              <div class="checkout__char-count">
+                <span class="checkout__char-count-value">0</span> / 500
+              </div>
+            </div>
+
+            <!-- Honeypot field for spam prevention -->
+            <input
+              type="text"
+              name="website"
+              id="checkout-honeypot"
+              class="checkout__honeypot"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+            />
+
+            <div class="checkout__form-actions">
+              <button
+                type="submit"
+                class="checkout__submit-btn"
+              >
+                <span class="checkout__submit-text">Place Order</span>
+                <span class="checkout__submit-loader" aria-hidden="true"></span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <div class="checkout__success" hidden>
+          <div class="checkout__success-icon" aria-hidden="true">✓</div>
+          <h3 class="checkout__success-title">Order Submitted!</h3>
+          <p class="checkout__success-message"></p>
+          <div class="checkout__success-fallback" hidden>
+            <p class="checkout__success-fallback-text">If your email client didn't open, you can copy the order details below:</p>
+            <div class="checkout__success-order-details">
+              <pre class="checkout__success-order-text"></pre>
+            </div>
+            <button type="button" class="checkout__success-copy-btn">
+              <span class="checkout__success-copy-text">Copy Order Details</span>
+              <span class="checkout__success-copy-check" aria-hidden="true">✓</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="checkout__error-state" hidden>
+          <div class="checkout__error-icon" aria-hidden="true">⚠️</div>
+          <h3 class="checkout__error-title">Submission Failed</h3>
+          <p class="checkout__error-message"></p>
+          <button type="button" class="checkout__retry-btn">Try Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

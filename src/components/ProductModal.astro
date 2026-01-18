@@ -1,0 +1,48 @@
+---
+// No props needed - JS populates dynamically
+---
+
+<dialog class="product-modal" aria-labelledby="product-modal-title">
+  <header class="product-modal__header">
+    <h2 class="product-modal__title" id="product-modal-title">
+      PRODUCT NAME
+    </h2>
+    <button
+      type="button"
+      class="product-modal__close"
+      aria-label="Close modal"
+    >
+      <span class="product-modal__close-icon" aria-hidden="true">×</span>
+    </button>
+  </header>
+  <div class="product-modal__body">
+    <img class="product-modal__image" src="" alt="" loading="lazy" />
+    <p class="product-modal__description"></p>
+    <section class="product-modal__section">
+      <label class="product-modal__section-label">Select Quantity</label>
+      <div class="product-modal__quantity-options"></div>
+    </section>
+    <section class="product-modal__section">
+      <label
+        for="product-instructions"
+        class="product-modal__section-label"
+      >
+        Special Instructions (optional, max 250 characters)
+      </label>
+      <textarea
+        id="product-instructions"
+        class="product-modal__instructions"
+        placeholder="Colors, themes, or special requests..."
+        rows="4"
+        maxlength="250"
+      ></textarea>
+      <div class="product-modal__char-count">
+        <span class="product-modal__char-count-value">0</span> / 250
+      </div>
+    </section>
+    <button type="button" class="product-modal__add-btn" disabled>
+      <span class="product-modal__add-text">Add to Cart - $0</span>
+      <span class="product-modal__checkmark">✓</span>
+    </button>
+  </div>
+</dialog>

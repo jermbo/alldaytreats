@@ -1,14 +1,14 @@
 {
-	"name": "all-day-treats",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "vite --open --port 4444",
-		"build": "vite build",
-		"preview": "vite preview"
-	},
-	"devDependencies": {
-		"vite": "^7.2.4"
-	}
+  "name": "all-day-treats",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev --port 4444 --open",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.16.11"
+  }
 }

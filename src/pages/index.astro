@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Menu from '../components/Menu.astro';
+import Footer from '../components/Footer.astro';
+import CartPanel from '../components/CartPanel.astro';
+import ProductModal from '../components/ProductModal.astro';
+import CheckoutPanel from '../components/CheckoutPanel.astro';
+
+// Get products from content collection and serialize for client-side use
+const products = await getCollection('products');
+const productsData = products.map((p: any) => ({
+  id: p.data.id,
+  name: p.data.name,
+  category: p.data.category,
+  image: p.data.image,
+  priceFrom: p.data.priceFrom,
+  priceOptions: p.data.priceOptions,
+  extraAddOns: p.data.extraAddOns,
+  description: p.body,
+}));
+---
+
+<Layout
+  title="All Day Treats - Omaha, NE"
+  description="Handcrafted candy-coated fruits, chocolate-covered treats, and party platters made with love in Omaha, NE"
+>
+  <Header cartCount={0} />
+  <main>
+    <Hero />
+    <Menu />
+  </main>
+  <Footer />
+
+  <!-- Interactive Overlays -->
+  <CartPanel />
+  <ProductModal />
+  <CheckoutPanel />
+
+  <!-- Serialize product data for client-side JavaScript -->
+  <script define:vars={{ productsData }}>
+    window.PRODUCTS = productsData;
+  </script>
+
+  <!-- Initialize interactive features -->
+  <script src="../scripts/main.ts"></script>
+</Layout>
