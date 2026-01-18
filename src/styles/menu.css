@@ -3,24 +3,30 @@
 }
 
 .menu__container {
+	container-type: inline-size;
+	container-name: menu;
 	max-width: var(--container-max-width);
 	margin: 0 auto;
 }
 
 .menu__title {
-	font-size: 2.5rem;
+	font-size: var(--font-size-4xl);
 	color: var(--color-accent-purple);
 	font-style: italic;
 	text-align: center;
 	margin-bottom: var(--spacing-base);
+
+	@container menu (max-width: 768px) {
+		font-size: var(--font-size-3xl);
+	}
 }
 
 .menu__disclaimer {
 	text-align: center;
 	color: var(--color-text-light);
-	opacity: 0.8;
+	opacity: var(--opacity-primary);
 	margin-bottom: var(--spacing-lg);
-	font-size: 0.875rem;
+	font-size: var(--font-size-sm);
 }
 
 .menu__tabs {
@@ -35,11 +41,24 @@
 	background: transparent;
 	border: 2px solid transparent;
 	color: var(--color-text-light);
-	padding: 0.75rem 1.5rem;
-	border-radius: 0.5rem;
+	padding: var(--spacing-sm) var(--spacing-lg);
+	border-radius: var(--radius-lg);
 	cursor: pointer;
-	font-size: 1rem;
+	font-size: var(--font-size-base);
 	transition: all var(--transition-fast);
+
+	&:hover:not(.menu__tab--active) {
+		border-color: var(--color-accent-blue);
+	}
+
+	&:focus {
+		outline: none;
+	}
+
+	&:focus-visible {
+		outline: 3px solid var(--color-accent-blue);
+		outline-offset: 2px;
+	}
 }
 
 .menu__tab--active {
@@ -47,33 +66,44 @@
 	color: var(--color-bg-dark);
 }
 
-.menu__tab:hover:not(.menu__tab--active) {
-	border-color: var(--color-accent-blue);
-}
-
-.menu__tab:focus {
-	outline: none;
-}
-
-.menu__tab:focus-visible {
-	outline: 3px solid var(--color-accent-blue);
-	outline-offset: 2px;
-}
-
 .menu__grid {
+	container-type: inline-size;
+	container-name: menu-grid;
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 	gap: var(--spacing-lg);
+
+	@container menu (max-width: 768px) {
+		grid-template-columns: 1fr;
+	}
 }
 
 .menu__item {
 	background: var(--color-overlay-light);
-	border-radius: 0.5rem;
+	border-radius: var(--radius-lg);
 	overflow: hidden;
 	transition: transform var(--transition-base) var(--easing-spring),
 		box-shadow var(--transition-base) ease;
 	contain: layout;
 	transform-origin: center center;
+
+	&:has(.menu__item-button:hover) {
+		transform: translateY(-8px) scale(1.02)
+			rotate(calc(var(--hover-rotate, 1deg)));
+		box-shadow: var(--shadow-menu-hover);
+	}
+
+	&:has(.menu__item-button:focus-visible) {
+		transform: translateY(-8px) scale(1.02)
+			rotate(calc(var(--hover-rotate, 1deg)));
+		box-shadow: var(--shadow-menu-hover), 0 0 0 3px var(--color-accent-blue);
+		outline: 3px solid var(--color-accent-blue);
+		outline-offset: 2px;
+	}
+
+	&[hidden] {
+		display: none;
+	}
 }
 
 .menu__item-button {
@@ -86,31 +116,18 @@
 	display: block;
 	font: inherit;
 	color: inherit;
+
+	&:focus {
+		outline: none;
+	}
 }
 
-.menu__item:has(.menu__item-button:hover) {
-	transform: translateY(-8px) scale(1.02)
-		rotate(calc(var(--hover-rotate, 1deg)));
-	box-shadow: var(--shadow-menu-hover);
-}
+/* ============================================
+   ANIMATION VARIABLES
+   Per-item rotation, translation, and animation values
+   ============================================ */
 
-.menu__item-button:focus {
-	outline: none;
-}
-
-.menu__item:has(.menu__item-button:focus-visible) {
-	transform: translateY(-8px) scale(1.02)
-		rotate(calc(var(--hover-rotate, 1deg)));
-	box-shadow: var(--shadow-menu-hover), 0 0 0 3px var(--color-accent-blue);
-	outline: 3px solid var(--color-accent-blue);
-	outline-offset: 2px;
-}
-
-.menu__item[hidden] {
-	display: none;
-}
-
-/* Animation variables - consolidated patterns */
+/* Exit rotation patterns (3n cycle) */
 .menu__item:nth-child(3n + 1) {
 	--exit-rotate: -18deg;
 	--exit-rotate-mid: -9deg;
@@ -126,6 +143,7 @@
 	--exit-rotate-mid: -7.5deg;
 }
 
+/* Entrance rotation patterns (4n cycle) */
 .menu__item:nth-child(4n + 1) {
 	--entrance-rotate-start: 16deg;
 	--entrance-rotate-mid: -4.8deg;
@@ -154,6 +172,7 @@
 	--entrance-rotate-settle: 0.4deg;
 }
 
+/* Entrance X translation patterns (5n cycle) */
 .menu__item:nth-child(5n + 1) {
 	--entrance-translate-x-start: 12px;
 	--entrance-translate-x-mid: -6px;
@@ -189,6 +208,7 @@
 	--entrance-translate-x-settle: -1.1px;
 }
 
+/* Entrance Y translation patterns (6n cycle) */
 .menu__item:nth-child(6n + 1) {
 	--entrance-translate-y-start: 22px;
 	--entrance-translate-y-mid: -6px;
@@ -231,6 +251,7 @@
 	--entrance-translate-y-settle: 1.1px;
 }
 
+/* Hover rotation patterns (7n cycle) */
 .menu__item:nth-child(7n + 1) {
 	--hover-rotate: 2.5deg;
 }
@@ -261,7 +282,7 @@
 
 .menu__item-image {
 	width: 100%;
-	height: 250px;
+	height: var(--size-image-2xl);
 	object-fit: cover;
 	display: block;
 }
@@ -271,22 +292,22 @@
 }
 
 .menu__item-title {
-	font-size: 1.25rem;
+	font-size: var(--font-size-xl);
 	color: var(--color-text-light);
-	margin-bottom: 0.5rem;
+	margin-bottom: var(--spacing-sm);
 	font-weight: 600;
 	text-transform: uppercase;
 }
 
 .menu__item-description {
 	color: var(--color-text-light);
-	opacity: 0.8;
+	opacity: var(--opacity-primary);
 	margin-bottom: var(--spacing-base);
-	font-size: 0.9375rem;
+	font-size: var(--font-size-sm);
 }
 
 .menu__item-price {
-	font-size: 1.125rem;
+	font-size: var(--font-size-lg);
 	color: var(--color-text-light);
 	font-weight: 600;
 }
@@ -298,22 +319,12 @@
 			opacity var(--transition-slow) var(--easing-spring),
 			filter var(--transition-slow) var(--easing-spring);
 		transform-origin: center center;
-	}
 
-	.menu__item[hidden] {
-		display: none;
-		opacity: 0;
-		transform: scale(0.6) rotate(-15deg);
-		filter: blur(4px);
-	}
-}
-
-@media (max-width: 768px) {
-	.menu__title {
-		font-size: 2rem;
-	}
-
-	.menu__grid {
-		grid-template-columns: 1fr;
+		&[hidden] {
+			display: none;
+			opacity: 0;
+			transform: scale(0.6) rotate(-15deg);
+			filter: blur(4px);
+		}
 	}
 }

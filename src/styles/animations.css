@@ -1,4 +1,8 @@
-/* View Transitions API styles */
+/* ============================================
+   VIEW TRANSITIONS API
+   Used for smooth menu item filtering animations
+   ============================================ */
+
 @view-transition {
 	navigation: none;
 }
@@ -17,7 +21,7 @@
 
 /* Smooth, natural animations for menu item transitions only */
 ::view-transition-group(*) {
-	animation-duration: 0.5s;
+	animation-duration: var(--transition-slow);
 	animation-timing-function: var(--easing-smooth);
 	perspective: 1000px;
 }
@@ -28,16 +32,20 @@
 }
 
 ::view-transition-new(*) {
-	animation: spring-entrance 0.6s var(--easing-spring) both;
+	animation: spring-entrance var(--transition-slow) var(--easing-spring) both;
 	transform-origin: center center;
 }
 
-/* Keyframe animations */
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+
+/* Exit animation for menu items being filtered out */
 @keyframes dramatic-exit {
 	0% {
 		opacity: 1;
 		transform: scale(1) rotate(0deg);
-		filter: blur(0px);
+		filter: blur(0);
 	}
 
 	50% {
@@ -52,6 +60,7 @@
 	}
 }
 
+/* Entrance animation for menu items being filtered in */
 @keyframes spring-entrance {
 	0% {
 		opacity: 0;
@@ -64,7 +73,7 @@
 	}
 
 	40% {
-		opacity: 0.8;
+		opacity: var(--opacity-primary);
 		transform: scale(1.08) rotate(calc(var(--entrance-rotate-mid, -3deg)))
 			translate(
 				calc(var(--entrance-translate-x-mid, 0px)),
@@ -79,7 +88,7 @@
 				calc(var(--entrance-translate-x-wiggle, 0px)),
 				calc(var(--entrance-translate-y-wiggle, 2px))
 			);
-		filter: blur(0px);
+		filter: blur(0);
 	}
 
 	80% {
@@ -93,6 +102,6 @@
 	100% {
 		opacity: 1;
 		transform: scale(1) rotate(0deg) translate(0, 0);
-		filter: blur(0px);
+		filter: blur(0);
 	}
 }

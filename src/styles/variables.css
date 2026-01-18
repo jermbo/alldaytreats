@@ -1,19 +1,28 @@
 :root {
-	/* Colors */
+	/* ============================================
+	   COLORS
+	   ============================================ */
+
+	/* Base Colors */
 	--color-bg-dark: #1a1a1a;
 	--color-text-light: #ffffff;
 	--color-text-dark: #1a1a1a;
 	--color-text-gradient-start: #4a90e2;
 	--color-text-gradient-end: #9b59b6;
+
+	/* Accent Colors */
 	--color-accent-blue: #87ceeb;
 	--color-accent-purple: #9b59b6;
 	--color-accent-pink: #ff69b4;
 	--color-accent-green: #4caf50;
+	--color-accent-red: #ff6b6b;
+
+	/* Overlay Colors */
 	--color-overlay-light: rgba(255, 255, 255, 0.05);
 	--color-overlay-dark: rgba(0, 0, 0, 0.3);
 	--color-border-light: rgba(255, 255, 255, 0.1);
-	
-	/* Additional UI colors */
+
+	/* UI Colors (specific use cases) */
 	--color-white: #ffffff;
 	--color-light-gray: #e5e5e5;
 	--color-medium-gray: #757575;
@@ -22,32 +31,110 @@
 	--color-dark-pink: #e55a9f;
 	--color-light-pink: #fff0f8;
 
-	/* Spacing */
-	--spacing-sm: 0.5rem;
-	--spacing-base: 1rem;
-	--spacing-lg: 2rem;
-	--spacing-xl: 3rem;
+	/* Validation Colors */
+	--color-success: #51cf66;
+	--color-success-muted: #51cf66;
+	--color-error: #ff6b6b;
+	--color-error-muted: #ff8787;
 
-	/* Typography */
+	/* ============================================
+	   SPACING
+	   ============================================ */
+
+	/* Micro Spacing (for tight layouts) */
+	--spacing-3xs: 0.125rem; /* 2px - minimal gaps */
+	--spacing-2xs: 0.25rem;  /* 4px - small gaps */
+	--spacing-xs: 0.375rem;  /* 6px - between 2xs and sm */
+
+	/* Standard Spacing Scale */
+	--spacing-sm: 0.5rem;    /* 8px */
+	--spacing-base: 1rem;    /* 16px */
+	--spacing-lg: 2rem;      /* 32px */
+	--spacing-xl: 3rem;      /* 48px */
+
+	/* ============================================
+	   TYPOGRAPHY
+	   ============================================ */
+
 	--font-family-base: system-ui, -apple-system, sans-serif;
 	--line-height-base: 1.6;
 
 	/* Font Sizes */
-	--font-size-xs: 0.75rem;
-	--font-size-sm: 0.875rem;
-	--font-size-base: 1rem;
-	--font-size-lg: 1.125rem;
-	--font-size-xl: 1.25rem;
-	--font-size-2xl: 1.5rem;
-	--font-size-3xl: 2rem;
-	--font-size-4xl: 2.5rem;
-	--font-size-5xl: 3rem;
+	--font-size-xs: 0.75rem;     /* 12px */
+	--font-size-sm: 0.875rem;    /* 14px */
+	--font-size-base: 1rem;      /* 16px */
+	--font-size-lg: 1.125rem;    /* 18px */
+	--font-size-xl: 1.25rem;     /* 20px */
+	--font-size-2xl: 1.5rem;     /* 24px */
+	--font-size-3xl: 2rem;       /* 32px */
+	--font-size-4xl: 2.5rem;     /* 40px */
+	--font-size-5xl: 3rem;       /* 48px */
 
-	/* Layout */
+	/* ============================================
+	   LAYOUT
+	   ============================================ */
+
 	--container-max-width: 1200px;
 	--hero-max-width: 800px;
 
-	/* Transitions */
+	/* ============================================
+	   BORDER RADIUS
+	   ============================================ */
+
+	--radius-sm: 0.25rem;   /* 4px - buttons, badges, small elements */
+	--radius-base: 0.375rem; /* 6px - inputs, cards */
+	--radius-lg: 0.5rem;    /* 8px - modals, panels, larger cards */
+	--radius-full: 50%;     /* circles */
+
+	/* ============================================
+	   OPACITY
+	   ============================================ */
+
+	--opacity-disabled: 0.4;   /* disabled states */
+	--opacity-muted: 0.5;      /* placeholder text */
+	--opacity-medium: 0.6;     /* secondary content */
+	--opacity-secondary: 0.7;  /* less important text */
+	--opacity-primary: 0.8;    /* standard opacity reduction */
+	--opacity-hover: 0.9;      /* hover states */
+
+	/* ============================================
+	   SIZING
+	   ============================================ */
+
+	/* Icon Sizes */
+	--size-icon-sm: 1.125rem;   /* 18px */
+	--size-icon-base: 1.25rem;  /* 20px */
+	--size-icon-lg: 1.5rem;     /* 24px */
+	--size-icon-xl: 2rem;       /* 32px */
+	--size-icon-2xl: 3rem;      /* 48px */
+
+	/* Button/Interactive Element Sizes */
+	--size-button-sm: 2rem;     /* 32px */
+	--size-button-base: 2.5rem; /* 40px */
+
+	/* Logo Sizes */
+	--size-logo-sm: 32px;
+	--size-logo-base: 40px;
+	--size-logo-lg: 200px;
+
+	/* Image Sizes */
+	--size-image-sm: 80px;
+	--size-image-base: 100px;
+	--size-image-lg: 150px;
+	--size-image-xl: 200px;
+	--size-image-2xl: 250px;
+
+	/* ============================================
+	   Z-INDEX LAYERS
+	   ============================================ */
+
+	--z-sticky: 100;   /* sticky header */
+	--z-overlay: 200;  /* modals, panels, overlays */
+
+	/* ============================================
+	   TRANSITIONS
+	   ============================================ */
+
 	--transition-fast: 0.2s;
 	--transition-base: 0.3s;
 	--transition-slow: 0.6s;
@@ -55,8 +142,26 @@
 	--easing-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 	--easing-exit: cubic-bezier(0.55, 0.06, 0.68, 0.19);
 
-	/* Shadows */
+	/* ============================================
+	   SHADOWS
+	   ============================================ */
+
+	/* Elevation Shadows */
+	--shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+	--shadow-base: 0 4px 12px rgba(0, 0, 0, 0.15);
+	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+	/* Glow Effects */
+	--shadow-glow-blue: 0 0 20px rgba(135, 206, 235, 0.3);
 	--shadow-glow-purple: 0 0 20px rgba(155, 89, 182, 0.5);
-	--shadow-menu-hover: 0 12px 24px rgba(155, 89, 182, 0.3),
-		0 0 20px rgba(135, 206, 235, 0.2);
+
+	/* Component-Specific Shadows */
+	--shadow-header: 0 2px 20px rgba(155, 89, 182, 0.3), 0 0 40px rgba(135, 206, 235, 0.2);
+	--shadow-menu-hover: 0 12px 24px rgba(155, 89, 182, 0.3), 0 0 20px rgba(135, 206, 235, 0.2);
+	--shadow-panel: -4px 0 24px rgba(0, 0, 0, 0.5);
+	--shadow-modal: 0 4px 20px rgba(155, 89, 182, 0.5);
+	--shadow-button: 0 4px 12px rgba(135, 206, 235, 0.4);
+	--shadow-button-lg: 0 6px 20px rgba(135, 206, 235, 0.6);
+	--shadow-gradient-button: 0 4px 12px rgba(155, 89, 182, 0.4);
+	--shadow-gradient-button-hover: 0 6px 20px rgba(155, 89, 182, 0.6);
 }

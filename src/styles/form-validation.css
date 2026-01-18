@@ -6,21 +6,21 @@
 
 /* Invalid field state - using :user-invalid (only after user interaction) */
 .checkout__input:user-invalid {
-	border-color: #ff6b6b;
+	border-color: var(--color-error);
 	background-color: rgba(255, 107, 107, 0.1);
 
 	&:focus {
-		border-color: #ff6b6b;
+		border-color: var(--color-error);
 		box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
 	}
 }
 
 /* Valid field state - using :user-valid (only after user interaction) */
 .checkout__input:user-valid {
-	border-color: #51cf66;
+	border-color: var(--color-success);
 
 	&:focus {
-		border-color: #51cf66;
+		border-color: var(--color-success);
 		box-shadow: 0 0 0 3px rgba(81, 207, 102, 0.15);
 	}
 }
@@ -28,18 +28,19 @@
 /* Error message container (still managed by JS for custom messages) */
 .checkout__error {
 	display: none;
-	color: #ff8787;
+	color: var(--color-error-muted);
 	font-size: var(--font-size-xs);
-	margin-top: 0.25rem;
+	margin-top: var(--spacing-2xs);
 	line-height: 1.4;
 	font-weight: 500;
 
 	&.checkout__error--visible {
 		display: block;
-		animation: slideDown 0.2s ease;
+		animation: slideDown var(--transition-fast) ease;
 	}
 }
 
+/* Slide down animation for error messages */
 @keyframes slideDown {
 	from {
 		opacity: 0;
@@ -54,14 +55,14 @@
 /* Form group with invalid field */
 .checkout__form-group:has(.checkout__input:user-invalid) {
 	.checkout__label {
-		color: #ff8787;
+		color: var(--color-error-muted);
 	}
 }
 
 /* Form group with valid field */
 .checkout__form-group:has(.checkout__input:user-valid) {
 	.checkout__label {
-		color: #51cf66;
+		color: var(--color-success);
 	}
 }
 
