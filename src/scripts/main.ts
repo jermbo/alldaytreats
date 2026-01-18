@@ -64,12 +64,11 @@ const initializeApp = () => {
     });
   };
 
-  // Add click handlers to menu items
-  const menuItems = document.querySelectorAll(".menu__item");
-  menuItems.forEach((item) => {
-    (item as HTMLElement).style.cursor = "pointer";
-    item.addEventListener("click", () => {
-      const titleElement = item.querySelector(".menu__item-title");
+  // Add click handlers to menu item buttons
+  const menuItemButtons = document.querySelectorAll(".menu__item-button");
+  menuItemButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const titleElement = button.querySelector(".menu__item-title");
       if (titleElement) {
         const productName = titleElement.textContent?.trim() || "";
         const product = findProductByName(productName);
@@ -90,6 +89,7 @@ const initializeApp = () => {
 
   // Category filtering with View Transitions API
   const tabs = document.querySelectorAll(".menu__tab");
+  const menuItems = document.querySelectorAll(".menu__item");
 
   // Assign unique, stable view-transition-name to each menu item based on title
   menuItems.forEach((item) => {

@@ -51,6 +51,15 @@
 	border-color: var(--color-accent-blue);
 }
 
+.menu__tab:focus {
+	outline: none;
+}
+
+.menu__tab:focus-visible {
+	outline: 3px solid var(--color-accent-blue);
+	outline-offset: 2px;
+}
+
 .menu__grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -67,10 +76,34 @@
 	transform-origin: center center;
 }
 
-.menu__item:hover {
+.menu__item-button {
+	width: 100%;
+	background: none;
+	border: none;
+	padding: 0;
+	text-align: left;
+	cursor: pointer;
+	display: block;
+	font: inherit;
+	color: inherit;
+}
+
+.menu__item:has(.menu__item-button:hover) {
 	transform: translateY(-8px) scale(1.02)
 		rotate(calc(var(--hover-rotate, 1deg)));
 	box-shadow: var(--shadow-menu-hover);
+}
+
+.menu__item-button:focus {
+	outline: none;
+}
+
+.menu__item:has(.menu__item-button:focus-visible) {
+	transform: translateY(-8px) scale(1.02)
+		rotate(calc(var(--hover-rotate, 1deg)));
+	box-shadow: var(--shadow-menu-hover), 0 0 0 3px var(--color-accent-blue);
+	outline: 3px solid var(--color-accent-blue);
+	outline-offset: 2px;
 }
 
 .menu__item[hidden] {
