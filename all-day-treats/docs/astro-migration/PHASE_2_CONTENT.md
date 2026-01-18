@@ -1,7 +1,7 @@
 # Phase 2: Content Migration - User Stories
 
 **Phase:** 2 of 8
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 **Dependencies:** Phase 1 Complete
 **Last Updated:** 2026-01-18
 
@@ -17,7 +17,7 @@ Convert all products from hardcoded JavaScript objects to markdown files with fr
 
 **Priority:** P0 (Critical)
 **Estimate:** 3 hours
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 **Depends On:** US-002
 
 ### Story
@@ -28,94 +28,94 @@ Convert all products from hardcoded JavaScript objects to markdown files with fr
 
 ### Acceptance Criteria
 
-- [ ] All 9 products converted to individual markdown files
-- [ ] Product files created in `src/content/products/`:
-  - [ ] `candy-grapes.md`
-  - [ ] `candy-strawberries.md`
-  - [ ] `candy-pineapple-rings.md`
-  - [ ] `chocolate-strawberries.md`
-  - [ ] `cake-pops.md`
-  - [ ] `chocolate-oreos.md`
-  - [ ] `chocolate-pretzels.md`
-  - [ ] `chocolate-rice-krispies.md`
-  - [ ] `party-platter.md`
-- [ ] All product images copied to `src/assets/images/`
-- [ ] Each markdown file has valid frontmatter matching schema
-- [ ] Content collection validates all products (no errors)
-- [ ] `getCollection('products')` returns all 9 products
-- [ ] Products sorted by `order` field
-- [ ] Product descriptions migrated to markdown body
+- [x] All 9 products converted to individual markdown files
+- [x] Product files created in `src/content/products/`:
+  - [x] `candy-grapes.md`
+  - [x] `candy-strawberries.md`
+  - [x] `candy-pineapple.md` (matches product ID from products.js)
+  - [x] `chocolate-strawberries.md`
+  - [x] `cake-pops.md`
+  - [x] `chocolate-oreos.md`
+  - [x] `chocolate-pretzels.md`
+  - [x] `chocolate-rice-krispies.md`
+  - [x] `party-platter.md`
+- [x] All product images copied to `src/assets/images/`
+- [x] Each markdown file has valid frontmatter matching schema
+- [x] Content collection validates all products (no errors)
+- [x] `getCollection('products')` returns all 9 products
+- [x] Products sorted by `order` field
+- [x] Product descriptions migrated to markdown body
 
 ### Product Migration Checklist
 
 #### Candy Products
 
 **1. Candy Grapes** (`candy-grapes.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `candy-grapes-new.jpg` copied
-- [ ] Price options: 6/$10, 8/$15, 12/$20
-- [ ] Description migrated
-- [ ] Order: 1
+- [x] Frontmatter complete
+- [x] Image: `candy-grapes-new.jpg` copied
+- [x] Price options: 6/$10, 8/$15, 12/$20
+- [x] Description migrated
+- [x] Order: 1
 
 **2. Candy Strawberries** (`candy-strawberries.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `candy-strawberries.jpg` copied
-- [ ] Price options: 6/$15, 8/$20, 12/$25
-- [ ] Description migrated
-- [ ] Order: 2
+- [x] Frontmatter complete
+- [x] Image: `candy-strawberries.jpg` copied
+- [x] Price options: 6/$10, 8/$15, 12/$20
+- [x] Description migrated
+- [x] Order: 2
 
-**3. Candy Pineapple Rings** (`candy-pineapple-rings.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `candy-pineapple-rings.jpg` copied
-- [ ] Price options: 6/$15, 8/$20, 12/$25
-- [ ] Description migrated
-- [ ] Order: 3
+**3. Candy Pineapple** (`candy-pineapple.md`)
+- [x] Frontmatter complete
+- [x] Image: `candy-pineapple-rings.jpg` copied
+- [x] Price options: 6/$12, 8/$17, 12/$27
+- [x] Description migrated
+- [x] Order: 3
 
 #### Chocolate Products
 
 **4. Chocolate Strawberries** (`chocolate-strawberries.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `chocolate-strawberries-new.jpg` copied
-- [ ] Price options: 6/$15, 8/$20, 12/$25
-- [ ] Description migrated
-- [ ] Order: 4
+- [x] Frontmatter complete
+- [x] Image: `chocolate-strawberries-new.jpg` copied
+- [x] Price options: 6/$10, 8/$15, 12/$20
+- [x] Description migrated
+- [x] Order: 4
 
 **5. Cake Pops** (`cake-pops.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `cake-pops.jpg` copied
-- [ ] Price options: 6/$18, 8/$24, 12/$30
-- [ ] Description migrated
-- [ ] Order: 5
+- [x] Frontmatter complete
+- [x] Image: `cake-pops.jpg` copied
+- [x] Price options: 6/$10, 8/$17, 12/$27
+- [x] Description migrated
+- [x] Order: 5
 
 **6. Chocolate Oreos** (`chocolate-oreos.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `chocolate-oreos.jpg` copied
-- [ ] Price options: 6/$15, 8/$20, 12/$25
-- [ ] Description migrated
-- [ ] Order: 6
+- [x] Frontmatter complete
+- [x] Image: `chocolate-oreos.jpg` copied
+- [x] Price options: 6/$10, 8/$15, 12/$20
+- [x] Description migrated
+- [x] Order: 6
 
 **7. Chocolate Pretzels** (`chocolate-pretzels.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `chocolate-pretzels.jpg` copied
-- [ ] Price options: 6/$15, 8/$20, 12/$25
-- [ ] Description migrated
-- [ ] Order: 7
+- [x] Frontmatter complete
+- [x] Image: `chocolate-pretzels.jpg` copied
+- [x] Price options: 6/$10, 8/$15, 12/$20
+- [x] Description migrated
+- [x] Order: 7
 
 **8. Chocolate Rice Krispies** (`chocolate-rice-krispies.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `chocolate-rice-krispies.jpg` copied
-- [ ] Price options: 6/$15, 8/$20, 12/$25
-- [ ] Description migrated
-- [ ] Order: 8
+- [x] Frontmatter complete
+- [x] Image: `chocolate-rice-krispies.jpg` copied
+- [x] Price options: 6/$15, 8/$15, 12/$20
+- [x] Description migrated
+- [x] Order: 8
 
 #### Platter Products
 
 **9. Party Platter** (`party-platter.md`)
-- [ ] Frontmatter complete
-- [ ] Image: `party-platter.jpg` copied
-- [ ] Price options: 1/$45, 1/$60, 1/$75
-- [ ] Description migrated
-- [ ] Order: 9
+- [x] Frontmatter complete
+- [x] Image: `party-platter.jpg` copied
+- [x] Price options: 1/$45, 2/$55, 3/$60
+- [x] Description migrated
+- [x] Order: 9
 
 ### Implementation Template
 
@@ -197,12 +197,12 @@ Phase 2 is complete when:
 
 ## Phase 2 Testing Checklist
 
-- [ ] All 9 markdown files exist in `src/content/products/`
-- [ ] All images exist in `src/assets/images/`
-- [ ] No validation errors in dev server console
-- [ ] Product data queryable via content collection
-- [ ] Each product has complete data
-- [ ] Image paths resolve correctly
+- [x] All 9 markdown files exist in `src/content/products/`
+- [x] All images exist in `src/assets/images/`
+- [x] No validation errors in dev server console
+- [x] Product data queryable via content collection
+- [x] Each product has complete data
+- [x] Image paths resolve correctly
 
 ---
 
