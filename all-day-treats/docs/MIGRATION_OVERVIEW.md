@@ -13,6 +13,7 @@ This migration follows the **Coding with VIBES** methodology, organizing documen
 | 30,000ft | [README.md](../README.md) | High-level project overview | ✅ Complete |
 | 30,000ft | [Migration Vision](vision/MIGRATION_VISION.md) | Why we're migrating, success criteria | ✅ Complete |
 | 15,000ft | [Migration Roadmap](architecture/MIGRATION_ROADMAP.md) | How we'll migrate, architecture, phases | ✅ Complete |
+| Ground Level | [User Stories Index](astro-migration/USER_STORIES_INDEX.md) | All 28 user stories organized by phase | ✅ Complete |
 | Ground Level | [Developer Onboarding](DEVELOPER_ONBOARDING.md) | Setup, workflow, contribution guide | ✅ Complete |
 | Original | [Original PRD](../../PRD.md) | Original project requirements | ✅ Reference |
 | Original | [Original README](../../README.md) | Current site documentation | ✅ Reference |
@@ -23,6 +24,7 @@ This migration follows the **Coding with VIBES** methodology, organizing documen
 - **New to this project?** Start with [README.md](../README.md)
 - **Want to understand the migration?** Read [Migration Vision](vision/MIGRATION_VISION.md)
 - **Ready to build?** Follow [Migration Roadmap](architecture/MIGRATION_ROADMAP.md)
+- **Need user stories?** See [User Stories Index](astro-migration/USER_STORIES_INDEX.md)
 - **Need to set up dev environment?** See [Developer Onboarding](DEVELOPER_ONBOARDING.md)
 
 ### Understanding the Why (30,000ft)
@@ -38,6 +40,13 @@ This migration follows the **Coding with VIBES** methodology, organizing documen
   - Component breakdown
   - 8-phase migration plan
   - Testing strategy
+
+### Implementation (Ground Level)
+- [User Stories Index](astro-migration/USER_STORIES_INDEX.md)
+  - All 28 user stories by phase
+  - Acceptance criteria
+  - Dependencies and estimates
+  - Quick reference guide
 
 ### VIBES Framework
 - [Coding with VIBES](../../docs/coding_with_vibes/README.md) - Main methodology
