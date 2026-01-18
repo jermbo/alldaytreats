@@ -99,6 +99,31 @@ const trimFieldValue = (field) => {
 };
 
 /**
+ * Check if form is valid and update submit button state
+ * @param {HTMLFormElement} form - Form element
+ * @returns {void}
+ */
+const updateSubmitButtonState = (form) => {
+	if (!form || !submitBtn) return;
+
+	const nameField = form.querySelector("#checkout-name");
+	const emailField = form.querySelector("#checkout-email");
+	const phoneField = form.querySelector("#checkout-phone");
+	const addressField = form.querySelector("#checkout-address");
+
+	// Check if all required fields have valid values
+	const nameValid = validateRequired(nameField?.value.trim() || "").isValid;
+	const emailValid = validateEmail(emailField?.value.trim() || "").isValid;
+	const phoneValid = validatePhone(phoneField?.value.trim() || "").isValid;
+	const addressValid = validateAddress(addressField?.value.trim() || "").isValid;
+
+	const allValid = nameValid && emailValid && phoneValid && addressValid;
+
+	// Enable/disable submit button
+	submitBtn.disabled = !allValid;
+};
+
+/**
  * Setup field validation (on blur)
  * @param {HTMLFormElement} form - Form element
  * @returns {void}
@@ -122,6 +147,7 @@ const setupFieldValidation = (form) => {
 			} else {
 				clearFieldError(nameField);
 			}
+			updateSubmitButtonState(form);
 		});
 
 		// Clear error on input if field becomes valid
@@ -130,6 +156,7 @@ const setupFieldValidation = (form) => {
 			if (validation.isValid && nameField.getAttribute("aria-invalid") === "true") {
 				clearFieldError(nameField);
 			}
+			updateSubmitButtonState(form);
 		});
 	}
 
@@ -142,6 +169,7 @@ const setupFieldValidation = (form) => {
 			} else {
 				clearFieldError(emailField);
 			}
+			updateSubmitButtonState(form);
 		});
 
 		emailField.addEventListener("input", () => {
@@ -149,6 +177,7 @@ const setupFieldValidation = (form) => {
 			if (validation.isValid && emailField.getAttribute("aria-invalid") === "true") {
 				clearFieldError(emailField);
 			}
+			updateSubmitButtonState(form);
 		});
 	}
 
@@ -161,6 +190,7 @@ const setupFieldValidation = (form) => {
 			} else {
 				clearFieldError(phoneField);
 			}
+			updateSubmitButtonState(form);
 		});
 
 		phoneField.addEventListener("input", () => {
@@ -168,6 +198,7 @@ const setupFieldValidation = (form) => {
 			if (validation.isValid && phoneField.getAttribute("aria-invalid") === "true") {
 				clearFieldError(phoneField);
 			}
+			updateSubmitButtonState(form);
 		});
 	}
 
@@ -180,6 +211,7 @@ const setupFieldValidation = (form) => {
 			} else {
 				clearFieldError(addressField);
 			}
+			updateSubmitButtonState(form);
 		});
 
 		addressField.addEventListener("input", () => {
@@ -187,6 +219,7 @@ const setupFieldValidation = (form) => {
 			if (validation.isValid && addressField.getAttribute("aria-invalid") === "true") {
 				clearFieldError(addressField);
 			}
+			updateSubmitButtonState(form);
 		});
 	}
 
@@ -196,6 +229,9 @@ const setupFieldValidation = (form) => {
 			trimFieldValue(notesField);
 		});
 	}
+
+	// Initial check on form setup
+	updateSubmitButtonState(form);
 };
 
 /**
@@ -370,6 +406,11 @@ export const openCheckout = () => {
 
 	// Render order summary
 	renderOrderSummary();
+
+	// Reset submit button state
+	if (checkoutForm) {
+		updateSubmitButtonState(checkoutForm);
+	}
 
 	// Show panel
 	checkoutPanel.hidden = false;
