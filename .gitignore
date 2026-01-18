@@ -36,3 +36,4 @@ docs/coding_with_vibes/
 # Vite
 vite.config.*.timestamp-*
 .DS_Store
+.vercel
