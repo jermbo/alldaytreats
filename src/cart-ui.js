@@ -7,6 +7,7 @@ import {
 } from "./cart.js";
 import { products } from "./products.js";
 import { openProductModal } from "./product-modal.js";
+import { openCheckout } from "./checkout-ui.js";
 
 let cartPanel = null;
 let productModal = null;
@@ -65,11 +66,14 @@ export const initCartUI = (panelElement, modalElement) => {
 		clearBtn.addEventListener("click", handleClearCart);
 	}
 
-	// Checkout button handler (placeholder for future implementation)
+	// Checkout button handler
 	if (checkoutBtn) {
 		checkoutBtn.addEventListener("click", () => {
-			// TODO: Navigate to checkout (US-004)
-			console.log("Checkout clicked");
+			closeCart();
+			// Small delay to allow cart close animation
+			setTimeout(() => {
+				openCheckout();
+			}, 100);
 		});
 	}
 

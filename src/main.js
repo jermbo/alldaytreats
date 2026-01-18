@@ -2,6 +2,7 @@ import { products } from "./products.js";
 import { getCartItemCount } from "./cart.js";
 import { initProductModal, openProductModal } from "./product-modal.js";
 import { initCartUI, openCart } from "./cart-ui.js";
+import { initCheckoutUI } from "./checkout-ui.js";
 
 // Initialize product modal from template
 const productModalTemplate = document.getElementById("product-modal-template");
@@ -95,6 +96,20 @@ if (cartBtn) {
 	cartBtn.addEventListener("click", () => {
 		openCart();
 	});
+}
+
+// Initialize checkout UI
+const checkoutTemplate = document.getElementById("checkout-template");
+let checkoutPanel = null;
+
+if (checkoutTemplate) {
+	const templateContent = checkoutTemplate.content.cloneNode(true);
+	checkoutPanel = templateContent.querySelector(".checkout");
+	document.body.appendChild(checkoutPanel);
+
+	if (checkoutPanel) {
+		initCheckoutUI(checkoutPanel);
+	}
 }
 
 // Category filtering with View Transitions API

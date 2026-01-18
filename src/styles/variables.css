@@ -11,6 +11,15 @@
 	--color-overlay-light: rgba(255, 255, 255, 0.05);
 	--color-overlay-dark: rgba(0, 0, 0, 0.3);
 	--color-border-light: rgba(255, 255, 255, 0.1);
+	
+	/* Additional UI colors */
+	--color-white: #ffffff;
+	--color-light-gray: #e5e5e5;
+	--color-medium-gray: #757575;
+	--color-dark-gray: #333333;
+	--color-pink: #ff69b4;
+	--color-dark-pink: #e55a9f;
+	--color-light-pink: #fff0f8;
 
 	/* Spacing */
 	--spacing-sm: 0.5rem;
