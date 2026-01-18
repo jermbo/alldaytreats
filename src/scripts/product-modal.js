@@ -132,7 +132,7 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 
 	// Set title
 	if (titleEl) {
-		titleEl.textContent = product.name.toUpperCase();
+		titleEl.textContent = product.name;
 	}
 
 	// Set image

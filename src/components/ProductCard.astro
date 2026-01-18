@@ -8,30 +8,36 @@ interface Props {
 const { product } = Astro.props;
 const { name, image, priceFrom, category, id } = product.data;
 const description = product.body;
+const headingId = `product-${id}-heading`;
+const descriptionId = `product-${id}-description`;
+const priceId = `product-${id}-price`;
 ---
 
 <article
   class="menu__item"
   data-category={category}
+  aria-labelledby={headingId}
 >
   <button
     type="button"
     class="menu__item-button"
     data-product-id={id}
-    aria-label={`View details for ${name}`}
+    aria-labelledby={headingId}
+    aria-describedby={`${descriptionId} ${priceId}`}
   >
     <img
       src={image}
-      alt={name}
+      alt=""
+      role="presentation"
       class="menu__item-image"
       width="400"
       height="400"
       loading="lazy"
     />
     <div class="menu__item-content">
-      <h3 class="menu__item-title">{name.toUpperCase()}</h3>
-      <p class="menu__item-description">{description}</p>
-      <p class="menu__item-price">From ${priceFrom}</p>
+      <h3 id={headingId} class="menu__item-title">{name}</h3>
+      <p id={descriptionId} class="menu__item-description">{description}</p>
+      <p id={priceId} class="menu__item-price">From ${priceFrom}</p>
     </div>
   </button>
 </article>
