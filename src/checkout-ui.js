@@ -72,7 +72,7 @@ export const initCheckoutUI = (panelElement) => {
 	if (checkoutForm) {
 		checkoutForm.addEventListener("submit", handleFormSubmit);
 		setupFieldValidation(checkoutForm);
-		
+
 		// Initialize phone number formatter
 		const phoneField = checkoutForm.querySelector("#checkout-phone");
 		if (phoneField) {
@@ -285,45 +285,98 @@ const handleFormSubmit = async (e) => {
 	setLoadingState(true);
 
 	try {
-		// TODO: Implement actual order submission (US-006)
-		// For now, simulate API call
-		await submitOrder({
+		const result = await submitOrder({
 			...formData,
 			items: getCartItems(),
 			subtotal: getCartSubtotal(),
 		});
 
-		// Show success state
-		showSuccess("Your order has been submitted successfully! We'll contact you shortly to confirm your order and arrange payment.");
-		
+		// Show success state with instructions
+		const successMessage = "Your email client has been opened with your order details. Please review and click send to complete your order.";
+		showSuccess(successMessage, result.formattedOrder);
+
 		// Clear cart
 		clearCart();
-		
+
 		// Reset form
 		checkoutForm.reset();
 		clearAllErrors(checkoutForm);
 	} catch (error) {
 		// Show error state
-		showError(error.message || "An error occurred while submitting your order. Please try again.");
+		showError(error.message || "An error occurred while preparing your order. Please try again.");
 	} finally {
 		setLoadingState(false);
 	}
 };
 
 /**
- * Simulate order submission (placeholder for US-006)
+ * Generate unique order ID using Web Crypto API
+ * @returns {string} - 8 character unique ID
+ */
+const generateOrderId = () => {
+	return crypto.randomUUID().substring(0, 8);
+};
+
+/**
+ * Format order details for email body
+ * @param {Object} orderData - Order data with customer info and items
+ * @returns {string} - Formatted email body
+ */
+const formatOrderEmail = (orderData) => {
+	const { name, phone, address, notes, items, subtotal } = orderData;
+
+	let body = `Name - ${name}\n`;
+	body += `Phone - ${phone}\n`;
+	body += `Address - ${address}\n`;
+	if (notes) {
+		body += `Special Instructions - ${notes}\n`;
+	}
+
+	body += `\n------\nOrder:\n------\n\n`;
+
+	items.forEach((item, index) => {
+		body += `${index + 1}. ${item.name} - ${item.count}ct × ${item.quantity}\n`;
+		body += `   Price: $${(item.unitPrice * item.quantity).toFixed(2)}\n`;
+		if (item.specialInstructions) {
+			body += `   Notes: ${item.specialInstructions}\n`;
+		}
+		body += `\n`;
+	});
+
+	body += `------\nSubtotal: $${subtotal.toFixed(2)}\n------`;
+
+	return body;
+};
+
+/**
+ * Submit order via email
  * @param {Object} orderData - Order data
  * @returns {Promise}
  */
 const submitOrder = async (orderData) => {
-	// Simulate API call
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			// For now, always succeed
-			console.log("Order submitted:", orderData);
-			resolve({ success: true });
-		}, 1500);
-	});
+	const orderId = generateOrderId();
+	// const businessEmail = "alldaytreats@gmail.com";
+	const businessEmail = "jermbo@cosmicstrawberry.com";
+	const subject = `Treat Order #${orderId}`;
+	const body = formatOrderEmail(orderData);
+
+	// Create mailto link
+	const mailtoLink = `mailto:${businessEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+	// Try to open email client in new context (prevents page navigation)
+	try {
+		const anchor = document.createElement('a');
+		anchor.href = mailtoLink;
+		anchor.target = '_blank';
+		anchor.rel = 'noopener noreferrer';
+		document.body.appendChild(anchor);
+		anchor.click();
+		document.body.removeChild(anchor);
+		return Promise.resolve({ success: true, orderId, formattedOrder: `${subject}\n\n${body}` });
+	} catch (error) {
+		// If mailto fails, still return success with fallback data
+		return Promise.resolve({ success: true, orderId, formattedOrder: `${subject}\n\n${body}`, requiresFallback: true });
+	}
 };
 
 /**
@@ -356,9 +409,10 @@ const showContent = () => {
 /**
  * Show success state
  * @param {string} message - Success message
+ * @param {string} formattedOrder - Formatted order text for fallback
  * @returns {void}
  */
-const showSuccess = (message) => {
+const showSuccess = (message, formattedOrder = null) => {
 	if (contentSection) contentSection.hidden = true;
 	if (errorSection) errorSection.hidden = true;
 	if (successSection) {
@@ -366,6 +420,43 @@ const showSuccess = (message) => {
 		const messageEl = successSection.querySelector(".checkout__success-message");
 		if (messageEl) {
 			messageEl.textContent = message;
+		}
+
+		// Show fallback section with copy functionality
+		if (formattedOrder) {
+			const fallbackSection = successSection.querySelector(".checkout__success-fallback");
+			const orderTextEl = successSection.querySelector(".checkout__success-order-text");
+			const copyBtn = successSection.querySelector(".checkout__success-copy-btn");
+
+			if (fallbackSection && orderTextEl) {
+				fallbackSection.hidden = false;
+				orderTextEl.textContent = formattedOrder;
+			}
+
+			// Setup copy button
+			if (copyBtn && orderTextEl) {
+				// Remove existing listeners
+				const newCopyBtn = copyBtn.cloneNode(true);
+				copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+
+				newCopyBtn.addEventListener("click", async () => {
+					try {
+						await navigator.clipboard.writeText(formattedOrder);
+						newCopyBtn.classList.add("checkout__success-copy-btn--copied");
+						setTimeout(() => {
+							newCopyBtn.classList.remove("checkout__success-copy-btn--copied");
+						}, 2000);
+					} catch (error) {
+						console.error("Failed to copy to clipboard:", error);
+						// Fallback: select the text
+						const range = document.createRange();
+						range.selectNodeContents(orderTextEl);
+						const selection = window.getSelection();
+						selection.removeAllRanges();
+						selection.addRange(range);
+					}
+				});
+			}
 		}
 	}
 };

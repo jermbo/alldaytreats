@@ -600,11 +600,21 @@
 								</form>
 							</section>
 
-							<div class="checkout__success" hidden>
-								<div class="checkout__success-icon" aria-hidden="true">✓</div>
-								<h3 class="checkout__success-title">Order Submitted!</h3>
-								<p class="checkout__success-message"></p>
+						<div class="checkout__success" hidden>
+							<div class="checkout__success-icon" aria-hidden="true">✓</div>
+							<h3 class="checkout__success-title">Order Submitted!</h3>
+							<p class="checkout__success-message"></p>
+							<div class="checkout__success-fallback" hidden>
+								<p class="checkout__success-fallback-text">If your email client didn't open, you can copy the order details below:</p>
+								<div class="checkout__success-order-details">
+									<pre class="checkout__success-order-text"></pre>
+								</div>
+								<button type="button" class="checkout__success-copy-btn">
+									<span class="checkout__success-copy-text">Copy Order Details</span>
+									<span class="checkout__success-copy-check" aria-hidden="true">✓</span>
+								</button>
 							</div>
+						</div>
 
 							<div class="checkout__error-state" hidden>
 								<div class="checkout__error-icon" aria-hidden="true">⚠️</div>
