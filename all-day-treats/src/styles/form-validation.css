@@ -1,0 +1,73 @@
+/**
+ * Form Validation Styles
+ * Using modern CSS :user-valid and :user-invalid pseudo-classes
+ * These only apply after user interaction, avoiding premature validation styling
+ */
+
+/* Invalid field state - using :user-invalid (only after user interaction) */
+.checkout__input:user-invalid {
+	border-color: #ff6b6b;
+	background-color: rgba(255, 107, 107, 0.1);
+
+	&:focus {
+		border-color: #ff6b6b;
+		box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
+	}
+}
+
+/* Valid field state - using :user-valid (only after user interaction) */
+.checkout__input:user-valid {
+	border-color: #51cf66;
+
+	&:focus {
+		border-color: #51cf66;
+		box-shadow: 0 0 0 3px rgba(81, 207, 102, 0.15);
+	}
+}
+
+/* Error message container (still managed by JS for custom messages) */
+.checkout__error {
+	display: none;
+	color: #ff8787;
+	font-size: var(--font-size-xs);
+	margin-top: 0.25rem;
+	line-height: 1.4;
+	font-weight: 500;
+
+	&.checkout__error--visible {
+		display: block;
+		animation: slideDown 0.2s ease;
+	}
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-5px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Form group with invalid field */
+.checkout__form-group:has(.checkout__input:user-invalid) {
+	.checkout__label {
+		color: #ff8787;
+	}
+}
+
+/* Form group with valid field */
+.checkout__form-group:has(.checkout__input:user-valid) {
+	.checkout__label {
+		color: #51cf66;
+	}
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+	.checkout__error {
+		animation: none;
+	}
+}
