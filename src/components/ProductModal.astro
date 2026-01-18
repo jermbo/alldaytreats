@@ -23,6 +23,28 @@
       <div class="product-modal__quantity-options"></div>
     </section>
     <section class="product-modal__section">
+      <label class="product-modal__section-label">
+        Choose Your Toppings (optional)
+      </label>
+      <fieldset class="toppings-group">
+        <legend class="toppings-group__legend">
+          <span>Included (No Extra Charge)</span>
+          <span class="toppings-group__counter">
+            <span class="toppings-group__counter-current">0</span> of 2
+          </span>
+        </legend>
+        <div class="toppings-group__options" data-category="included"></div>
+      </fieldset>
+      <fieldset class="toppings-group toppings-group--premium">
+        <legend class="toppings-group__legend">Premium Add-ons</legend>
+        <div class="toppings-group__options" data-category="premium"></div>
+      </fieldset>
+      <div class="product-modal__toppings-total">
+        <span class="product-modal__toppings-total-label">Toppings:</span>
+        <span class="product-modal__toppings-total-value">+$0</span>
+      </div>
+    </section>
+    <section class="product-modal__section">
       <label
         for="product-instructions"
         class="product-modal__section-label"

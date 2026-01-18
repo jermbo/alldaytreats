@@ -213,6 +213,14 @@
 	margin: 0;
 }
 
+.cart__item-toppings {
+	font-size: var(--font-size-xs);
+	color: var(--color-accent-pink);
+	margin: 0;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
 .cart__item-instructions {
 	font-size: var(--font-size-xs);
 	color: var(--color-text-light);

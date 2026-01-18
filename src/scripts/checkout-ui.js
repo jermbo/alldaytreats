@@ -13,6 +13,7 @@ import {
 	focusFirstInvalidField,
 } from "./validation-ui.js";
 import { initPhoneFormatter } from "./phone-formatter.js";
+import { getToppingById } from "../config/toppings.ts";
 
 let checkoutPanel = null;
 let checkoutForm = null;
@@ -360,6 +361,15 @@ const formatOrderEmail = (orderData) => {
 	items.forEach((item, index) => {
 		body += `${index + 1}. ${item.name} - ${item.count}ct × ${item.quantity}\n`;
 		body += `   Price: $${(item.unitPrice * item.quantity).toFixed(2)}\n`;
+		
+		// Add toppings to order email
+		if (item.toppings) {
+			const toppingsText = formatToppingsForEmail(item.toppings);
+			if (toppingsText) {
+				body += `   Toppings: ${toppingsText}\n`;
+			}
+		}
+		
 		if (item.specialInstructions) {
 			body += `   Notes: ${item.specialInstructions}\n`;
 		}
@@ -586,12 +596,16 @@ const renderOrderSummary = () => {
 		const unitPrice = item.unitPrice !== undefined ? item.unitPrice : item.price;
 		const lineTotal = unitPrice * quantity;
 
+		// Format toppings for display
+		const toppingsText = formatToppingsForDisplay(item.toppings);
+
 		const itemEl = document.createElement("div");
 		itemEl.className = "checkout__summary-item";
 		itemEl.innerHTML = `
 			<div class="checkout__summary-item-details">
 				<span class="checkout__summary-item-name">${escapeHtml(item.name)}</span>
 				<span class="checkout__summary-item-meta">${item.count}ct × ${quantity}</span>
+				${toppingsText ? `<span class="checkout__summary-item-toppings">${toppingsText}</span>` : ""}
 			</div>
 			<span class="checkout__summary-item-price">$${lineTotal.toFixed(2)}</span>
 		`;
@@ -601,6 +615,72 @@ const renderOrderSummary = () => {
 	// Update totals
 	summarySubtotalEl.textContent = `$${subtotal.toFixed(2)}`;
 	summaryTotalEl.textContent = `$${subtotal.toFixed(2)}`;
+};
+
+/**
+ * Format toppings for display in checkout summary
+ * @param {Object} toppings - Toppings object with included and premium arrays
+ * @returns {string} Formatted toppings text
+ */
+const formatToppingsForDisplay = (toppings) => {
+	if (!toppings || (!toppings.included?.length && !toppings.premium?.length)) {
+		return "";
+	}
+
+	const allToppingIds = [
+		...(toppings.included || []),
+		...(toppings.premium || []),
+	];
+
+	const toppingNames = allToppingIds
+		.map((id) => {
+			const topping = getToppingById(id);
+			if (!topping) return null;
+			
+			// Add price indicator for premium toppings
+			if (topping.price > 0) {
+				return `${topping.name} (+$${topping.price})`;
+			}
+			return topping.name;
+		})
+		.filter(Boolean);
+
+	if (toppingNames.length === 0) {
+		return "";
+	}
+
+	return `+ ${escapeHtml(toppingNames.join(", "))}`;
+};
+
+/**
+ * Format toppings for email body
+ * @param {Object} toppings - Toppings object with included and premium arrays
+ * @returns {string} Formatted toppings text for email
+ */
+const formatToppingsForEmail = (toppings) => {
+	if (!toppings || (!toppings.included?.length && !toppings.premium?.length)) {
+		return "";
+	}
+
+	const allToppingIds = [
+		...(toppings.included || []),
+		...(toppings.premium || []),
+	];
+
+	const toppingNames = allToppingIds
+		.map((id) => {
+			const topping = getToppingById(id);
+			if (!topping) return null;
+			
+			// Add price indicator for premium toppings
+			if (topping.price > 0) {
+				return `${topping.name} (+$${topping.price})`;
+			}
+			return topping.name;
+		})
+		.filter(Boolean);
+
+	return toppingNames.join(", ");
 };
 
 /**

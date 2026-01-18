@@ -7,6 +7,7 @@ import {
 } from "./cart.js";
 import { openProductModal } from "./product-modal.js";
 import { openCheckout } from "./checkout-ui.js";
+import { getToppingById } from "../config/toppings.ts";
 
 let cartPanel = null;
 let productModal = null;
@@ -224,6 +225,9 @@ const createCartItemElement = (item) => {
 	const unitPrice = item.unitPrice !== undefined ? item.unitPrice : item.price;
 	const lineTotal = unitPrice * quantity;
 
+	// Format toppings for display
+	const toppingsHtml = formatToppingsDisplay(item.toppings);
+
 	itemEl.innerHTML = `
 		<div class="cart__item-main">
 			<img class="cart__item-image" src="${escapeHtml(
@@ -239,6 +243,7 @@ const createCartItemElement = (item) => {
 					</button>
 				</div>
 				<p class="cart__item-option">${unitCount}ct $${unitPrice.toFixed(2)}</p>
+				${toppingsHtml}
 				${
 					item.specialInstructions
 						? `<p class="cart__item-instructions">${escapeHtml(
@@ -419,9 +424,25 @@ const refreshCartItemElement = (itemId) => {
 		optionEl.textContent = `${unitCount}ct $${unitPrice.toFixed(2)}`;
 	}
 
+	// Update toppings display
+	const toppingsEl = itemElement.querySelector(".cart__item-toppings");
+	const contentEl = itemElement.querySelector(".cart__item-content");
+	const toppingsHtml = formatToppingsDisplay(item.toppings);
+
+	if (toppingsHtml) {
+		if (toppingsEl) {
+			toppingsEl.outerHTML = toppingsHtml;
+		} else if (contentEl && optionEl) {
+			// Insert toppings after option element
+			optionEl.insertAdjacentHTML("afterend", toppingsHtml);
+		}
+	} else if (toppingsEl) {
+		// Remove toppings element if no toppings
+		toppingsEl.remove();
+	}
+
 	// Update special instructions
 	const instructionsEl = itemElement.querySelector(".cart__item-instructions");
-	const contentEl = itemElement.querySelector(".cart__item-content");
 
 	if (item.specialInstructions) {
 		if (instructionsEl) {
@@ -488,6 +509,7 @@ const handleEditItem = (item) => {
 		count: item.count,
 		price: item.unitPrice || item.price,
 		specialInstructions: item.specialInstructions,
+		toppings: item.toppings,
 	});
 };
 
@@ -508,6 +530,41 @@ const handleRemoveItem = (itemId) => {
 const handleClearCart = () => {
 	clearCart();
 	renderCart();
+};
+
+/**
+ * Format toppings for display in cart
+ * @param {Object} toppings - Toppings object with included and premium arrays
+ * @returns {string} HTML string for toppings display
+ */
+const formatToppingsDisplay = (toppings) => {
+	if (!toppings || (!toppings.included?.length && !toppings.premium?.length)) {
+		return "";
+	}
+
+	const allToppingIds = [
+		...(toppings.included || []),
+		...(toppings.premium || []),
+	];
+
+	const toppingNames = allToppingIds
+		.map((id) => {
+			const topping = getToppingById(id);
+			if (!topping) return null;
+			
+			// Add price indicator for premium toppings
+			if (topping.price > 0) {
+				return `${topping.name} (+$${topping.price})`;
+			}
+			return topping.name;
+		})
+		.filter(Boolean);
+
+	if (toppingNames.length === 0) {
+		return "";
+	}
+
+	return `<p class="cart__item-toppings">+ ${escapeHtml(toppingNames.join(", "))}</p>`;
 };
 
 /**

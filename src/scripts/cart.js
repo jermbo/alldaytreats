@@ -22,14 +22,37 @@ const isLocalStorageAvailable = () => {
  * @returns {boolean}
  */
 const isValidCartItem = (item) => {
-	return (
+	const basicValidation =
 		item &&
 		typeof item === "object" &&
 		typeof item.id === "string" &&
 		typeof item.productId === "string" &&
 		typeof item.name === "string" &&
-		typeof item.price === "number"
-	);
+		typeof item.price === "number";
+
+	if (!basicValidation) return false;
+
+	// Validate toppings structure if present
+	if (item.toppings !== undefined) {
+		if (typeof item.toppings !== "object" || item.toppings === null) {
+			return false;
+		}
+		// Validate toppings.included and toppings.premium are arrays if present
+		if (
+			item.toppings.included !== undefined &&
+			!Array.isArray(item.toppings.included)
+		) {
+			return false;
+		}
+		if (
+			item.toppings.premium !== undefined &&
+			!Array.isArray(item.toppings.premium)
+		) {
+			return false;
+		}
+	}
+
+	return true;
 };
 
 /**
@@ -47,12 +70,29 @@ const isValidCartData = (data) => {
  * @returns {Object} - Normalized cart item
  */
 const normalizeCartItem = (item) => {
-	return {
+	const normalized = {
 		...item,
 		quantity: item.quantity || 1,
-		unitPrice: item.unitPrice !== undefined ? item.unitPrice : item.price / (item.quantity || 1),
+		unitPrice:
+			item.unitPrice !== undefined
+				? item.unitPrice
+				: item.price / (item.quantity || 1),
 		specialInstructions: item.specialInstructions || "",
 	};
+
+	// Normalize toppings structure if present
+	if (item.toppings) {
+		normalized.toppings = {
+			included: Array.isArray(item.toppings.included)
+				? item.toppings.included
+				: [],
+			premium: Array.isArray(item.toppings.premium)
+				? item.toppings.premium
+				: [],
+		};
+	}
+
+	return normalized;
 };
 
 /**
@@ -107,7 +147,7 @@ const saveCartToStorage = () => {
 
 /**
  * Add item to cart
- * @param {Object} item - Cart item with productId, name, count, price, specialInstructions
+ * @param {Object} item - Cart item with productId, name, count, price, specialInstructions, toppings
  * @returns {void}
  */
 export const addToCart = (item) => {
@@ -120,6 +160,7 @@ export const addToCart = (item) => {
 		specialInstructions: item.specialInstructions || "",
 		quantity: item.quantity || 1,
 		unitPrice: item.price,
+		toppings: item.toppings || undefined,
 	});
 
 	// Calculate total price
@@ -194,6 +235,7 @@ export const updateCartItem = (itemId, updates) => {
 	}
 	if (updates.quantity !== undefined) item.quantity = updates.quantity;
 	if (updates.unitPrice !== undefined) item.unitPrice = updates.unitPrice;
+	if (updates.toppings !== undefined) item.toppings = updates.toppings;
 
 	// Ensure normalized structure
 	const normalized = normalizeCartItem(item);
