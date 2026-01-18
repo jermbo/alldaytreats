@@ -1,4 +1,6 @@
 ---
+import { siteConfig } from '@/config/site';
+
 interface Props {
   cartCount?: number;
 }
@@ -10,30 +12,22 @@ const { cartCount = 0 } = Astro.props;
   <div class="header__top-container">
     <nav class="header__contact" aria-label="Contact information">
       <a
-        href="tel:555-555-5555"
-        class="header__contact-link"
-        aria-label="Call us"
-      >
-        <span class="header__contact-icon" aria-hidden="true">📞</span>
-        <span>555-555-5555</span>
-      </a>
-      <a
-        href="mailto:alldaytreats@gmail.com"
+        href={`mailto:${siteConfig.contact.email}`}
         class="header__contact-link"
         aria-label="Email us"
       >
         <span class="header__contact-icon" aria-hidden="true">✉️</span>
-        <span>alldaytreats@gmail.com</span>
+        <span>{siteConfig.contact.email}</span>
       </a>
       <a
-        href="https://instagram.com/all_day_treats"
+        href={siteConfig.contact.instagram.url}
         target="_blank"
         rel="noopener noreferrer"
         class="header__contact-link"
         aria-label="Follow us on Instagram"
       >
         <span class="header__contact-icon" aria-hidden="true">📷</span>
-        <span>@all_day_treats</span>
+        <span>{siteConfig.contact.instagram.handle}</span>
       </a>
     </nav>
   </div>
@@ -45,8 +39,8 @@ const { cartCount = 0 } = Astro.props;
         class="header__logo"
       />
       <div class="header__brand-text">
-        <h1 class="header__title">ALL DAY TREATS</h1>
-        <p class="header__location">Omaha, NE</p>
+        <h1 class="header__title">{siteConfig.name}</h1>
+        <p class="header__location">{siteConfig.location}</p>
       </div>
     </div>
     <div class="header__actions">
