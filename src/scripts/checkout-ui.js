@@ -361,7 +361,7 @@ const formatOrderEmail = (orderData) => {
 	items.forEach((item, index) => {
 		body += `${index + 1}. ${item.name} - ${item.count}ct × ${item.quantity}\n`;
 		body += `   Price: $${(item.unitPrice * item.quantity).toFixed(2)}\n`;
-		
+
 		// Add toppings to order email
 		if (item.toppings) {
 			const toppingsText = formatToppingsForEmail(item.toppings);
@@ -369,7 +369,7 @@ const formatOrderEmail = (orderData) => {
 				body += `   Toppings: ${toppingsText}\n`;
 			}
 		}
-		
+
 		if (item.specialInstructions) {
 			body += `   Notes: ${item.specialInstructions}\n`;
 		}
@@ -619,25 +619,36 @@ const renderOrderSummary = () => {
 
 /**
  * Format toppings for display in checkout summary
- * @param {Object} toppings - Toppings object with included and premium arrays
+ * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
  * @returns {string} Formatted toppings text
  */
 const formatToppingsForDisplay = (toppings) => {
-	if (!toppings || (!toppings.included?.length && !toppings.premium?.length)) {
+	if (!toppings) {
 		return "";
 	}
 
-	const allToppingIds = [
-		...(toppings.included || []),
-		...(toppings.premium || []),
-	];
+	// Handle both new format (array) and old format (object)
+	let allToppingIds = [];
+	if (Array.isArray(toppings)) {
+		allToppingIds = toppings;
+	} else if (toppings.included || toppings.premium) {
+		// Legacy format support
+		allToppingIds = [
+			...(toppings.included || []),
+			...(toppings.premium || []),
+		];
+	}
+
+	if (allToppingIds.length === 0) {
+		return "";
+	}
 
 	const toppingNames = allToppingIds
 		.map((id) => {
 			const topping = getToppingById(id);
 			if (!topping) return null;
-			
-			// Add price indicator for premium toppings
+
+			// Add price indicator for all toppings (all are premium now)
 			if (topping.price > 0) {
 				return `${topping.name} (+$${topping.price})`;
 			}
@@ -654,25 +665,36 @@ const formatToppingsForDisplay = (toppings) => {
 
 /**
  * Format toppings for email body
- * @param {Object} toppings - Toppings object with included and premium arrays
+ * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
  * @returns {string} Formatted toppings text for email
  */
 const formatToppingsForEmail = (toppings) => {
-	if (!toppings || (!toppings.included?.length && !toppings.premium?.length)) {
+	if (!toppings) {
 		return "";
 	}
 
-	const allToppingIds = [
-		...(toppings.included || []),
-		...(toppings.premium || []),
-	];
+	// Handle both new format (array) and old format (object)
+	let allToppingIds = [];
+	if (Array.isArray(toppings)) {
+		allToppingIds = toppings;
+	} else if (toppings.included || toppings.premium) {
+		// Legacy format support
+		allToppingIds = [
+			...(toppings.included || []),
+			...(toppings.premium || []),
+		];
+	}
+
+	if (allToppingIds.length === 0) {
+		return "";
+	}
 
 	const toppingNames = allToppingIds
 		.map((id) => {
 			const topping = getToppingById(id);
 			if (!topping) return null;
-			
-			// Add price indicator for premium toppings
+
+			// Add price indicator for all toppings (all are premium now)
 			if (topping.price > 0) {
 				return `${topping.name} (+$${topping.price})`;
 			}

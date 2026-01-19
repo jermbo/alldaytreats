@@ -2,16 +2,13 @@ import { addToCart, updateCartItem } from "./cart.js";
 import {
 	toppings,
 	calculateToppingsPrice,
-	MAX_INCLUDED_TOPPINGS,
+	MAX_TOPPINGS,
 } from "../config/toppings.ts";
 
 let currentProduct = null;
 let selectedPriceOption = null;
 let editingItemId = null;
-let selectedToppings = {
-	included: [],
-	premium: [],
-};
+let selectedToppings = [];
 
 /**
  * Initialize product modal (one-time setup)
@@ -85,21 +82,12 @@ export const initProductModal = (dialogElement) => {
 				: "";
 
 			// Calculate total price including toppings
-			const toppingsPrice = calculateToppingsPrice([
-				...selectedToppings.included,
-				...selectedToppings.premium,
-			]);
+			const toppingsPrice = calculateToppingsPrice(selectedToppings);
 			const totalPrice = selectedPriceOption.price + toppingsPrice;
 
 			// Prepare toppings data (only include if selections exist)
 			const toppingsData =
-				selectedToppings.included.length > 0 ||
-				selectedToppings.premium.length > 0
-					? {
-							included: [...selectedToppings.included],
-							premium: [...selectedToppings.premium],
-					  }
-					: undefined;
+				selectedToppings.length > 0 ? [...selectedToppings] : undefined;
 
 			if (editingItemId) {
 				// Update existing item
@@ -143,10 +131,14 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 	currentProduct = product;
 	selectedPriceOption = null;
 	editingItemId = editData?.itemId || null;
-	selectedToppings = {
-		included: editData?.toppings?.included || [],
-		premium: editData?.toppings?.premium || [],
-	};
+	// Handle both old format {included: [], premium: []} and new format []
+	if (editData?.toppings) {
+		selectedToppings = Array.isArray(editData.toppings)
+			? [...editData.toppings]
+			: [...(editData.toppings.included || []), ...(editData.toppings.premium || [])];
+	} else {
+		selectedToppings = [];
+	}
 
 	// Update modal content
 	const titleEl = dialogElement.querySelector(".product-modal__title");
@@ -195,9 +187,9 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 	// Generate topping options
 	populateToppings(dialogElement);
 
-	// Update included toppings state if editing (to disable options if at limit)
-	if (selectedToppings.included.length > 0) {
-		updateIncludedToppingsState(dialogElement);
+	// Update toppings state if editing (to disable options if at limit)
+	if (selectedToppings.length > 0) {
+		updateToppingsState(dialogElement);
 	}
 
 	// Pre-select option if editing
@@ -281,19 +273,13 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 			selectedPriceOption = { count, price };
 
 			// Update add button with toppings price
-			const toppingsPrice = calculateToppingsPrice([
-				...selectedToppings.included,
-				...selectedToppings.premium,
-			]);
+			const toppingsPrice = calculateToppingsPrice(selectedToppings);
 			updateAddButton(addBtn, price + toppingsPrice, editingItemId !== null);
 		});
 	});
 
 	// Update initial add button price with toppings if editing
-	const initialToppingsPrice = calculateToppingsPrice([
-		...selectedToppings.included,
-		...selectedToppings.premium,
-	]);
+	const initialToppingsPrice = calculateToppingsPrice(selectedToppings);
 	updateAddButton(
 		addBtn,
 		(preSelectedOption?.price || 0) + initialToppingsPrice,
@@ -373,31 +359,15 @@ const closeModal = (dialogElement) => {
  * @returns {void}
  */
 const populateToppings = (dialogElement) => {
-	const includedContainer = dialogElement.querySelector(
-		'.toppings-group__options[data-category="included"]'
-	);
 	const premiumContainer = dialogElement.querySelector(
 		'.toppings-group__options[data-category="premium"]'
 	);
 
-	if (includedContainer) {
-		includedContainer.innerHTML = "";
-		const includedToppings = toppings.filter(
-			(t) => t.category === "included" && t.available
-		);
-		includedToppings.forEach((topping) => {
-			const option = createToppingOption(topping, "included", dialogElement);
-			includedContainer.appendChild(option);
-		});
-	}
-
 	if (premiumContainer) {
 		premiumContainer.innerHTML = "";
-		const premiumToppings = toppings.filter(
-			(t) => t.category === "premium" && t.available
-		);
-		premiumToppings.forEach((topping) => {
-			const option = createToppingOption(topping, "premium", dialogElement);
+		const availableToppings = toppings.filter((t) => t.available);
+		availableToppings.forEach((topping) => {
+			const option = createToppingOption(topping, dialogElement);
 			premiumContainer.appendChild(option);
 		});
 	}
@@ -409,11 +379,10 @@ const populateToppings = (dialogElement) => {
 /**
  * Create topping option element
  * @param {Object} topping - Topping data
- * @param {string} category - Category (included or premium)
  * @param {HTMLElement} dialogElement - The dialog element
  * @returns {HTMLElement}
  */
-const createToppingOption = (topping, category, dialogElement) => {
+const createToppingOption = (topping, dialogElement) => {
 	const label = document.createElement("label");
 	label.className = "topping-option";
 
@@ -421,10 +390,10 @@ const createToppingOption = (topping, category, dialogElement) => {
 	checkbox.type = "checkbox";
 	checkbox.className = "topping-option__checkbox";
 	checkbox.value = topping.id;
-	checkbox.dataset.category = category;
+	checkbox.dataset.category = "premium";
 
 	// Pre-check if editing
-	if (selectedToppings[category].includes(topping.id)) {
+	if (selectedToppings.includes(topping.id)) {
 		checkbox.checked = true;
 	}
 
@@ -435,8 +404,8 @@ const createToppingOption = (topping, category, dialogElement) => {
 	label.appendChild(checkbox);
 	label.appendChild(labelText);
 
-	// Add price indicator for premium toppings
-	if (category === "premium" && topping.price > 0) {
+	// Add price indicator for all toppings
+	if (topping.price > 0) {
 		const priceSpan = document.createElement("span");
 		priceSpan.className = "topping-option__price";
 		priceSpan.textContent = `+$${topping.price}`;
@@ -445,7 +414,7 @@ const createToppingOption = (topping, category, dialogElement) => {
 
 	// Handle checkbox change
 	checkbox.addEventListener("change", () => {
-		handleToppingChange(topping.id, category, checkbox.checked, dialogElement);
+		handleToppingChange(topping.id, checkbox.checked, dialogElement);
 	});
 
 	return label;
@@ -454,21 +423,17 @@ const createToppingOption = (topping, category, dialogElement) => {
 /**
  * Handle topping selection change
  * @param {string} toppingId - Topping ID
- * @param {string} category - Category (included or premium)
  * @param {boolean} isChecked - Whether checkbox is checked
  * @param {HTMLElement} dialogElement - The dialog element
  * @returns {void}
  */
-const handleToppingChange = (toppingId, category, isChecked, dialogElement) => {
+const handleToppingChange = (toppingId, isChecked, dialogElement) => {
 	if (isChecked) {
-		// Check limit for included toppings
-		if (
-			category === "included" &&
-			selectedToppings.included.length >= MAX_INCLUDED_TOPPINGS
-		) {
+		// Check limit for toppings
+		if (selectedToppings.length >= MAX_TOPPINGS) {
 			// Already at max, uncheck the box
 			const checkbox = dialogElement.querySelector(
-				`input[value="${toppingId}"][data-category="included"]`
+				`input[value="${toppingId}"]`
 			);
 			if (checkbox) {
 				checkbox.checked = false;
@@ -476,19 +441,15 @@ const handleToppingChange = (toppingId, category, isChecked, dialogElement) => {
 			return;
 		}
 
-		if (!selectedToppings[category].includes(toppingId)) {
-			selectedToppings[category].push(toppingId);
+		if (!selectedToppings.includes(toppingId)) {
+			selectedToppings.push(toppingId);
 		}
 	} else {
-		selectedToppings[category] = selectedToppings[category].filter(
-			(id) => id !== toppingId
-		);
+		selectedToppings = selectedToppings.filter((id) => id !== toppingId);
 	}
 
-	// Update UI based on included topping limit
-	if (category === "included") {
-		updateIncludedToppingsState(dialogElement);
-	}
+	// Update UI based on topping limit
+	updateToppingsState(dialogElement);
 
 	// Update toppings total display
 	updateToppingsTotal(dialogElement);
@@ -496,10 +457,7 @@ const handleToppingChange = (toppingId, category, isChecked, dialogElement) => {
 	// Update add button price
 	const addBtn = dialogElement.querySelector(".product-modal__add-btn");
 	if (selectedPriceOption) {
-		const toppingsPrice = calculateToppingsPrice([
-			...selectedToppings.included,
-			...selectedToppings.premium,
-		]);
+		const toppingsPrice = calculateToppingsPrice(selectedToppings);
 		updateAddButton(
 			addBtn,
 			selectedPriceOption.price + toppingsPrice,
@@ -509,25 +467,25 @@ const handleToppingChange = (toppingId, category, isChecked, dialogElement) => {
 };
 
 /**
- * Update included toppings state (disable/enable based on limit)
+ * Update toppings state (disable/enable based on limit)
  * @param {HTMLElement} dialogElement - The dialog element
  * @returns {void}
  */
-const updateIncludedToppingsState = (dialogElement) => {
-	const includedCheckboxes = dialogElement.querySelectorAll(
-		'input[type="checkbox"][data-category="included"]'
+const updateToppingsState = (dialogElement) => {
+	const checkboxes = dialogElement.querySelectorAll(
+		'input[type="checkbox"][data-category="premium"]'
 	);
 	const counterCurrent = dialogElement.querySelector(
 		".toppings-group__counter-current"
 	);
-	const atLimit = selectedToppings.included.length >= MAX_INCLUDED_TOPPINGS;
+	const atLimit = selectedToppings.length >= MAX_TOPPINGS;
 
 	// Update counter
 	if (counterCurrent) {
-		counterCurrent.textContent = selectedToppings.included.length;
+		counterCurrent.textContent = selectedToppings.length;
 	}
 
-	includedCheckboxes.forEach((checkbox) => {
+	checkboxes.forEach((checkbox) => {
 		if (!checkbox.checked) {
 			// Disable unchecked boxes if at limit
 			checkbox.disabled = atLimit;
@@ -554,10 +512,7 @@ const updateToppingsTotal = (dialogElement) => {
 	);
 
 	if (toppingsTotalValue) {
-		const toppingsPrice = calculateToppingsPrice([
-			...selectedToppings.included,
-			...selectedToppings.premium,
-		]);
+		const toppingsPrice = calculateToppingsPrice(selectedToppings);
 		toppingsTotalValue.textContent = `+$${toppingsPrice}`;
 
 		// Add animation class if price changed
@@ -578,8 +533,5 @@ const resetModal = () => {
 	currentProduct = null;
 	selectedPriceOption = null;
 	editingItemId = null;
-	selectedToppings = {
-		included: [],
-		premium: [],
-	};
+	selectedToppings = [];
 };

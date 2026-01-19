@@ -297,36 +297,27 @@ body:has(.product-modal[open]) {
    ============================================ */
 
 .toppings-group {
-	border: 1px solid var(--color-border-light);
+	border: 1px solid var(--color-accent-pink);
 	border-radius: var(--radius-lg);
 	padding: var(--spacing-base);
 	margin-bottom: var(--spacing-base);
-	background: var(--color-overlay-light);
-}
-
-.toppings-group--premium {
-	border-color: var(--color-accent-pink);
 	background: rgba(255, 105, 180, 0.05);
-}
-
-.toppings-group--premium .toppings-group__legend {
-	color: var(--color-accent-pink);
-}
-
-.toppings-group--premium .topping-option__checkbox {
-	accent-color: var(--color-accent-pink);
 }
 
 .toppings-group__legend {
 	font-size: var(--font-size-sm);
 	font-weight: 600;
-	color: var(--color-text-light);
+	color: var(--color-accent-pink);
 	padding: 0 var(--spacing-sm);
 	margin-bottom: var(--spacing-sm);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	gap: var(--spacing-sm);
+}
+
+.topping-option__checkbox {
+	accent-color: var(--color-accent-pink);
 }
 
 .toppings-group__counter {

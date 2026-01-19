@@ -32,8 +32,13 @@ const isValidCartItem = (item) => {
 
 	if (!basicValidation) return false;
 
-	// Validate toppings structure if present
+	// Validate toppings structure if present (support both old and new formats)
 	if (item.toppings !== undefined) {
+		// New format: array
+		if (Array.isArray(item.toppings)) {
+			return true;
+		}
+		// Old format: object with included/premium arrays
 		if (typeof item.toppings !== "object" || item.toppings === null) {
 			return false;
 		}
@@ -82,14 +87,16 @@ const normalizeCartItem = (item) => {
 
 	// Normalize toppings structure if present
 	if (item.toppings) {
-		normalized.toppings = {
-			included: Array.isArray(item.toppings.included)
-				? item.toppings.included
-				: [],
-			premium: Array.isArray(item.toppings.premium)
-				? item.toppings.premium
-				: [],
-		};
+		// Convert old format {included: [], premium: []} to new format []
+		if (Array.isArray(item.toppings)) {
+			normalized.toppings = [...item.toppings];
+		} else {
+			// Merge old format into single array
+			normalized.toppings = [
+				...(item.toppings.included || []),
+				...(item.toppings.premium || []),
+			];
+		}
 	}
 
 	return normalized;

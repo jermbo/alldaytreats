@@ -534,25 +534,36 @@ const handleClearCart = () => {
 
 /**
  * Format toppings for display in cart
- * @param {Object} toppings - Toppings object with included and premium arrays
+ * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
  * @returns {string} HTML string for toppings display
  */
 const formatToppingsDisplay = (toppings) => {
-	if (!toppings || (!toppings.included?.length && !toppings.premium?.length)) {
+	if (!toppings) {
 		return "";
 	}
 
-	const allToppingIds = [
-		...(toppings.included || []),
-		...(toppings.premium || []),
-	];
+	// Handle both new format (array) and old format (object)
+	let allToppingIds = [];
+	if (Array.isArray(toppings)) {
+		allToppingIds = toppings;
+	} else if (toppings.included || toppings.premium) {
+		// Legacy format support
+		allToppingIds = [
+			...(toppings.included || []),
+			...(toppings.premium || []),
+		];
+	}
+
+	if (allToppingIds.length === 0) {
+		return "";
+	}
 
 	const toppingNames = allToppingIds
 		.map((id) => {
 			const topping = getToppingById(id);
 			if (!topping) return null;
-			
-			// Add price indicator for premium toppings
+
+			// Add price indicator for all toppings (all are premium now)
 			if (topping.price > 0) {
 				return `${topping.name} (+$${topping.price})`;
 			}

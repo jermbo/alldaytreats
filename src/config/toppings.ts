@@ -1,78 +1,64 @@
 export interface Topping {
 	id: string;
 	name: string;
-	price: number; // 0 for included toppings
-	category: "included" | "premium";
+	price: number;
 	available: boolean;
 }
 
 // Configuration constants
-export const MAX_INCLUDED_TOPPINGS = 2;
+export const MAX_TOPPINGS = 2;
 
 export const toppings: Topping[] = [
 	{
 		id: "jolly-ranchers",
 		name: "Jolly Ranchers",
 		price: 2,
-		category: "premium",
 		available: true,
 	},
 	{
 		id: "nerds",
 		name: "Nerds",
 		price: 2,
-		category: "premium",
 		available: true,
 	},
 	{
 		id: "starburst",
 		name: "Starburst",
 		price: 2,
-		category: "premium",
 		available: true,
 	},
 	{
 		id: "skittles",
 		name: "Skittles",
 		price: 2,
-		category: "premium",
 		available: true,
 	},
 	{
 		id: "airheads",
 		name: "Airheads",
 		price: 2,
-		category: "premium",
 		available: true,
 	},
 	{
 		id: "candy-sauce",
 		name: "Candy Sauce",
 		price: 1,
-		category: "premium",
 		available: true,
 	},
 	{
 		id: "fruit-rollup",
 		name: "Fruit Rollup",
 		price: 5,
-		category: "premium",
 		available: true,
 	},
 ];
 
 /**
- * Get all available toppings by category
- * @returns Object with included and premium topping arrays
+ * Get all available toppings
+ * @returns Array of available toppings
  */
-export const getToppingsByCategory = () => {
-	const included = toppings.filter(
-		(t) => t.category === "included" && t.available
-	);
-	const premium = toppings.filter(
-		(t) => t.category === "premium" && t.available
-	);
-	return { included, premium };
+export const getAvailableToppings = () => {
+	return toppings.filter((t) => t.available);
 };
 
 /**
