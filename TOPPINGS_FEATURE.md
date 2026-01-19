@@ -11,20 +11,35 @@ Successfully implemented a flexible toppings system that allows customers to sel
 - Easy to maintain and update prices
 - Available/unavailable toggle per topping
 - Maximum 2 topping selections per order
+- **Dynamic pricing based on product count**
 
 **Available Toppings (All Premium - Pick up to 2):**
-- Jolly Ranchers (+$2)
-- Nerds (+$2)
-- Starburst (+$2)
-- Skittles (+$2)
-- Airheads (+$2)
-- Candy Sauce (+$1)
-- Fruit Rollup (+$5)
+
+Base prices are defined in config, and automatically adjust based on quantity:
+- **6ct**: Base price
+- **8ct**: Base price + $1
+- **12ct**: Base price + $2
+
+Example - Jolly Ranchers (base: $2):
+- 6ct: +$2
+- 8ct: +$3
+- 12ct: +$4
+
+All Toppings:
+- Jolly Ranchers (base $2)
+- Nerds (base $2)
+- Starburst (base $2)
+- Skittles (base $2)
+- Airheads (base $2)
+- Candy Sauce (base $1)
+- Fruit Rollup (base $5)
 
 ### 2. Product Modal Updates
 - Added toppings selection section between quantity and special instructions
 - Checkboxes for easy multi-select (up to 2)
 - Real-time price calculation including toppings
+- **Dynamic topping prices that update when quantity changes**
+- Topping options regenerate with new prices when quantity is selected
 - Live toppings total display
 - Counter showing selections (e.g., "1 of 2")
 
@@ -36,15 +51,17 @@ Successfully implemented a flexible toppings system that allows customers to sel
 
 ### 4. Cart Display
 - Toppings shown below quantity in cart items
-- All toppings display price (+$X)
+- All toppings display price based on item count (+$X)
+- Prices automatically calculated based on the product count
 - Included in edit functionality
 - Formatted as comma-separated list
 - Backward compatible with old topping format
 
 ### 5. Checkout Integration
-- Toppings displayed in order summary
-- Included in email order details
+- Toppings displayed in order summary with dynamic pricing
+- Included in email order details with correct prices per count
 - Proper formatting for business processing
+- Prices reflect the actual cost based on product quantity
 
 ## Data Structure
 
@@ -88,7 +105,10 @@ Edit `src/config/toppings.ts`:
 ```
 
 ### Change Prices
-Simply update the `price` field in `src/config/toppings.ts`
+Simply update the `price` field (base price) in `src/config/toppings.ts`. The dynamic pricing logic will automatically apply the quantity multipliers (+$0 for 6ct, +$1 for 8ct, +$2 for 12ct).
+
+### Modify Price Multipliers
+Edit the `calculateToppingPrice()` function in `src/config/toppings.ts` to change how prices scale with quantity.
 
 ### Temporarily Disable Topping
 Set `available: false` in `src/config/toppings.ts`
@@ -97,15 +117,19 @@ Set `available: false` in `src/config/toppings.ts`
 
 1. Customer clicks "Add to Cart" on a product
 2. Modal opens with quantity selection
-3. Customer sees "Premium Add-ons" section with all available toppings
+3. Customer sees "Premium Add-ons" section with all available toppings (showing base 6ct prices)
 4. Counter shows "0 of 2" initially
-5. As customer selects toppings, counter updates live ("1 of 2", "2 of 2")
-6. When 2 toppings selected, remaining options are disabled
-7. Live price updates as toppings are selected (all have prices)
-8. Toppings total shown separately (+$X)
-9. Add to cart button shows total including toppings
-10. Cart displays selected toppings with pricing
-11. Checkout email includes full topping details
+5. **When customer selects a quantity option, topping prices automatically update:**
+   - 6ct selected → Shows base prices
+   - 8ct selected → Shows base prices + $1
+   - 12ct selected → Shows base prices + $2
+6. As customer selects toppings, counter updates live ("1 of 2", "2 of 2")
+7. When 2 toppings selected, remaining options are disabled
+8. Live price updates as toppings are selected and quantities change
+9. Toppings total shown separately (+$X) with current quantity pricing
+10. Add to cart button shows total including toppings at correct price
+11. Cart displays selected toppings with pricing based on item count
+12. Checkout email includes full topping details with accurate pricing
 
 ## Testing Checklist
 
@@ -119,17 +143,24 @@ Set `available: false` in `src/config/toppings.ts`
 - [ ] Unchecked toppings disable when limit reached
 - [ ] Can deselect topping to select a different one
 - [ ] All toppings show price indicator
+- [ ] **Topping prices update when quantity option is selected**
+- [ ] **6ct shows base prices**
+- [ ] **8ct shows base prices + $1**
+- [ ] **12ct shows base prices + $2**
 - [ ] Price updates when toppings selected
-- [ ] Toppings total displays correctly
-- [ ] Add to cart includes toppings
+- [ ] Toppings total displays correctly with current quantity
+- [ ] Add to cart includes toppings at correct price
 
 ### Cart Integration
 - [ ] Cart items show selected toppings
-- [ ] All toppings show price (+$X)
+- [ ] All toppings show price based on item count (+$X)
+- [ ] 6ct items show base topping prices
+- [ ] 8ct items show base topping prices + $1
+- [ ] 12ct items show base topping prices + $2
 - [ ] Edit button opens modal with toppings pre-selected
 - [ ] Can modify toppings in edit mode
-- [ ] Quantity changes don't affect toppings
-- [ ] Old cart format displays correctly
+- [ ] Quantity changes update topping prices in cart display
+- [ ] Old cart format displays correctly with dynamic pricing
 
 ### Checkout
 - [ ] Order summary shows toppings
@@ -140,11 +171,14 @@ Set `available: false` in `src/config/toppings.ts`
 - [ ] No toppings selected works fine
 - [ ] Only 1 topping selected
 - [ ] Exactly 2 toppings selected
-- [ ] Different price toppings calculate correctly
-- [ ] Editing item with 2 toppings pre-selected
+- [ ] Different price toppings calculate correctly with multipliers
+- [ ] Changing quantity after selecting toppings updates prices
+- [ ] Selected toppings remain checked when quantity changes
+- [ ] Editing item with 2 toppings pre-selected shows correct prices
 - [ ] Old cart items without toppings still work
 - [ ] Old cart items with legacy format still work
 - [ ] Deselecting topping re-enables other options
+- [ ] Price calculations work correctly for all quantity/topping combinations
 
 ### Mobile Responsive
 - [ ] Toppings section displays properly on mobile
@@ -197,3 +231,4 @@ Possible future additions (not implemented):
 - **Accessibility** - Proper fieldset/legend, labels, ARIA
 - **Performance** - Efficient DOM updates, minimal re-renders
 - **Mobile-first** - Touch-friendly, responsive design
+- **Dynamic pricing** - Quantity-based price calculation with single source of truth

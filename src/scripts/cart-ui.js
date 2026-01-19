@@ -7,7 +7,7 @@ import {
 } from "./cart.js";
 import { openProductModal } from "./product-modal.js";
 import { openCheckout } from "./checkout-ui.js";
-import { getToppingById } from "../config/toppings.ts";
+import { getToppingById, calculateToppingPrice } from "../config/toppings.ts";
 
 let cartPanel = null;
 let productModal = null;
@@ -226,7 +226,7 @@ const createCartItemElement = (item) => {
 	const lineTotal = unitPrice * quantity;
 
 	// Format toppings for display
-	const toppingsHtml = formatToppingsDisplay(item.toppings);
+	const toppingsHtml = formatToppingsDisplay(item.toppings, item.count);
 
 	itemEl.innerHTML = `
 		<div class="cart__item-main">
@@ -427,7 +427,7 @@ const refreshCartItemElement = (itemId) => {
 	// Update toppings display
 	const toppingsEl = itemElement.querySelector(".cart__item-toppings");
 	const contentEl = itemElement.querySelector(".cart__item-content");
-	const toppingsHtml = formatToppingsDisplay(item.toppings);
+	const toppingsHtml = formatToppingsDisplay(item.toppings, item.count);
 
 	if (toppingsHtml) {
 		if (toppingsEl) {
@@ -535,9 +535,10 @@ const handleClearCart = () => {
 /**
  * Format toppings for display in cart
  * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
+ * @param {number} count - Product count for price calculation
  * @returns {string} HTML string for toppings display
  */
-const formatToppingsDisplay = (toppings) => {
+const formatToppingsDisplay = (toppings, count) => {
 	if (!toppings) {
 		return "";
 	}
@@ -563,9 +564,10 @@ const formatToppingsDisplay = (toppings) => {
 			const topping = getToppingById(id);
 			if (!topping) return null;
 
-			// Add price indicator for all toppings (all are premium now)
-			if (topping.price > 0) {
-				return `${topping.name} (+$${topping.price})`;
+			// Calculate dynamic price based on count
+			const price = calculateToppingPrice(topping.price, count);
+			if (price > 0) {
+				return `${topping.name} (+$${price})`;
 			}
 			return topping.name;
 		})

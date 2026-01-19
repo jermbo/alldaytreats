@@ -13,7 +13,7 @@ import {
 	focusFirstInvalidField,
 } from "./validation-ui.js";
 import { initPhoneFormatter } from "./phone-formatter.js";
-import { getToppingById } from "../config/toppings.ts";
+import { getToppingById, calculateToppingPrice } from "../config/toppings.ts";
 
 let checkoutPanel = null;
 let checkoutForm = null;
@@ -364,7 +364,7 @@ const formatOrderEmail = (orderData) => {
 
 		// Add toppings to order email
 		if (item.toppings) {
-			const toppingsText = formatToppingsForEmail(item.toppings);
+			const toppingsText = formatToppingsForEmail(item.toppings, item.count);
 			if (toppingsText) {
 				body += `   Toppings: ${toppingsText}\n`;
 			}
@@ -597,7 +597,7 @@ const renderOrderSummary = () => {
 		const lineTotal = unitPrice * quantity;
 
 		// Format toppings for display
-		const toppingsText = formatToppingsForDisplay(item.toppings);
+		const toppingsText = formatToppingsForDisplay(item.toppings, item.count);
 
 		const itemEl = document.createElement("div");
 		itemEl.className = "checkout__summary-item";
@@ -620,9 +620,10 @@ const renderOrderSummary = () => {
 /**
  * Format toppings for display in checkout summary
  * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
+ * @param {number} count - Product count for price calculation
  * @returns {string} Formatted toppings text
  */
-const formatToppingsForDisplay = (toppings) => {
+const formatToppingsForDisplay = (toppings, count) => {
 	if (!toppings) {
 		return "";
 	}
@@ -648,9 +649,10 @@ const formatToppingsForDisplay = (toppings) => {
 			const topping = getToppingById(id);
 			if (!topping) return null;
 
-			// Add price indicator for all toppings (all are premium now)
-			if (topping.price > 0) {
-				return `${topping.name} (+$${topping.price})`;
+			// Calculate dynamic price based on count
+			const price = calculateToppingPrice(topping.price, count);
+			if (price > 0) {
+				return `${topping.name} (+$${price})`;
 			}
 			return topping.name;
 		})
@@ -666,9 +668,10 @@ const formatToppingsForDisplay = (toppings) => {
 /**
  * Format toppings for email body
  * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
+ * @param {number} count - Product count for price calculation
  * @returns {string} Formatted toppings text for email
  */
-const formatToppingsForEmail = (toppings) => {
+const formatToppingsForEmail = (toppings, count) => {
 	if (!toppings) {
 		return "";
 	}
@@ -694,9 +697,10 @@ const formatToppingsForEmail = (toppings) => {
 			const topping = getToppingById(id);
 			if (!topping) return null;
 
-			// Add price indicator for all toppings (all are premium now)
-			if (topping.price > 0) {
-				return `${topping.name} (+$${topping.price})`;
+			// Calculate dynamic price based on count
+			const price = calculateToppingPrice(topping.price, count);
+			if (price > 0) {
+				return `${topping.name} (+$${price})`;
 			}
 			return topping.name;
 		})

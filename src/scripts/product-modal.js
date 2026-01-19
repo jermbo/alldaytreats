@@ -2,6 +2,7 @@ import { addToCart, updateCartItem } from "./cart.js";
 import {
 	toppings,
 	calculateToppingsPrice,
+	calculateToppingPrice,
 	MAX_TOPPINGS,
 } from "../config/toppings.ts";
 
@@ -82,7 +83,7 @@ export const initProductModal = (dialogElement) => {
 				: "";
 
 			// Calculate total price including toppings
-			const toppingsPrice = calculateToppingsPrice(selectedToppings);
+			const toppingsPrice = calculateToppingsPrice(selectedToppings, selectedPriceOption.count);
 			const totalPrice = selectedPriceOption.price + toppingsPrice;
 
 			// Prepare toppings data (only include if selections exist)
@@ -272,14 +273,20 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 			// Get price option data
 			selectedPriceOption = { count, price };
 
+			// Regenerate toppings with new prices based on count
+			populateToppings(dialogElement);
+
 			// Update add button with toppings price
-			const toppingsPrice = calculateToppingsPrice(selectedToppings);
+			const toppingsPrice = calculateToppingsPrice(selectedToppings, count);
 			updateAddButton(addBtn, price + toppingsPrice, editingItemId !== null);
 		});
 	});
 
 	// Update initial add button price with toppings if editing
-	const initialToppingsPrice = calculateToppingsPrice(selectedToppings);
+	const initialToppingsPrice = calculateToppingsPrice(
+		selectedToppings,
+		preSelectedOption?.count || 6
+	);
 	updateAddButton(
 		addBtn,
 		(preSelectedOption?.price || 0) + initialToppingsPrice,
@@ -366,8 +373,9 @@ const populateToppings = (dialogElement) => {
 	if (premiumContainer) {
 		premiumContainer.innerHTML = "";
 		const availableToppings = toppings.filter((t) => t.available);
+		const currentCount = selectedPriceOption?.count || 6;
 		availableToppings.forEach((topping) => {
-			const option = createToppingOption(topping, dialogElement);
+			const option = createToppingOption(topping, currentCount, dialogElement);
 			premiumContainer.appendChild(option);
 		});
 	}
@@ -379,10 +387,11 @@ const populateToppings = (dialogElement) => {
 /**
  * Create topping option element
  * @param {Object} topping - Topping data
+ * @param {number} count - Product count for price calculation
  * @param {HTMLElement} dialogElement - The dialog element
  * @returns {HTMLElement}
  */
-const createToppingOption = (topping, dialogElement) => {
+const createToppingOption = (topping, count, dialogElement) => {
 	const label = document.createElement("label");
 	label.className = "topping-option";
 
@@ -404,11 +413,12 @@ const createToppingOption = (topping, dialogElement) => {
 	label.appendChild(checkbox);
 	label.appendChild(labelText);
 
-	// Add price indicator for all toppings
-	if (topping.price > 0) {
+	// Add price indicator with dynamic pricing based on count
+	const price = calculateToppingPrice(topping.price, count);
+	if (price > 0) {
 		const priceSpan = document.createElement("span");
 		priceSpan.className = "topping-option__price";
-		priceSpan.textContent = `+$${topping.price}`;
+		priceSpan.textContent = `+$${price}`;
 		label.appendChild(priceSpan);
 	}
 
@@ -457,7 +467,7 @@ const handleToppingChange = (toppingId, isChecked, dialogElement) => {
 	// Update add button price
 	const addBtn = dialogElement.querySelector(".product-modal__add-btn");
 	if (selectedPriceOption) {
-		const toppingsPrice = calculateToppingsPrice(selectedToppings);
+		const toppingsPrice = calculateToppingsPrice(selectedToppings, selectedPriceOption.count);
 		updateAddButton(
 			addBtn,
 			selectedPriceOption.price + toppingsPrice,
@@ -512,7 +522,8 @@ const updateToppingsTotal = (dialogElement) => {
 	);
 
 	if (toppingsTotalValue) {
-		const toppingsPrice = calculateToppingsPrice(selectedToppings);
+		const currentCount = selectedPriceOption?.count || 6;
+		const toppingsPrice = calculateToppingsPrice(selectedToppings, currentCount);
 		toppingsTotalValue.textContent = `+$${toppingsPrice}`;
 
 		// Add animation class if price changed
