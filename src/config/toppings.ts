@@ -10,43 +10,41 @@ export interface Topping {
 export const MAX_INCLUDED_TOPPINGS = 2;
 
 export const toppings: Topping[] = [
-	// Included toppings (no extra charge)
 	{
 		id: "jolly-ranchers",
 		name: "Jolly Ranchers",
-		price: 0,
-		category: "included",
+		price: 2,
+		category: "premium",
 		available: true,
 	},
 	{
 		id: "nerds",
 		name: "Nerds",
-		price: 0,
-		category: "included",
+		price: 2,
+		category: "premium",
 		available: true,
 	},
 	{
 		id: "starburst",
 		name: "Starburst",
-		price: 0,
-		category: "included",
+		price: 2,
+		category: "premium",
 		available: true,
 	},
 	{
 		id: "skittles",
 		name: "Skittles",
-		price: 0,
-		category: "included",
+		price: 2,
+		category: "premium",
 		available: true,
 	},
 	{
 		id: "airheads",
 		name: "Airheads",
-		price: 0,
-		category: "included",
+		price: 2,
+		category: "premium",
 		available: true,
 	},
-	// Premium toppings (extra charge)
 	{
 		id: "candy-sauce",
 		name: "Candy Sauce",
