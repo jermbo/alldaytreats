@@ -276,6 +276,9 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 			// Regenerate toppings with new prices based on count
 			populateToppings(dialogElement);
 
+			// Update toppings state to re-apply disabled state if at limit
+			updateToppingsState(dialogElement);
+
 			// Update add button with toppings price
 			const toppingsPrice = calculateToppingsPrice(selectedToppings, count);
 			updateAddButton(addBtn, price + toppingsPrice, editingItemId !== null);
