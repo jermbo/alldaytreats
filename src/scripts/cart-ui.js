@@ -82,9 +82,22 @@ export const initCartUI = (panelElement, modalElement) => {
 		itemsContainer.addEventListener("click", handleItemAction);
 	}
 
-	// Close on ESC key
+	// Keyboard shortcuts
 	document.addEventListener("keydown", (e) => {
+		// Open/close cart with Cmd+D (Mac) or Ctrl+D (Windows/Linux)
+		if ((e.key === "d" || e.key === "D") && (e.metaKey || e.ctrlKey)) {
+			e.preventDefault();
+			if (isCartOpen()) {
+				closeCart();
+			} else {
+				openCart();
+			}
+			return;
+		}
+
+		// Close on ESC key
 		if (e.key === "Escape" && isCartOpen()) {
+			e.preventDefault();
 			closeCart();
 		}
 	});
