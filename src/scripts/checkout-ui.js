@@ -71,13 +71,15 @@ export const initCheckoutUI = (panelElement) => {
 	// Form submission handler
 	if (checkoutForm) {
 		checkoutForm.addEventListener("submit", handleFormSubmit);
-		setupFieldValidation(checkoutForm);
 
-		// Initialize phone number formatter
+		// Initialize phone number formatter BEFORE validation
+		// This ensures formatter runs first on input events
 		const phoneField = checkoutForm.querySelector("#checkout-phone");
 		if (phoneField) {
 			initPhoneFormatter(phoneField);
 		}
+
+		setupFieldValidation(checkoutForm);
 	}
 
 	// Close on ESC key

@@ -55,8 +55,7 @@ export const validateEmail = (email) => {
 
 /**
  * Validate US phone number format
- * Accepts only formatted: (XXX) XXX-XXXX
- * Auto-formatting ensures this is the only format users can input
+ * Validates based on digit count since auto-formatting ensures proper format
  * @param {string} phone - Phone number
  * @returns {Object} - { isValid: boolean, message: string }
  */
@@ -75,17 +74,8 @@ export const validatePhone = (phone) => {
 	const digitsOnly = trimmedPhone.replace(/\D/g, "");
 	
 	// Must have exactly 10 digits for US phone
-	if (digitsOnly.length !== 10) {
-		return {
-			isValid: false,
-			message: ERROR_MESSAGES.PHONE_INVALID,
-		};
-	}
-
-	// Accept only formatted format: (XXX) XXX-XXXX
-	const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
-	
-	const isValid = phonePattern.test(trimmedPhone);
+	// Auto-formatter ensures proper (XXX) XXX-XXXX format
+	const isValid = digitsOnly.length === 10;
 	
 	return {
 		isValid,
