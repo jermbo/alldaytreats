@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
 import Menu from '../components/Menu.astro';
 import Footer from '../components/Footer.astro';
 import CartPanel from '../components/CartPanel.astro';
@@ -30,6 +31,7 @@ const productsData = products.map((p: any) => ({
   <Header cartCount={0} />
   <main>
     <Hero />
+    <About />
     <Menu />
   </main>
   <Footer />

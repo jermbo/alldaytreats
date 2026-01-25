@@ -3,15 +3,27 @@ import { siteConfig } from '@/config/site';
 ---
 
 <section class="hero">
+  <!-- Decorative background elements -->
   <div class="hero__background">
     <div class="hero__background-shape hero__background-shape--1"></div>
     <div class="hero__background-shape hero__background-shape--2"></div>
+    <div class="hero__background-shape hero__background-shape--3"></div>
+  </div>
+  
+  <!-- Floating decorative dots -->
+  <div class="hero__dots" aria-hidden="true">
+    <span class="hero__dot hero__dot--1"></span>
+    <span class="hero__dot hero__dot--2"></span>
+    <span class="hero__dot hero__dot--3"></span>
+    <span class="hero__dot hero__dot--4"></span>
+    <span class="hero__dot hero__dot--5"></span>
   </div>
   
   <div class="hero__container">
     <div class="hero__content">
       <div class="hero__text">
         <div class="hero__logo-wrapper">
+          <div class="hero__logo-glow"></div>
           <img
             src="/images/logo.jpeg"
             alt="All Day Treats Logo"
@@ -19,44 +31,59 @@ import { siteConfig } from '@/config/site';
           />
         </div>
         
-        <h1 class="hero__title">{siteConfig.name}</h1>
-        <p class="hero__location">{siteConfig.location}</p>
+        <h1 class="hero__title">
+          <span class="hero__title-line">{siteConfig.name}</span>
+        </h1>
+        <p class="hero__location">
+          <span class="hero__location-icon">📍</span>
+          {siteConfig.location}
+        </p>
         
         <p class="hero__tagline">
           Handcrafted candy-coated fruits, chocolate-covered treats, and party
           platters made with love!
         </p>
         
-        <div class="hero__badges">
-          <span class="hero__badge">Made Fresh to Order</span>
-          <span class="hero__badge">Handcrafted with Love</span>
-        </div>
+        <a href="#menu" class="hero__cta">
+          <span class="hero__cta-text">Explore Our Treats</span>
+          <span class="hero__cta-icon">→</span>
+        </a>
       </div>
       
       <div class="hero__images">
         <div class="hero__image-grid">
-          <div class="hero__image-item hero__image-item--1">
-            <img
-              src="/images/chocolate-strawberries-new.jpg"
-              alt="Chocolate covered strawberries"
-              class="hero__image"
-            />
+          <div class="hero__image-item hero__image-item--featured">
+            <div class="hero__image-frame">
+              <img
+                src="/images/chocolate-strawberries-new.jpg"
+                alt="Chocolate covered strawberries"
+                class="hero__image"
+              />
+            </div>
+            <span class="hero__image-label">Fan Favorite</span>
           </div>
-          <div class="hero__image-item hero__image-item--2">
-            <img
-              src="/images/candy-strawberries.jpg"
-              alt="Candy coated strawberries"
-              class="hero__image"
-            />
+          <div class="hero__image-item hero__image-item--secondary">
+            <div class="hero__image-frame">
+              <img
+                src="/images/candy-strawberries.jpg"
+                alt="Candy coated strawberries"
+                class="hero__image"
+              />
+            </div>
           </div>
-          <div class="hero__image-item hero__image-item--3">
-            <img
-              src="/images/party-platter.jpg"
-              alt="Party platter"
-              class="hero__image"
-            />
+          <div class="hero__image-item hero__image-item--tertiary">
+            <div class="hero__image-frame">
+              <img
+                src="/images/party-platter.jpg"
+                alt="Party platter"
+                class="hero__image"
+              />
+            </div>
           </div>
         </div>
+        
+        <!-- Decorative accent behind images -->
+        <div class="hero__images-accent" aria-hidden="true"></div>
       </div>
     </div>
   </div>

@@ -10,13 +10,30 @@ const { cartCount = 0 } = Astro.props;
 
 <header class="header">
   <div class="header__container">
+    <!-- Mobile menu button -->
+    <button
+      type="button"
+      class="header__menu-btn"
+      id="mobile-menu-btn"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="header__menu-icon">
+        <span class="header__menu-line"></span>
+        <span class="header__menu-line"></span>
+        <span class="header__menu-line"></span>
+      </span>
+    </button>
+
+    <!-- Desktop navigation -->
     <nav class="header__nav" aria-label="Main navigation">
       <a href="#menu" class="header__nav-link">Menu</a>
       <a href="#about" class="header__nav-link">About</a>
-      <div class="header__brand">
-        <h1 class="header__title">{siteConfig.name}</h1>
-      </div>
-      <a href="#contact" class="header__nav-link">Contact</a>
+      <a href="#" class="header__brand">
+        <span class="header__title">{siteConfig.name}</span>
+      </a>
+      <a href={`mailto:${siteConfig.contact.email}`} class="header__nav-link" target="_blank" rel="noopener noreferrer">Contact</a>
       <a
         href={siteConfig.contact.instagram.url}
         target="_blank"
@@ -27,6 +44,11 @@ const { cartCount = 0 } = Astro.props;
         Instagram
       </a>
     </nav>
+
+    <!-- Mobile brand (centered) -->
+    <a href="#" class="header__brand-mobile">
+      <span class="header__title">{siteConfig.name}</span>
+    </a>
     
     <div class="header__actions">
       <button
@@ -43,3 +65,78 @@ const { cartCount = 0 } = Astro.props;
     </div>
   </div>
 </header>
+
+<!-- Mobile menu overlay -->
+<div class="mobile-menu__overlay" id="mobile-menu-overlay" aria-hidden="true"></div>
+
+<!-- Mobile menu drawer -->
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" aria-hidden="true">
+  <div class="mobile-menu__header">
+    <span class="mobile-menu__title">{siteConfig.name}</span>
+    <button
+      type="button"
+      class="mobile-menu__close"
+      id="mobile-menu-close"
+      aria-label="Close menu"
+    >
+      ✕
+    </button>
+  </div>
+  
+  <div class="mobile-menu__links">
+    <a href="#" class="mobile-menu__link">Home</a>
+    <a href="#menu" class="mobile-menu__link">Menu</a>
+    <a href="#about" class="mobile-menu__link">About</a>
+    <a href={`mailto:${siteConfig.contact.email}`} class="mobile-menu__link" target="_blank" rel="noopener noreferrer">Contact</a>
+    <a
+      href={siteConfig.contact.instagram.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="mobile-menu__link"
+    >
+      Instagram
+    </a>
+  </div>
+  
+  <div class="mobile-menu__footer">
+    <p class="mobile-menu__location">📍 {siteConfig.location}</p>
+  </div>
+</nav>
+
+<script>
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenuClose = document.getElementById('mobile-menu-close');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+  const mobileMenuLinks = document.querySelectorAll('.mobile-menu__link');
+
+  const openMenu = (): void => {
+    mobileMenu?.setAttribute('aria-hidden', 'false');
+    mobileMenuOverlay?.setAttribute('aria-hidden', 'false');
+    mobileMenuBtn?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeMenu = (): void => {
+    mobileMenu?.setAttribute('aria-hidden', 'true');
+    mobileMenuOverlay?.setAttribute('aria-hidden', 'true');
+    mobileMenuBtn?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+
+  mobileMenuBtn?.addEventListener('click', openMenu);
+  mobileMenuClose?.addEventListener('click', closeMenu);
+  mobileMenuOverlay?.addEventListener('click', closeMenu);
+
+  // Close menu when clicking a link
+  mobileMenuLinks.forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // Close menu on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu?.getAttribute('aria-hidden') === 'false') {
+      closeMenu();
+    }
+  });
+</script>

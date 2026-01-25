@@ -1,0 +1,45 @@
+---
+import { siteConfig } from '@/config/site';
+---
+
+<section id="about" class="about">
+  <div class="about__container">
+    <div class="about__content">
+      <div class="about__text">
+        <h2 class="about__title">About Us</h2>
+        <p class="about__description">
+          At {siteConfig.name}, we believe every celebration deserves something special. 
+          We handcraft each treat with care, using quality ingredients to create 
+          candy-coated fruits, chocolate-covered delights, and stunning party platters 
+          that make any occasion unforgettable.
+        </p>
+        <p class="about__description">
+          Based in {siteConfig.location}, we're proud to serve our community with 
+          fresh, made-to-order treats. Whether it's a birthday, wedding, holiday, 
+          or just because — we've got you covered.
+        </p>
+      </div>
+      
+      <div class="about__delivery">
+        <h3 class="about__delivery-title">
+          <span class="about__delivery-icon">🚗</span>
+          Delivery Areas
+        </h3>
+        <p class="about__delivery-description">{siteConfig.delivery.description}</p>
+        
+        <div class="about__zip-codes">
+          {siteConfig.delivery.zipCodes.map((zip) => (
+            <span class="about__zip-code">{zip}</span>
+          ))}
+        </div>
+        
+        <p class="about__delivery-note">{siteConfig.delivery.note}</p>
+        
+        <a href={`mailto:${siteConfig.contact.email}`} class="about__contact-link">
+          <span class="about__contact-icon">✉️</span>
+          {siteConfig.contact.email}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
