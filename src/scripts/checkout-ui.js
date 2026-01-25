@@ -347,9 +347,10 @@ const generateOrderId = () => {
  * @returns {string} - Formatted email body
  */
 const formatOrderEmail = (orderData) => {
-	const { name, phone, address, notes, items, subtotal } = orderData;
+	const { name, email, phone, address, notes, items, subtotal } = orderData;
 
 	let body = `Name - ${name}\n`;
+	body += `Email - ${email}\n`;
 	body += `Phone - ${phone}\n`;
 	body += `Address - ${address}\n`;
 	if (notes) {
@@ -388,8 +389,7 @@ const formatOrderEmail = (orderData) => {
  */
 const submitOrder = async (orderData) => {
 	const orderId = generateOrderId();
-	// const businessEmail = "alldaytreats@gmail.com";
-	const businessEmail = "jermbo@cosmicstrawberry.com";
+	const businessEmail = "alldaytreats@gmail.com";
 	const subject = `Treat Order #${orderId}`;
 	const body = formatOrderEmail(orderData);
 
