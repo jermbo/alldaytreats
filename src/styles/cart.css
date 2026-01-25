@@ -45,7 +45,7 @@
 	bottom: 0;
 	width: 100%;
 	max-width: 480px;
-	background: var(--color-bg-dark);
+	background: var(--color-white);
 	border-left: 1px solid var(--color-border-light);
 	box-shadow: var(--shadow-panel);
 	display: flex;
@@ -80,13 +80,13 @@
 
 .cart__icon {
 	font-size: var(--font-size-2xl);
-	color: var(--color-accent-blue);
+	color: var(--color-burgundy);
 }
 
 .cart__title {
 	font-size: var(--font-size-xl);
 	font-weight: 700;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	margin: 0;
 	text-transform: uppercase;
 
@@ -98,7 +98,7 @@
 .cart__close {
 	background: transparent;
 	border: none;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	cursor: pointer;
 	width: var(--size-button-sm);
 	height: var(--size-button-sm);
@@ -145,14 +145,14 @@
 
 .cart__empty-message {
 	font-size: var(--font-size-lg);
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	margin: 0 0 var(--spacing-sm);
 	font-weight: 600;
 }
 
 .cart__empty-subtext {
 	font-size: var(--font-size-sm);
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	opacity: var(--opacity-secondary);
 	margin: 0;
 }
@@ -227,7 +227,7 @@
 .cart__item-name {
 	font-size: var(--font-size-base);
 	font-weight: 600;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	margin: 0;
 	flex: 1;
 	word-wrap: break-word;
@@ -240,7 +240,7 @@
 
 .cart__item-option {
 	font-size: var(--font-size-sm);
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	opacity: var(--opacity-primary);
 	margin: 0;
 
@@ -259,7 +259,7 @@
 
 .cart__item-instructions {
 	font-size: var(--font-size-xs);
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	opacity: var(--opacity-secondary);
 	font-style: italic;
 	margin: 0;
@@ -272,7 +272,7 @@
 .cart__item-edit {
 	background: transparent;
 	border: none;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	cursor: pointer;
 	width: var(--size-button-sm);
 	height: var(--size-button-sm);
@@ -319,7 +319,7 @@
 	border: 1px solid var(--color-border-light);
 	border-radius: var(--radius-sm);
 	background: transparent;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	cursor: pointer;
 	display: flex;
 	align-items: center;
@@ -330,7 +330,7 @@
 
 	&:hover {
 		background: var(--color-overlay-light);
-		border-color: var(--color-accent-blue);
+		border-color: var(--color-burgundy);
 	}
 
 	@container cart-panel (max-width: 768px) {
@@ -344,7 +344,7 @@
 	text-align: center;
 	font-size: var(--font-size-base);
 	font-weight: 600;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 
 	@container cart-panel (max-width: 768px) {
 		min-width: var(--size-button-sm);
@@ -354,7 +354,7 @@
 .cart__item-price {
 	font-size: var(--font-size-lg);
 	font-weight: 700;
-	color: var(--color-accent-blue);
+	color: var(--color-burgundy);
 	min-width: 70px;
 	text-align: right;
 	flex-shrink: 0;
@@ -368,7 +368,7 @@
 .cart__item-remove {
 	background: transparent;
 	border: none;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	cursor: pointer;
 	width: var(--size-button-base);
 	height: var(--size-button-base);
@@ -399,7 +399,7 @@
 	padding: var(--spacing-base);
 	border-top: 1px solid var(--color-border-light);
 	flex-shrink: 0;
-	background: var(--color-bg-dark);
+	background: var(--color-white);
 
 	&[hidden] {
 		display: none !important;
@@ -429,20 +429,20 @@
 .cart__total-label {
 	font-size: var(--font-size-base);
 	font-weight: 600;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 }
 
 .cart__subtotal-value {
 	font-size: var(--font-size-base);
 	font-weight: 600;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	opacity: var(--opacity-primary);
 }
 
 .cart__total-value {
 	font-size: var(--font-size-xl);
 	font-weight: 700;
-	color: var(--color-accent-blue);
+	color: var(--color-burgundy);
 }
 
 .cart__actions {
@@ -479,7 +479,7 @@
 	border: 1px solid var(--color-border-light);
 	border-radius: var(--radius-sm);
 	background: transparent;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	font-size: var(--font-size-base);
 	cursor: pointer;
 	transition: background var(--transition-fast), opacity var(--transition-fast);

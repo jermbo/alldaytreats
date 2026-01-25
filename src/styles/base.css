@@ -10,8 +10,8 @@ html {
 
 body {
 	font-family: var(--font-family-base);
-	background-color: var(--color-bg-dark);
-	color: var(--color-text-light);
+	background-color: var(--color-bg-cream);
+	color: var(--color-text-dark);
 	line-height: var(--line-height-base);
 	view-transition-name: none;
 	scrollbar-gutter: stable;
@@ -25,16 +25,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-	background: var(--color-bg-dark);
+	background: var(--color-bg-cream);
 }
 
 ::-webkit-scrollbar-thumb {
-	background: var(--color-border-light);
+	background: var(--color-border-medium);
 	border-radius: var(--radius-sm);
 	transition: background var(--transition-fast);
 
 	&:hover {
-		background: var(--color-accent-blue);
+		background: var(--color-burgundy);
 		opacity: var(--opacity-primary);
 	}
 }
@@ -42,5 +42,5 @@ body {
 /* Firefox */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: var(--color-border-light) var(--color-bg-dark);
+	scrollbar-color: var(--color-border-medium) var(--color-bg-cream);
 }

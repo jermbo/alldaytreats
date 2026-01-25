@@ -4,115 +4,68 @@
 	position: sticky;
 	top: 0;
 	z-index: var(--z-sticky);
-	background: var(--color-bg-dark);
+	background: var(--color-bg-cream);
 	border-bottom: 1px solid var(--color-border-light);
 	box-shadow: var(--shadow-header);
 }
 
-.header__top-container {
-	display: flex;
-	justify-content: center;
-	border-bottom: 1px solid var(--color-border-light);
-	padding: var(--spacing-sm);
-
-	@container header (max-width: 768px) {
-		padding: var(--spacing-xs) var(--spacing-base);
-	}
-}
-
 .header__container {
-	padding: var(--spacing-sm);
-	display: flex;
+	max-width: var(--container-max-width);
+	margin: 0 auto;
+	padding: var(--spacing-base) var(--spacing-lg);
+	display: grid;
+	grid-template-columns: 1fr auto;
 	align-items: center;
-	justify-content: space-between;
 	gap: var(--spacing-lg);
 
 	@container header (max-width: 768px) {
+		grid-template-columns: 1fr auto;
 		gap: var(--spacing-base);
+		padding: var(--spacing-base);
+	}
+}
+
+.header__nav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-lg);
+	flex-wrap: wrap;
+
+	@container header (max-width: 768px) {
+		display: none;
+	}
+}
+
+.header__nav-link {
+	color: var(--color-text-dark);
+	text-decoration: none;
+	font-size: var(--font-size-base);
+	font-weight: 500;
+	transition: color var(--transition-fast);
+
+	&:hover {
+		color: var(--color-burgundy);
 	}
 }
 
 .header__brand {
 	display: flex;
 	align-items: center;
-	gap: var(--spacing-base);
-	flex-shrink: 0;
-}
-
-.header__logo {
-	width: var(--size-logo-base);
-	height: var(--size-logo-base);
-	border-radius: var(--radius-full);
-	object-fit: cover;
-	flex-shrink: 0;
-
-	@container header (max-width: 768px) {
-		width: var(--size-logo-sm);
-		height: var(--size-logo-sm);
-	}
-}
-
-.header__brand-text {
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-3xs);
+	justify-content: center;
 }
 
 .header__title {
-	font-size: var(--font-size-sm);
-	background: linear-gradient(
-		to right,
-		var(--color-text-gradient-start),
-		var(--color-text-gradient-end)
-	);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
+	font-family: var(--font-family-serif);
+	font-size: var(--font-size-xl);
+	color: var(--color-burgundy);
 	font-weight: 700;
 	margin: 0;
 	line-height: 1.2;
-	text-transform: uppercase;
-}
-
-.header__location {
-	font-size: var(--font-size-xs);
-	color: var(--color-text-light);
-	margin: 0;
-	line-height: 1.2;
-	opacity: var(--opacity-hover);
-}
-
-.header__contact {
-	display: flex;
-	gap: var(--spacing-base);
-	align-items: center;
+	text-align: center;
 
 	@container header (max-width: 768px) {
-		gap: var(--spacing-sm);
-	}
-}
-
-.header__contact-link {
-	display: flex;
-	align-items: center;
-	gap: var(--spacing-sm);
-	color: var(--color-text-light);
-	text-decoration: none;
-	font-size: var(--font-size-sm);
-	white-space: nowrap;
-	transition: opacity var(--transition-fast);
-
-	&:hover {
-		opacity: var(--opacity-primary);
-	}
-
-	@container header (max-width: 768px) {
-		font-size: var(--font-size-xs);
-		gap: var(--spacing-2xs);
-
-		span:not(.header__contact-icon) {
-			display: none;
-		}
+		font-size: var(--font-size-lg);
 	}
 }
 
@@ -123,11 +76,10 @@
 	flex-shrink: 0;
 }
 
-.header__track-btn,
 .header__cart-btn {
 	background: transparent;
 	border: none;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	cursor: pointer;
 	display: flex;
 	align-items: center;
@@ -140,29 +92,18 @@
 	&:hover {
 		opacity: var(--opacity-primary);
 	}
-
-	@container header (max-width: 768px) {
-		span:not(.header__track-icon):not(.header__cart-icon):not(.header__cart-badge) {
-			display: none;
-		}
-	}
 }
 
-.header__track-icon,
 .header__cart-icon {
 	font-size: var(--size-icon-base);
-
-	@container header (max-width: 768px) {
-		font-size: var(--size-icon-sm);
-	}
 }
 
 .header__cart-badge {
 	position: absolute;
 	top: 0;
 	right: 0;
-	background: var(--color-accent-blue);
-	color: var(--color-bg-dark);
+	background: var(--color-burgundy);
+	color: var(--color-white);
 	border-radius: var(--radius-full);
 	width: var(--size-icon-base);
 	height: var(--size-icon-base);

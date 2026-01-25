@@ -9,40 +9,25 @@ const { cartCount = 0 } = Astro.props;
 ---
 
 <header class="header">
-  <div class="header__top-container">
-    <nav class="header__contact" aria-label="Contact information">
-      <a
-        href={`mailto:${siteConfig.contact.email}`}
-        class="header__contact-link"
-        aria-label="Email us"
-      >
-        <span class="header__contact-icon" aria-hidden="true">✉️</span>
-        <span>{siteConfig.contact.email}</span>
-      </a>
+  <div class="header__container">
+    <nav class="header__nav" aria-label="Main navigation">
+      <a href="#menu" class="header__nav-link">Menu</a>
+      <a href="#about" class="header__nav-link">About</a>
+      <div class="header__brand">
+        <h1 class="header__title">{siteConfig.name}</h1>
+      </div>
+      <a href="#contact" class="header__nav-link">Contact</a>
       <a
         href={siteConfig.contact.instagram.url}
         target="_blank"
         rel="noopener noreferrer"
-        class="header__contact-link"
+        class="header__nav-link"
         aria-label="Follow us on Instagram"
       >
-        <span class="header__contact-icon" aria-hidden="true">📷</span>
-        <span>{siteConfig.contact.instagram.handle}</span>
+        Instagram
       </a>
     </nav>
-  </div>
-  <div class="header__container">
-    <div class="header__brand">
-      <img
-        src="/images/logo.jpeg"
-        alt="All Day Treats Logo"
-        class="header__logo"
-      />
-      <div class="header__brand-text">
-        <h1 class="header__title">{siteConfig.name}</h1>
-        <p class="header__location">{siteConfig.location}</p>
-      </div>
-    </div>
+    
     <div class="header__actions">
       <button
         type="button"

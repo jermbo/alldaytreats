@@ -1,7 +1,7 @@
 /* Product Modal Styles */
 .product-modal {
-	background: var(--color-bg-dark);
-	color: var(--color-text-light);
+	background: var(--color-white);
+	color: var(--color-text-dark);
 	border: 1px solid var(--color-border-light);
 	border-radius: var(--radius-lg);
 	padding: 0;
@@ -18,7 +18,7 @@
 }
 
 .product-modal::backdrop {
-	background: rgba(0, 0, 0, 0.75);
+	background: rgba(0, 0, 0, 0.5);
 	backdrop-filter: blur(4px);
 	animation: backdrop-fade-in var(--transition-base) var(--easing-smooth);
 }
@@ -89,13 +89,13 @@ body:has(.product-modal[open]) {
 	font-weight: 700;
 	text-transform: uppercase;
 	margin: 0;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 }
 
 .product-modal__close {
 	background: transparent;
 	border: none;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	line-height: 1;
 	cursor: pointer;
 	padding: 0;
@@ -108,7 +108,7 @@ body:has(.product-modal[open]) {
 }
 
 .product-modal__close:hover {
-	color: var(--color-accent-blue);
+	color: var(--color-burgundy);
 }
 
 .product-modal__body {
@@ -165,7 +165,7 @@ body:has(.product-modal[open]) {
 }
 
 .product-modal__description {
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	opacity: var(--opacity-primary);
 	line-height: var(--line-height-base);
 	font-size: var(--font-size-sm);
@@ -179,7 +179,7 @@ body:has(.product-modal[open]) {
 .product-modal__section-label {
 	font-size: var(--font-size-base);
 	font-weight: 600;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	margin-bottom: var(--spacing-base);
 	display: block;
 }
@@ -193,7 +193,7 @@ body:has(.product-modal[open]) {
 .product-modal__quantity-option {
 	background: var(--color-overlay-light);
 	border: 2px solid transparent;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	padding: var(--spacing-sm) var(--spacing-lg);
 	border-radius: var(--radius-lg);
 	cursor: pointer;
@@ -206,13 +206,13 @@ body:has(.product-modal[open]) {
 }
 
 .product-modal__quantity-option:hover {
-	border-color: var(--color-accent-blue);
+	border-color: var(--color-burgundy);
 }
 
 .product-modal__quantity-option--selected {
 	background: transparent;
-	border-color: var(--color-accent-blue);
-	color: var(--color-accent-blue);
+	border-color: var(--color-burgundy);
+	color: var(--color-burgundy);
 }
 
 .product-modal__instructions {
@@ -221,7 +221,7 @@ body:has(.product-modal[open]) {
 	border: 1px solid var(--color-border-light);
 	border-radius: var(--radius-lg);
 	padding: var(--spacing-base);
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	font-family: var(--font-family-base);
 	font-size: var(--font-size-sm);
 	resize: none;
@@ -230,12 +230,12 @@ body:has(.product-modal[open]) {
 }
 
 .product-modal__instructions::placeholder {
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	opacity: var(--opacity-muted);
 }
 
 .product-modal__instructions:focus {
-	outline: 2px solid var(--color-accent-blue);
+	outline: 2px solid var(--color-burgundy);
 	outline-offset: 2px;
 }
 
@@ -244,7 +244,7 @@ body:has(.product-modal[open]) {
 	justify-content: flex-end;
 	margin-top: var(--spacing-sm);
 	font-size: var(--font-size-xs);
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	opacity: var(--opacity-secondary);
 	transition: color var(--transition-fast);
 }
@@ -260,8 +260,8 @@ body:has(.product-modal[open]) {
 
 .product-modal__add-btn {
 	width: 100%;
-	background: var(--color-accent-blue);
-	color: var(--color-bg-dark);
+	background: var(--color-burgundy);
+	color: var(--color-white);
 	border: none;
 	padding: var(--spacing-sm) var(--spacing-lg);
 	border-radius: var(--radius-lg);
@@ -285,7 +285,7 @@ body:has(.product-modal[open]) {
 	opacity: var(--opacity-muted);
 	cursor: not-allowed;
 	background: var(--color-overlay-light);
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 }
 
 .product-modal__checkmark {
@@ -323,13 +323,13 @@ body:has(.product-modal[open]) {
 .toppings-group__counter {
 	font-size: var(--font-size-xs);
 	font-weight: 500;
-	color: var(--color-accent-blue);
+	color: var(--color-burgundy);
 	white-space: nowrap;
 }
 
 .toppings-group__counter-current {
 	font-weight: 700;
-	color: var(--color-accent-blue);
+	color: var(--color-burgundy);
 }
 
 .toppings-group__options {
@@ -349,7 +349,7 @@ body:has(.product-modal[open]) {
 }
 
 .topping-option:hover {
-	background: rgba(255, 255, 255, 0.05);
+	background: var(--color-overlay-light);
 }
 
 .topping-option--disabled {
@@ -366,10 +366,10 @@ body:has(.product-modal[open]) {
 	height: var(--size-icon-base);
 	border: 2px solid var(--color-border-light);
 	border-radius: var(--radius-sm);
-	background: var(--color-bg-dark);
+	background: var(--color-white);
 	cursor: pointer;
 	flex-shrink: 0;
-	accent-color: var(--color-accent-blue);
+	accent-color: var(--color-burgundy);
 }
 
 .topping-option__checkbox:disabled {
@@ -379,7 +379,7 @@ body:has(.product-modal[open]) {
 
 .topping-option__label {
 	font-size: var(--font-size-sm);
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 	cursor: pointer;
 	flex: 1;
 	user-select: none;
@@ -405,7 +405,7 @@ body:has(.product-modal[open]) {
 .product-modal__toppings-total-label {
 	font-size: var(--font-size-sm);
 	font-weight: 600;
-	color: var(--color-text-light);
+	color: var(--color-text-dark);
 }
 
 .product-modal__toppings-total-value {

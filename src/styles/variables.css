@@ -3,33 +3,31 @@
 	   COLORS
 	   ============================================ */
 
-	/* Base Colors */
-	--color-bg-dark: #1a1a1a;
+	/* Base Colors - Warm Bakery Palette */
+	--color-bg-cream: #FBF9F7;
+	--color-text-dark: #2C2C2C;
+	--color-text-muted: #666666;
 	--color-text-light: #ffffff;
-	--color-text-dark: #1a1a1a;
-	--color-text-gradient-start: #4a90e2;
-	--color-text-gradient-end: #9b59b6;
 
-	/* Accent Colors */
-	--color-accent-blue: #87ceeb;
-	--color-accent-purple: #9b59b6;
-	--color-accent-pink: #ff69b4;
-	--color-accent-green: #4caf50;
-	--color-accent-red: #ff6b6b;
-
-	/* Overlay Colors */
-	--color-overlay-light: rgba(255, 255, 255, 0.05);
-	--color-overlay-dark: rgba(0, 0, 0, 0.3);
-	--color-border-light: rgba(255, 255, 255, 0.1);
+	/* Primary Accent Colors */
+	--color-burgundy: #7A2E2E;
+	--color-burgundy-light: #8B3A3A;
+	--color-pastel-pink: #F4C2C2;
+	--color-pastel-pink-light: #F5D5D5;
+	--color-gold: #C9A068;
+	--color-gold-light: #D4A574;
 
 	/* UI Colors (specific use cases) */
 	--color-white: #ffffff;
-	--color-light-gray: #e5e5e5;
-	--color-medium-gray: #757575;
-	--color-dark-gray: #333333;
-	--color-pink: #ff69b4;
-	--color-dark-pink: #e55a9f;
-	--color-light-pink: #fff0f8;
+	--color-light-gray: #E8E8E8;
+	--color-medium-gray: #999999;
+	--color-dark-gray: #2C2C2C;
+
+	/* Overlay Colors - Light Theme */
+	--color-overlay-light: rgba(0, 0, 0, 0.05);
+	--color-overlay-dark: rgba(0, 0, 0, 0.1);
+	--color-border-light: rgba(0, 0, 0, 0.1);
+	--color-border-medium: rgba(0, 0, 0, 0.15);
 
 	/* Validation Colors */
 	--color-success: #51cf66;
@@ -56,7 +54,9 @@
 	   TYPOGRAPHY
 	   ============================================ */
 
-	--font-family-base: system-ui, -apple-system, sans-serif;
+	--font-family-serif: 'Playfair Display', serif;
+	--font-family-sans: 'Montserrat', 'Open Sans', system-ui, -apple-system, sans-serif;
+	--font-family-base: var(--font-family-sans);
 	--line-height-base: 1.6;
 
 	/* Font Sizes */
@@ -151,17 +151,13 @@
 	--shadow-base: 0 4px 12px rgba(0, 0, 0, 0.15);
 	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
 
-	/* Glow Effects */
-	--shadow-glow-blue: 0 0 20px rgba(135, 206, 235, 0.3);
-	--shadow-glow-purple: 0 0 20px rgba(155, 89, 182, 0.5);
-
-	/* Component-Specific Shadows */
-	--shadow-header: 0 2px 20px rgba(155, 89, 182, 0.3), 0 0 40px rgba(135, 206, 235, 0.2);
-	--shadow-menu-hover: 0 12px 24px rgba(155, 89, 182, 0.3), 0 0 20px rgba(135, 206, 235, 0.2);
-	--shadow-panel: -4px 0 24px rgba(0, 0, 0, 0.5);
-	--shadow-modal: 0 4px 20px rgba(155, 89, 182, 0.5);
-	--shadow-button: 0 4px 12px rgba(135, 206, 235, 0.4);
-	--shadow-button-lg: 0 6px 20px rgba(135, 206, 235, 0.6);
-	--shadow-gradient-button: 0 4px 12px rgba(155, 89, 182, 0.4);
-	--shadow-gradient-button-hover: 0 6px 20px rgba(155, 89, 182, 0.6);
+	/* Component-Specific Shadows - Light Theme */
+	--shadow-header: 0 2px 8px rgba(0, 0, 0, 0.08);
+	--shadow-menu-hover: 0 8px 16px rgba(0, 0, 0, 0.12);
+	--shadow-panel: -4px 0 24px rgba(0, 0, 0, 0.15);
+	--shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.15);
+	--shadow-button: 0 4px 12px rgba(122, 46, 46, 0.2);
+	--shadow-button-lg: 0 6px 20px rgba(122, 46, 46, 0.25);
+	--shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+	--shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
 }

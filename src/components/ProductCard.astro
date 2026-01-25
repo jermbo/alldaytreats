@@ -11,12 +11,27 @@ const description = product.body;
 const headingId = `product-${id}-heading`;
 const descriptionId = `product-${id}-description`;
 const priceId = `product-${id}-price`;
+
+// Generate pastel background colors based on product index
+const pastelColors = [
+  '#FFF8E7', // Light yellow
+  '#F5E6D3', // Light beige
+  '#F4C2C2', // Pastel pink
+  '#E8D5C4', // Light tan
+  '#F0E6F5', // Lavender
+  '#E8F4E8', // Mint green
+  '#FFE8E8', // Light rose
+  '#F5F0E8', // Cream
+];
+
+const bgColor = pastelColors[id % pastelColors.length];
 ---
 
 <article
   class="menu__item"
   data-category={category}
   aria-labelledby={headingId}
+  style={`--product-bg-color: ${bgColor};`}
 >
   <button
     type="button"
@@ -25,15 +40,17 @@ const priceId = `product-${id}-price`;
     aria-labelledby={headingId}
     aria-describedby={`${descriptionId} ${priceId}`}
   >
-    <img
-      src={image}
-      alt=""
-      role="presentation"
-      class="menu__item-image"
-      width="400"
-      height="400"
-      loading="lazy"
-    />
+    <div class="menu__item-image-wrapper">
+      <img
+        src={image}
+        alt=""
+        role="presentation"
+        class="menu__item-image"
+        width="400"
+        height="400"
+        loading="lazy"
+      />
+    </div>
     <div class="menu__item-content">
       <h3 id={headingId} class="menu__item-title">{name}</h3>
       <p id={descriptionId} class="menu__item-description">{description}</p>
