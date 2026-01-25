@@ -3,10 +3,10 @@ id: cake-pops
 name: Cake Pops / Cakesicles
 category: chocolate
 image: /images/cake-pops.jpg
-priceFrom: 10
+priceFrom: 13
 priceOptions:
   - count: 6
-    price: 10
+    price: 13
   - count: 8
     price: 17
   - count: 12
