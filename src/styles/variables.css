@@ -1,39 +1,52 @@
 :root {
 	/* ============================================
-	   COLORS
+	   COLORS - Dark Theme
 	   ============================================ */
 
-	/* Base Colors - Warm Bakery Palette */
-	--color-bg-cream: #FBF9F7;
-	--color-text-dark: #2C2C2C;
-	--color-text-muted: #666666;
-	--color-text-light: #ffffff;
+	/* Base Colors - Dark Theme */
+	--color-bg-cream: #262A2C;
+	--color-bg-elevated: #2F3537;
+	--color-text-dark: #F2F4F3;
+	--color-text-muted: rgba(242, 244, 243, 0.75);
+	--color-text-light: #262A2C;
+	--color-text-on-accent: #262A2C;
 
-	/* Primary Accent Colors */
-	--color-burgundy: #7A2E2E;
-	--color-burgundy-light: #8B3A3A;
-	--color-pastel-pink: #F4C2C2;
-	--color-pastel-pink-light: #F5D5D5;
-	--color-gold: #C9A068;
-	--color-gold-light: #D4A574;
+	/* Primary Accent - Blue */
+	--color-burgundy: #20a6fd;
+	--color-burgundy-light: #4db8ff;
+	--color-accent-blue: #20a6fd;
+	--color-accent-blue-light: #4db8ff;
+	--color-accent-blue-subtle: rgba(32, 166, 253, 0.2);
 
-	/* UI Colors (specific use cases) */
-	--color-white: #ffffff;
-	--color-light-gray: #E8E8E8;
-	--color-medium-gray: #999999;
-	--color-dark-gray: #2C2C2C;
+	/* Legacy mappings - all point to blue */
+	--color-accent-red: #20a6fd;
+	--color-accent-red-light: #4db8ff;
+	--color-accent-red-subtle: rgba(32, 166, 253, 0.15);
+	--color-pastel-pink: #20a6fd;
+	--color-pastel-pink-light: #4db8ff;
+	--color-gold: #20a6fd;
+	--color-gold-light: #4db8ff;
+	--color-accent-pink: #20a6fd;
+	--color-accent-purple: #20a6fd;
+	--color-accent-green: #51cf66;
 
-	/* Overlay Colors - Light Theme */
-	--color-overlay-light: rgba(0, 0, 0, 0.05);
-	--color-overlay-dark: rgba(0, 0, 0, 0.1);
-	--color-border-light: rgba(0, 0, 0, 0.1);
-	--color-border-medium: rgba(0, 0, 0, 0.15);
+	/* UI Colors */
+	--color-white: #F2F4F3;
+	--color-light-gray: #2F3537;
+	--color-medium-gray: rgba(242, 244, 243, 0.5);
+	--color-dark-gray: #F2F4F3;
+
+	/* Overlay Colors - Dark Theme */
+	--color-overlay-light: rgba(242, 244, 243, 0.05);
+	--color-overlay-dark: rgba(0, 0, 0, 0.5);
+	--color-border-light: rgba(242, 244, 243, 0.12);
+	--color-border-medium: rgba(242, 244, 243, 0.2);
 
 	/* Validation Colors */
 	--color-success: #51cf66;
-	--color-success-muted: #51cf66;
+	--color-success-muted: #3cb371;
 	--color-error: #ff6b6b;
-	--color-error-muted: #ff8787;
+	--color-error-muted: #ff8585;
 
 	/* ============================================
 	   SPACING
@@ -91,11 +104,11 @@
 	   ============================================ */
 
 	--opacity-disabled: 0.4;   /* disabled states */
-	--opacity-muted: 0.5;      /* placeholder text */
-	--opacity-medium: 0.6;     /* secondary content */
-	--opacity-secondary: 0.7;  /* less important text */
-	--opacity-primary: 0.8;    /* standard opacity reduction */
-	--opacity-hover: 0.9;      /* hover states */
+	--opacity-muted: 0.55;     /* placeholder text */
+	--opacity-medium: 0.7;     /* secondary content */
+	--opacity-secondary: 0.8;  /* less important text */
+	--opacity-primary: 0.9;    /* standard opacity reduction */
+	--opacity-hover: 0.95;     /* hover states */
 
 	/* ============================================
 	   SIZING
@@ -143,21 +156,23 @@
 	--easing-exit: cubic-bezier(0.55, 0.06, 0.68, 0.19);
 
 	/* ============================================
-	   SHADOWS
+	   SHADOWS - Dark Theme
 	   ============================================ */
 
 	/* Elevation Shadows */
-	--shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-	--shadow-base: 0 4px 12px rgba(0, 0, 0, 0.15);
-	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+	--shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+	--shadow-base: 0 4px 12px rgba(0, 0, 0, 0.4);
+	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
 
-	/* Component-Specific Shadows - Light Theme */
-	--shadow-header: 0 2px 8px rgba(0, 0, 0, 0.08);
-	--shadow-menu-hover: 0 8px 16px rgba(0, 0, 0, 0.12);
-	--shadow-panel: -4px 0 24px rgba(0, 0, 0, 0.15);
-	--shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.15);
-	--shadow-button: 0 4px 12px rgba(122, 46, 46, 0.2);
-	--shadow-button-lg: 0 6px 20px rgba(122, 46, 46, 0.25);
-	--shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
-	--shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+	/* Component-Specific Shadows - Dark Theme */
+	--shadow-header: 0 2px 8px rgba(0, 0, 0, 0.3);
+	--shadow-menu-hover: 0 8px 16px rgba(0, 0, 0, 0.4);
+	--shadow-panel: -4px 0 24px rgba(0, 0, 0, 0.5);
+	--shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.5);
+	--shadow-button: 0 4px 12px rgba(32, 166, 253, 0.3);
+	--shadow-button-lg: 0 6px 20px rgba(32, 166, 253, 0.35);
+	--shadow-card: 0 2px 8px rgba(0, 0, 0, 0.25);
+	--shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.35);
+	--shadow-gradient-button: 0 4px 15px rgba(32, 166, 253, 0.4);
+	--shadow-gradient-button-hover: 0 6px 20px rgba(32, 166, 253, 0.5);
 }

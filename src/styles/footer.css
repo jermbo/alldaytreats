@@ -2,7 +2,7 @@
 	container-type: inline-size;
 	container-name: footer;
 	padding: var(--spacing-xl) var(--spacing-lg);
-	background: var(--color-light-gray);
+	background: var(--color-bg-cream);
 	margin-top: var(--spacing-xl);
 	border-top: 1px solid var(--color-border-light);
 }
@@ -53,7 +53,7 @@
 	transition: color var(--transition-fast);
 
 	&:hover {
-		color: var(--color-burgundy);
+		color: var(--color-accent-blue-light);
 	}
 }
 

@@ -35,8 +35,7 @@ body {
 	transition: background var(--transition-fast);
 
 	&:hover {
-		background: var(--color-burgundy);
-		opacity: var(--opacity-primary);
+		background: var(--color-accent-blue);
 	}
 }
 

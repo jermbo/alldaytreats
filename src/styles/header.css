@@ -176,7 +176,7 @@
 	top: 0;
 	right: 0;
 	background: var(--color-burgundy);
-	color: var(--color-white);
+	color: var(--color-text-on-accent);
 	border-radius: var(--radius-full);
 	width: var(--size-icon-base);
 	height: var(--size-icon-base);

@@ -2,7 +2,7 @@
 	container-type: inline-size;
 	container-name: about;
 	padding: var(--spacing-xl) var(--spacing-lg);
-	background: var(--color-white);
+	background: var(--color-bg-elevated);
 	position: relative;
 
 	@container about (max-width: 768px) {
@@ -39,26 +39,6 @@
 	font-size: var(--font-size-3xl);
 	color: var(--color-burgundy);
 	margin-bottom: var(--spacing-lg);
-	position: relative;
-	display: inline-block;
-
-	&::after {
-		content: '';
-		position: absolute;
-		bottom: -8px;
-		left: 0;
-		width: 50px;
-		height: 3px;
-		background: linear-gradient(90deg, var(--color-gold), var(--color-pastel-pink));
-		border-radius: 2px;
-	}
-
-	@container about (max-width: 868px) {
-		&::after {
-			left: 50%;
-			transform: translateX(-50%);
-		}
-	}
 
 	@container about (max-width: 768px) {
 		font-size: var(--font-size-2xl);
@@ -132,7 +112,7 @@
 	font-size: var(--font-size-sm);
 	font-weight: 500;
 	color: var(--color-text-dark);
-	background: var(--color-white);
+	background: var(--color-bg-cream);
 	padding: var(--spacing-2xs) var(--spacing-sm);
 	border-radius: var(--radius-sm);
 	border: 1px solid var(--color-border-light);

@@ -45,7 +45,7 @@
 	bottom: 0;
 	width: 100%;
 	max-width: 480px;
-	background: var(--color-white);
+	background: var(--color-bg-elevated);
 	border-left: 1px solid var(--color-border-light);
 	box-shadow: var(--shadow-panel);
 	display: flex;
@@ -330,7 +330,7 @@
 
 	&:hover {
 		background: var(--color-overlay-light);
-		border-color: var(--color-burgundy);
+		border-color: var(--color-accent-blue);
 	}
 
 	@container cart-panel (max-width: 768px) {
@@ -399,7 +399,7 @@
 	padding: var(--spacing-base);
 	border-top: 1px solid var(--color-border-light);
 	flex-shrink: 0;
-	background: var(--color-white);
+	background: var(--color-bg-elevated);
 
 	&[hidden] {
 		display: none !important;

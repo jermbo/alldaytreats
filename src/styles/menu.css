@@ -26,7 +26,8 @@
 
 .menu__subtitle {
 	text-align: center;
-	color: var(--color-text-muted);
+	color: var(--color-text-dark);
+	opacity: var(--opacity-secondary);
 	margin-bottom: var(--spacing-lg);
 	font-size: var(--font-size-base);
 	line-height: 1.6;
@@ -38,8 +39,8 @@
 
 .menu__disclaimer {
 	text-align: center;
-	color: var(--color-text-muted);
-	opacity: var(--opacity-secondary);
+	color: var(--color-text-dark);
+	opacity: var(--opacity-medium);
 	margin-bottom: var(--spacing-lg);
 	font-size: var(--font-size-sm);
 }
@@ -65,7 +66,7 @@
 	position: relative;
 
 	&:hover:not(.menu__tab--active) {
-		color: var(--color-burgundy);
+		color: var(--color-accent-blue-light);
 		border-bottom-color: var(--color-border-medium);
 	}
 
@@ -74,15 +75,15 @@
 	}
 
 	&:focus-visible {
-		outline: 2px solid var(--color-burgundy);
+		outline: 2px solid var(--color-accent-blue);
 		outline-offset: 4px;
 		border-radius: var(--radius-sm);
 	}
 }
 
 .menu__tab--active {
-	color: var(--color-burgundy);
-	border-bottom-color: var(--color-burgundy);
+	color: var(--color-accent-blue-light);
+	border-bottom-color: var(--color-accent-blue);
 	font-weight: 600;
 }
 
@@ -102,7 +103,7 @@
 .menu__item {
 	display: flex;
 	flex-direction: column;
-	background: var(--color-white);
+	background: var(--color-bg-elevated);
 	border-radius: var(--radius-lg);
 	overflow: hidden;
 	transition: transform var(--transition-base), box-shadow var(--transition-base);
@@ -118,7 +119,7 @@
 	&:has(.menu__item-button:focus-visible) {
 		transform: translateY(-4px);
 		box-shadow: var(--shadow-card-hover);
-		outline: 3px solid var(--color-burgundy);
+		outline: 3px solid var(--color-accent-blue);
 		outline-offset: 2px;
 	}
 
@@ -172,7 +173,7 @@
 	display: flex;
 	flex-direction: column;
 	padding: var(--spacing-lg);
-	background: var(--color-white);
+	background: var(--color-bg-elevated);
 }
 
 .menu__item-title {
@@ -190,7 +191,7 @@
 
 .menu__item-description {
 	flex: 1;
-	color: var(--color-text-muted);
+	color: var(--color-text-dark);
 	opacity: var(--opacity-secondary);
 	margin-bottom: var(--spacing-base);
 	font-size: var(--font-size-sm);
