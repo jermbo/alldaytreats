@@ -1,5 +1,4 @@
 ---
-id: cake-pops
 name: Cake Pops / Cakesicles
 category: chocolate
 image: /images/cake-pops.jpg

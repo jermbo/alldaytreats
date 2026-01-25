@@ -1,5 +1,4 @@
 ---
-id: party-platter
 name: Party Platter
 category: platter
 image: /images/party-platter.jpg

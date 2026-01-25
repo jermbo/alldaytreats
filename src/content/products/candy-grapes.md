@@ -1,5 +1,4 @@
 ---
-id: candy-grapes
 name: Candy Grapes
 category: candy
 image: /images/candy-grapes-new.jpg

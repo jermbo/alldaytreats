@@ -13,7 +13,7 @@ import CheckoutPanel from '../components/CheckoutPanel.astro';
 // Get products from content collection and serialize for client-side use
 const products = await getCollection('products');
 const productsData = products.map((p: any) => ({
-  id: p.data.id,
+  id: p.id,
   name: p.data.name,
   category: p.data.category,
   image: p.data.image,

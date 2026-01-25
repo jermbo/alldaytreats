@@ -1,5 +1,4 @@
 ---
-id: chocolate-oreos
 name: Chocolate Covered Oreos
 category: chocolate
 image: /images/chocolate-oreos.jpg

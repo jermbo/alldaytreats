@@ -3,7 +3,6 @@ import { defineCollection, z } from 'astro:content';
 const products = defineCollection({
   type: 'content',
   schema: z.object({
-    id: z.string(),
     name: z.string(),
     category: z.enum(['candy', 'chocolate', 'platter']),
     image: z.string(),

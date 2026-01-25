@@ -1,5 +1,4 @@
 ---
-id: chocolate-pretzels
 name: Chocolate Covered Pretzels
 category: chocolate
 image: /images/chocolate-pretzels.jpg

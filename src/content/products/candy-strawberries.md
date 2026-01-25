@@ -1,5 +1,4 @@
 ---
-id: candy-strawberries
 name: Candy Strawberries
 category: candy
 image: /images/candy-strawberries.jpg

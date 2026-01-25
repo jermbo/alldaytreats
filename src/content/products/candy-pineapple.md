@@ -1,5 +1,4 @@
 ---
-id: candy-pineapple
 name: Candy Pineapple Rings/Chunks
 category: candy
 image: /images/candy-pineapple-rings.jpg

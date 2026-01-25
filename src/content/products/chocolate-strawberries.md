@@ -1,5 +1,4 @@
 ---
-id: chocolate-strawberries
 name: Chocolate Covered Strawberries
 category: chocolate
 image: /images/chocolate-strawberries-new.jpg

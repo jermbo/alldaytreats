@@ -1,5 +1,4 @@
 ---
-id: chocolate-rice-krispies
 name: Chocolate Covered Rice Krispies
 category: chocolate
 image: /images/chocolate-rice-krispies.jpg
