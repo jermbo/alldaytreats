@@ -44,11 +44,18 @@ The website solves the problem of visibility and accessibility for a word-of-mou
 3. **Communicate Order Process**: Clearly explain ordering requirements (deposits, payment methods, lead times)
 4. **Mobile-First Experience**: Ensure the site works beautifully on mobile devices where most social media traffic originates
 
-### Future Goals (Out of Scope for Initial Version)
+### Implemented Features (Added Post-Launch)
 
-- Simple "Add to Cart" functionality
-- Email-based order submission system
+- ✅ Shopping cart with localStorage persistence
+- ✅ Product modal with quantity selection and toppings
+- ✅ Checkout form with validation
+- ✅ Email-based order submission via mailto
+
+### Future Goals (Out of Scope)
+
 - Order tracking or confirmation system
+- Online payment processing
+- User accounts
 
 ---
 
@@ -102,14 +109,9 @@ The website solves the problem of visibility and accessibility for a word-of-mou
 ### Must-Have Constraints
 
 - **Zero Monthly Costs**: Static site hosting only (no backend, no databases, no serverless functions)
-- **Minimal Tech Stack**: Vanilla JavaScript, CSS, HTML (Vite for development)
+- **Modern Tech Stack**: Astro static site generator, Vanilla JavaScript, Modern CSS
 - **Fast Performance**: Optimized for mobile networks and slow connections
 - **No External Dependencies**: Avoid third-party services that require API keys or subscriptions
-
-### Future Considerations
-
-- Simple client-side cart that generates email-ready order summaries
-- No backend required for initial cart functionality
 
 ---
 
@@ -153,23 +155,22 @@ The website solves the problem of visibility and accessibility for a word-of-mou
 
 ---
 
-## Open Questions / Future Decisions
+## Resolved Decisions
 
-1. ~~**Cart Implementation**: How should the future "add to cart" feature work? (Client-side only, email generation, etc.)~~ **Resolved** - See [Ordering System Architecture](docs/architecture/ordering-system.md)
-2. **Product Updates**: What's the process for updating product information? (Direct code edits vs. content management)
-3. **Analytics**: Should we add basic analytics? (Privacy-focused, no external services)
-4. **SEO**: What keywords should we optimize for? (Local searches)
+1. ✅ **Cart Implementation**: Client-side cart with localStorage, email-based order submission
+2. ✅ **Product Updates**: Markdown files in `src/content/products/` - easy to edit
+3. ✅ **Tech Stack**: Migrated from Vite to Astro for better content management
+
+## Open Questions
+
+1. **Analytics**: Should we add basic analytics? (Privacy-focused, no external services)
+2. **SEO**: What keywords should we optimize for? (Local searches)
 
 ---
 
 ## Related Documents
 
-### Project Documentation
-
 - [README.md](README.md) - Project overview and setup instructions
-- [Ordering System Architecture](docs/architecture/ordering-system.md) - Architecture and design for ordering functionality
-
-### Documentation Standards
-
-- [Documentation Guidelines](docs/coding_with_vibes/README.md) - V.I.B.E.S. documentation methodology
-- [Architecture Guidelines](docs/coding_with_vibes/15k_documentation_guidelines.md) - Architecture documentation standards
+- [Project Status](docs/Project_Status.md) - Current project status
+- [Testing Checklist](docs/Testing_Checklist.md) - QA testing guide
+- [Deployment Guide](docs/Deployment.md) - Deployment instructions

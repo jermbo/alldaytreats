@@ -249,4 +249,4 @@ Phase 3 is complete when:
 
 ---
 
-[← Back to Phase 2](PHASE_2_CONTENT.md) | [Back to Index](USER_STORIES_INDEX.md) | [Next: Phase 4 →](PHASE_4_STATIC.md)
+[← Back to Phase 2](Phase_2_Content.md) | [Back to Index](User_Stories_Index.md) | [Next: Phase 4 →](Phase_4_Static.md)

@@ -452,4 +452,4 @@ Phase 4 is complete when:
 
 ---
 
-[← Back to Phase 3](PHASE_3_LAYOUT.md) | [Back to Index](USER_STORIES_INDEX.md) | [Next: Phase 5 →](PHASE_5_INTERACTIVE.md)
+[← Back to Phase 3](Phase_3_Layout.md) | [Back to Index](User_Stories_Index.md) | [Next: Phase 5 →](Phase_5_Interactive.md)

@@ -124,7 +124,7 @@ Include:
 Summarizing documentation closes the V.I.B.E.S. loop:
 
 1. **[Return to Visualize (30k)](30k_documentation_guidelines.md)** — Use learnings to refine project vision
-2. **Review [V.I.B.E.S. Visual Overview](VIBES_visuals.md)** — See how knowledge flows through all levels
+2. **Review [V.I.B.E.S. Visual Overview](Vibes_Visuals.md)** — See how knowledge flows through all levels
 3. **Update all levels** — Keep documentation current as the project evolves
 
 ## Related V.I.B.E.S. Documents
@@ -132,4 +132,4 @@ Summarizing documentation closes the V.I.B.E.S. loop:
 - **Main Hub:** [Coding with V.I.B.E.S.](README.md)
 - **Previous Level:** [Ground Level (Execute) Guidelines](ground_level_documentation_guidelines.md)
 - **All Levels:** [30k](30k_documentation_guidelines.md) | [15k](15k_documentation_guidelines.md) | [5k](5k_documentation_guidelines.md) | [Ground](ground_level_documentation_guidelines.md)
-- **Visuals:** [V.I.B.E.S. Visual Overview](VIBES_visuals.md)
+- **Visuals:** [V.I.B.E.S. Visual Overview](Vibes_Visuals.md)

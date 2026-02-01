@@ -4,7 +4,6 @@
 
 ### ✅ Verify Build
 ```bash
-cd all-day-treats
 npm run build
 ```
 

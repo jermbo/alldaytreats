@@ -39,7 +39,7 @@ Final documentation updates, cleanup of old files, and preparation for deploymen
   - [x] How to add products
   - [x] How to modify styles
   - [x] Contact information
-- [x] `DEVELOPER_ONBOARDING.md` reviewed and updated
+- [x] `README.md` reviewed and updated
 - [x] Migration documentation marked complete
 - [x] Links to all documentation verified
 - [x] Examples accurate for new structure
@@ -450,7 +450,7 @@ Phase 8 is complete when:
 
 ---
 
-[← Back to Phase 7](PHASE_7_TESTING.md) | [Back to Index](USER_STORIES_INDEX.md)
+[← Back to Phase 7](Phase_7_Testing.md) | [Back to Index](User_Stories_Index.md)
 
 ---
 

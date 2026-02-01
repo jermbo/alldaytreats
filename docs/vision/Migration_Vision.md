@@ -263,16 +263,10 @@ The current All Day Treats website works well but suffers from maintenance and s
 
 ## Related Documentation
 
-### Project Foundation (30,000ft)
-- [Original PRD](../../../PRD.md) - Initial project requirements
-- [Original README](../../../README.md) - Current site documentation
-
-### Architecture & Implementation (15,000ft)
-- [Migration Roadmap](../architecture/MIGRATION_ROADMAP.md) - Step-by-step migration plan *(to be created)*
-
-### VIBES Framework
-- [V.I.B.E.S. Methodology](../../docs/coding_with_vibes/README.md)
-- [30,000ft Guidelines](../../docs/coding_with_vibes/30k_documentation_guidelines.md)
+- [PRD](../../PRD.md) - Project requirements
+- [README](../../README.md) - Project overview
+- [Migration Roadmap](../architecture/Migration_Roadmap.md) - Step-by-step migration plan
+- [Project Status](../Project_Status.md) - Current status
 
 ---
 
@@ -284,4 +278,4 @@ The current All Day Treats website works well but suffers from maintenance and s
 
 ---
 
-*This document captures the "why" of the Astro migration. For the "how," see the [Migration Roadmap](../architecture/MIGRATION_ROADMAP.md).*
+*This document captured the "why" of the Astro migration. Migration completed January 2026.*

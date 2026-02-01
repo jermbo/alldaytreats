@@ -3,7 +3,6 @@
 ## 🚀 Get Running in 60 Seconds
 
 ```bash
-cd all-day-treats
 npm install
 npm run dev
 ```
@@ -13,14 +12,15 @@ Visit: `http://localhost:4321`
 ## 📁 Project at a Glance
 
 ```
-all-day-treats/
+alldaytreats/
 ├── src/
-│   ├── components/     # 8 Astro components
+│   ├── components/     # 10 Astro components
+│   ├── config/         # Site and toppings config
 │   ├── content/        # 9 product markdown files
 │   ├── layouts/        # Base layout
 │   ├── pages/          # index.astro
 │   ├── scripts/        # 8 JavaScript modules
-│   └── styles/         # 11 CSS files
+│   └── styles/         # 13 CSS files
 ├── public/images/      # Product images
 └── dist/               # Build output
 ```
@@ -40,7 +40,6 @@ npm run preview  # Preview production build
 
 ```markdown
 ---
-id: product-slug
 name: Product Name
 category: candy
 image: /images/product.jpg
@@ -48,8 +47,10 @@ priceFrom: 10
 priceOptions:
   - count: 6
     price: 10
+    sku: XX06
   - count: 8
     price: 15
+    sku: XX08
 order: 10
 ---
 
@@ -57,6 +58,8 @@ Product description here.
 ```
 
 3. Restart dev server - product appears!
+
+See [Sku_Reference.md](Sku_Reference.md) for SKU naming conventions.
 
 ## 🎨 Modifying Styles
 
@@ -87,10 +90,10 @@ npm run build
 
 ## 📚 Full Documentation
 
-- **README.md** - Complete guide
-- **DEPLOYMENT.md** - Deploy instructions
-- **TESTING_CHECKLIST.md** - QA guide
-- **MIGRATION_SUMMARY.md** - What changed
+- [README.md](../README.md) - Complete guide
+- [Project_Status.md](Project_Status.md) - Current status
+- [Deployment.md](Deployment.md) - Deploy instructions
+- [Testing_Checklist.md](Testing_Checklist.md) - QA guide
 
 ## 🚀 Deploy to Production
 
@@ -98,11 +101,11 @@ npm run build
 1. Push to GitHub
 2. Connect at netlify.com
 3. Build: `npm run build`
-4. Directory: `all-day-treats/dist`
+4. Directory: `dist`
 5. Deploy!
 
 ### Other Options
-See `DEPLOYMENT.md` for Vercel, Cloudflare Pages, etc.
+See `Deployment.md` for Vercel, Cloudflare Pages, etc.
 
 ## ✅ Verification
 

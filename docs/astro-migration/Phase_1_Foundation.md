@@ -207,4 +207,4 @@ Phase 1 is complete when:
 
 ---
 
-[← Back to User Stories Index](USER_STORIES_INDEX.md) | [Next: Phase 2 →](PHASE_2_CONTENT.md)
+[← Back to User Stories Index](User_Stories_Index.md) | [Next: Phase 2 →](Phase_2_Content.md)

@@ -3,11 +3,11 @@
 **Document Type:** Ground Level / Implementation
 **Part of:** [Coding with V.I.B.E.S.](../../docs/coding_with_vibes/README.md)
 **Status:** Active
-**Last Updated:** 2026-01-18
+**Last Updated:** 2026-02-01
 
 ## Purpose
 
-This document provides a comprehensive index of all user stories required to complete the Astro migration. User stories are organized by phase to match the [Migration Roadmap](../architecture/MIGRATION_ROADMAP.md).
+This document provides a comprehensive index of all user stories required to complete the Astro migration. User stories are organized by phase to match the [Migration Roadmap](../architecture/Migration_Roadmap.md).
 
 ## Epic Overview
 
@@ -21,14 +21,14 @@ User stories are organized into phase-specific files:
 
 | Phase | File | Stories | Status |
 |-------|------|---------|--------|
-| Phase 1 | [Foundation Setup](PHASE_1_FOUNDATION.md) | US-001 to US-002 | ⬜ Not Started |
-| Phase 2 | [Content Migration](PHASE_2_CONTENT.md) | US-003 | ⬜ Not Started |
-| Phase 3 | [Layout & Styles](PHASE_3_LAYOUT.md) | US-004 to US-005 | ⬜ Not Started |
-| Phase 4 | [Static Components](PHASE_4_STATIC.md) | US-006 to US-010 | ⬜ Not Started |
-| Phase 5 | [Interactive Components](PHASE_5_INTERACTIVE.md) | US-011 to US-013 | ⬜ Not Started |
-| Phase 6 | [JavaScript Migration](PHASE_6_JAVASCRIPT.md) | US-014 to US-021 | ⬜ Not Started |
-| Phase 7 | [Testing & Validation](PHASE_7_TESTING.md) | US-022 to US-025 | ⬜ Not Started |
-| Phase 8 | [Documentation & Cleanup](PHASE_8_CLEANUP.md) | US-026 to US-028 | ⬜ Not Started |
+| Phase 1 | [Foundation Setup](Phase_1_Foundation.md) | US-001 to US-002 | ✅ Complete |
+| Phase 2 | [Content Migration](Phase_2_Content.md) | US-003 | ✅ Complete |
+| Phase 3 | [Layout & Styles](Phase_3_Layout.md) | US-004 to US-005 | ✅ Complete |
+| Phase 4 | [Static Components](Phase_4_Static.md) | US-006 to US-010 | ✅ Complete |
+| Phase 5 | [Interactive Components](Phase_5_Interactive.md) | US-011 to US-013 | ✅ Complete |
+| Phase 6 | [JavaScript Migration](Phase_6_Javascript.md) | US-014 to US-021 | ✅ Complete |
+| Phase 7 | [Testing & Validation](Phase_7_Testing.md) | US-022 to US-025 | 🔄 In Progress |
+| Phase 8 | [Documentation & Cleanup](Phase_8_Cleanup.md) | US-026 to US-028 | ✅ Complete |
 
 ## Total User Stories: 28
 
@@ -131,9 +131,9 @@ Migration complete when:
 
 ## Related Documentation
 
-- [Migration Vision](../vision/MIGRATION_VISION.md) - Why we're migrating
-- [Migration Roadmap](../architecture/MIGRATION_ROADMAP.md) - Detailed architecture
-- [Developer Onboarding](../DEVELOPER_ONBOARDING.md) - Setup and workflow
+- [Migration Vision](../vision/Migration_Vision.md) - Why we're migrating
+- [Migration Roadmap](../architecture/Migration_Roadmap.md) - Detailed architecture
+- [README](../../README.md) - Project overview and setup
 
 ---
 

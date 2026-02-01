@@ -489,4 +489,4 @@ Phase 5 is complete when:
 
 ---
 
-[← Back to Phase 4](PHASE_4_STATIC.md) | [Back to Index](USER_STORIES_INDEX.md) | [Next: Phase 6 →](PHASE_6_JAVASCRIPT.md)
+[← Back to Phase 4](Phase_4_Static.md) | [Back to Index](User_Stories_Index.md) | [Next: Phase 6 →](Phase_6_Javascript.md)

@@ -214,4 +214,4 @@ Phase 2 is complete when:
 
 ---
 
-[← Back to Phase 1](PHASE_1_FOUNDATION.md) | [Back to Index](USER_STORIES_INDEX.md) | [Next: Phase 3 →](PHASE_3_LAYOUT.md)
+[← Back to Phase 1](Phase_1_Foundation.md) | [Back to Index](User_Stories_Index.md) | [Next: Phase 3 →](Phase_3_Layout.md)

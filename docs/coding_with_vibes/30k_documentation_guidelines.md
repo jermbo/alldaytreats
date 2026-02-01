@@ -149,7 +149,7 @@ Help me define the boundaries of this project so the scope is clear to developer
 Once you have your 30,000ft vision documents:
 
 1. **[Move to 15,000ft (Iterate)](15k_documentation_guidelines.md)** — Translate your vision into system architecture and design
-2. **Use the [V.I.B.E.S. Visual Overview](VIBES_visuals.md)** — See how all levels connect
+2. **Use the [V.I.B.E.S. Visual Overview](Vibes_Visuals.md)** — See how all levels connect
 3. **Return to [V.I.B.E.S. Home](README.md)** — Access the complete methodology
 
 ## Related V.I.B.E.S. Documents

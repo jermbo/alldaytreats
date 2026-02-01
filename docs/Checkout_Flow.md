@@ -191,7 +191,7 @@ Subtotal: $[total]
 
 Each product variant and topping has a unique SKU for order verification. The business can use these SKUs to verify that customers haven't altered pricing or product/topping details in the email.
 
-For the complete SKU reference with all products, quantities, and prices, see **[SKU_REFERENCE.md](SKU_REFERENCE.md)**.
+For the complete SKU reference with all products, quantities, and prices, see **[Sku_Reference.md](Sku_Reference.md)**.
 
 ## UX Decisions
 

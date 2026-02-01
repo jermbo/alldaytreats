@@ -1,9 +1,9 @@
 # Astro Migration Roadmap
 
 **Document Type:** 15,000ft (Iterate)
-**Part of:** [Coding with V.I.B.E.S.](../../docs/coding_with_vibes/README.md)
-**Status:** Active
-**Last Updated:** 2026-01-18
+**Part of:** [Coding with V.I.B.E.S.](../coding_with_vibes/README.md)
+**Status:** Complete
+**Last Updated:** 2026-02-01
 
 ## Purpose
 
@@ -41,7 +41,7 @@ alldaytreats/
 ### Target Architecture (Astro + Vanilla JS)
 
 ```
-all-day-treats/
+alldaytreats/
 ├── src/
 │   ├── assets/
 │   │   └── images/           # Optimized images (Astro handles)
@@ -608,7 +608,7 @@ Once migration complete and verified, consider:
 ## Related Documentation
 
 ### Vision (30,000ft)
-- [Migration Vision](../vision/MIGRATION_VISION.md) - Why we're migrating
+- [Migration Vision](../vision/Migration_Vision.md) - Why we're migrating
 
 ### Standards
 - [Coding with VIBES](../../docs/coding_with_vibes/README.md) - Development methodology
@@ -628,4 +628,4 @@ Once migration complete and verified, consider:
 
 ---
 
-*This document provides the "how" of the Astro migration. For the "why," see [Migration Vision](../vision/MIGRATION_VISION.md).*
+*This document provides the "how" of the Astro migration. For the "why," see [Migration Vision](../vision/Migration_Vision.md).*

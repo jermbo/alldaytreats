@@ -479,4 +479,4 @@ Phase 7 is complete when:
 
 ---
 
-[← Back to Phase 6](PHASE_6_JAVASCRIPT.md) | [Back to Index](USER_STORIES_INDEX.md) | [Next: Phase 8 →](PHASE_8_CLEANUP.md)
+[← Back to Phase 6](Phase_6_Javascript.md) | [Back to Index](User_Stories_Index.md) | [Next: Phase 8 →](Phase_8_Cleanup.md)

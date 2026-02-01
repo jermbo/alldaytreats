@@ -10,57 +10,16 @@ Custom chocolate-covered treats, candy grapes, strawberries, and dessert platter
 - **Content Collections** - Markdown-based product management
 - **TypeScript** - Type safety for main scripts
 
-## 📦 Project Structure
-
-```
-all-day-treats/
-├── src/
-│   ├── components/       # Astro components
-│   │   ├── Header.astro
-│   │   ├── Hero.astro
-│   │   ├── Menu.astro
-│   │   ├── ProductCard.astro
-│   │   ├── Footer.astro
-│   │   ├── CartPanel.astro
-│   │   ├── ProductModal.astro
-│   │   └── CheckoutPanel.astro
-│   ├── content/          # Content Collections
-│   │   ├── config.ts     # Content schema
-│   │   └── products/     # Product markdown files
-│   ├── layouts/          # Page layouts
-│   │   └── Layout.astro
-│   ├── pages/            # Routes
-│   │   └── index.astro
-│   ├── scripts/          # Client-side JavaScript
-│   │   ├── cart.js
-│   │   ├── cart-ui.js
-│   │   ├── product-modal.js
-│   │   ├── checkout-ui.js
-│   │   ├── validation.js
-│   │   ├── validation-ui.js
-│   │   ├── phone-formatter.js
-│   │   └── main.ts
-│   └── styles/           # Global CSS
-│       ├── variables.css
-│       ├── base.css
-│       ├── animations.css
-│       └── [feature].css
-├── public/
-│   └── images/           # Static images
-└── dist/                 # Build output (generated)
-```
-
 ## 🛠️ Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ installed
+- Node.js 22+ installed
 - npm or pnpm
 
 ### Installation
 
 ```bash
-cd all-day-treats
 npm install
 ```
 
@@ -98,23 +57,25 @@ Products are managed as markdown files in `src/content/products/`.
 
 ```markdown
 ---
-id: product-slug
 name: Product Name
-category: candy | chocolate | platter
+category: candy
 image: /images/product-image.jpg
 priceFrom: 10
 priceOptions:
   - count: 6
     price: 10
+    sku: XX06
   - count: 8
     price: 15
+    sku: XX08
   - count: 12
     price: 20
+    sku: XX12
 extraAddOns: 5
 order: 10
 ---
 
-Product description goes here. This will be displayed on the product card.
+Product description goes here.
 ```
 
 3. **Product will automatically appear** in the menu on next build/dev reload
@@ -123,14 +84,15 @@ Product description goes here. This will be displayed on the product card.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `id` | string | Yes | Unique identifier (URL-friendly) |
 | `name` | string | Yes | Display name |
-| `category` | enum | Yes | 'candy', 'chocolate', or 'platter' |
-| `image` | string | Yes | Path to image in `/public/images/` |
+| `category` | enum | Yes | `candy`, `chocolate`, or `platter` |
+| `image` | string | Yes | Path to image (e.g., `/images/product.jpg`) |
 | `priceFrom` | number | Yes | Starting price for display |
-| `priceOptions` | array | Yes | Array of {count, price} options |
-| `extraAddOns` | number | No | Cost per additional item (default: 5) |
+| `priceOptions` | array | Yes | Array of `{count, price, sku}` options |
+| `extraAddOns` | number | No | Cost per extra item (default: 5) |
 | `order` | number | No | Display order (default: 999) |
+
+**SKU Format:** Use 2-letter product code + count (e.g., `CG06` for Candy Grapes 6-pack). See [Sku_Reference.md](docs/Sku_Reference.md) for all codes.
 
 ## 🎨 Styling
 
@@ -161,7 +123,8 @@ Product description goes here. This will be displayed on the product card.
 
 - **Product Catalog** - Content collection-based product management
 - **Category Filtering** - Filter by candy, chocolate, or platters
-- **Product Modal** - View details, select quantity, add instructions
+- **Product Modal** - View details, select quantity, add toppings
+- **Toppings System** - Configurable toppings with dynamic pricing
 - **Shopping Cart** - Add/remove items, adjust quantities, persist in localStorage
 - **Checkout Form** - Customer information with validation
 - **Phone Formatting** - Automatic (555) 555-5555 formatting
@@ -171,7 +134,7 @@ Product description goes here. This will be displayed on the product card.
 
 ## 🧪 Testing
 
-Use the included `TESTING_CHECKLIST.md` for comprehensive testing.
+Use the included `Testing_Checklist.md` for comprehensive testing.
 
 ### Quick Smoke Test
 
@@ -196,6 +159,7 @@ npm run preview
 Open Chrome DevTools > Lighthouse > Run audit
 
 **Target Scores:**
+
 - Performance: ≥95
 - Accessibility: ≥95
 - Best Practices: ≥95
@@ -234,6 +198,7 @@ npm run build
 ## 📞 Contact Information
 
 Update contact information in:
+
 - `src/components/Header.astro`
 - `src/components/Footer.astro`
 - `src/layouts/Layout.astro` (meta description)
@@ -249,7 +214,7 @@ Update contact information in:
 
 ### Build fails
 
-- Check Node.js version (18+ required)
+- Check Node.js version (22+ required)
 - Clear node_modules: `rm -rf node_modules && npm install`
 - Check for syntax errors in markdown frontmatter
 
@@ -267,10 +232,11 @@ Update contact information in:
 
 ## 📚 Documentation
 
-- **Migration Docs:** `docs/astro-migration/`
-- **Developer Onboarding:** `docs/DEVELOPER_ONBOARDING.md`
-- **Testing Checklist:** `TESTING_CHECKLIST.md`
-- **PRD:** `../PRD.md`
+- **Project Status:** [docs/Project_Status.md](docs/Project_Status.md)
+- **Testing Checklist:** [docs/Testing_Checklist.md](docs/Testing_Checklist.md)
+- **Deployment Guide:** [docs/Deployment.md](docs/Deployment.md)
+- **SKU Reference:** [docs/Sku_Reference.md](docs/Sku_Reference.md)
+- **PRD:** [PRD.md](PRD.md)
 
 ## 🎯 Development Commands
 

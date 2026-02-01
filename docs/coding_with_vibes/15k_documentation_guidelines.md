@@ -160,4 +160,4 @@ Once you have your 15,000ft architecture documents:
 - **Main Hub:** [Coding with V.I.B.E.S.](README.md)
 - **Previous Level:** [30,000ft (Visualize) Guidelines](30k_documentation_guidelines.md)
 - **Next Level:** [5,000ft (Break) Guidelines](5k_documentation_guidelines.md)
-- **Supporting:** [V.I.B.E.S. Visual Overview](VIBES_visuals.md)
+- **Supporting:** [V.I.B.E.S. Visual Overview](Vibes_Visuals.md)

@@ -642,4 +642,4 @@ Phase 6 is complete when:
 
 ---
 
-[← Back to Phase 5](PHASE_5_INTERACTIVE.md) | [Back to Index](USER_STORIES_INDEX.md) | [Next: Phase 7 →](PHASE_7_TESTING.md)
+[← Back to Phase 5](Phase_5_Interactive.md) | [Back to Index](User_Stories_Index.md) | [Next: Phase 7 →](Phase_7_Testing.md)
