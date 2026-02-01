@@ -168,6 +168,7 @@ export const addToCart = (item) => {
 		quantity: item.quantity || 1,
 		unitPrice: item.price,
 		toppings: item.toppings || undefined,
+		sku: item.sku || "",
 	});
 
 	// Calculate total price
@@ -243,6 +244,7 @@ export const updateCartItem = (itemId, updates) => {
 	if (updates.quantity !== undefined) item.quantity = updates.quantity;
 	if (updates.unitPrice !== undefined) item.unitPrice = updates.unitPrice;
 	if (updates.toppings !== undefined) item.toppings = updates.toppings;
+	if (updates.sku !== undefined) item.sku = updates.sku;
 
 	// Ensure normalized structure
 	const normalized = normalizeCartItem(item);

@@ -6,10 +6,13 @@ priceFrom: 12
 priceOptions:
   - count: 6
     price: 12
+    sku: CCS06
   - count: 8
     price: 15
+    sku: CCS08
   - count: 12
     price: 20
+    sku: CCS12
 extraAddOns: 5
 order: 4
 ---

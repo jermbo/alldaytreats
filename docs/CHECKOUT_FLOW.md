@@ -177,6 +177,7 @@ Order:
 ------
 
 1. [Product Name] - [count]ct × [quantity]
+   SKU: [product variant SKU]
    Price: $[line total]
    Toppings: [topping names with prices]
    Notes: [item notes if any]
@@ -185,6 +186,12 @@ Order:
 Subtotal: $[total]
 ------
 ```
+
+### SKU Verification
+
+Each product variant and topping has a unique SKU for order verification. The business can use these SKUs to verify that customers haven't altered pricing or product/topping details in the email.
+
+For the complete SKU reference with all products, quantities, and prices, see **[SKU_REFERENCE.md](SKU_REFERENCE.md)**.
 
 ## UX Decisions
 

@@ -99,6 +99,7 @@ export const initProductModal = (dialogElement) => {
 					unitPrice: totalPrice,
 					specialInstructions: instructions,
 					toppings: toppingsData,
+					sku: selectedPriceOption.sku,
 				});
 			} else {
 				// Add new item
@@ -110,6 +111,7 @@ export const initProductModal = (dialogElement) => {
 					specialInstructions: instructions,
 					quantity: 1,
 					toppings: toppingsData,
+					sku: selectedPriceOption.sku,
 				});
 			}
 
@@ -258,7 +260,7 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 		// Pre-select if editing
 		if (preSelectedOption && count === preSelectedOption.count && price === preSelectedOption.price) {
 			option.classList.add("product-modal__quantity-option--selected");
-			selectedPriceOption = { count, price };
+			selectedPriceOption = { count, price, sku: preSelectedOption.sku || "" };
 		}
 
 		option.addEventListener("click", () => {
@@ -270,8 +272,11 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 			// Add selected class to clicked option
 			option.classList.add("product-modal__quantity-option--selected");
 
-			// Get price option data
-			selectedPriceOption = { count, price };
+			// Get price option data including SKU
+			const fullOption = currentProduct.priceOptions.find(
+				(opt) => opt.count === count && opt.price === price
+			);
+			selectedPriceOption = { count, price, sku: fullOption?.sku || "" };
 
 			// Regenerate toppings with new prices based on count
 			populateToppings(dialogElement);

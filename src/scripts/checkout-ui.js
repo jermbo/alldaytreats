@@ -539,6 +539,7 @@ const formatOrderEmail = (orderData) => {
 
 	items.forEach((item, index) => {
 		body += `${index + 1}. ${item.name} - ${item.count}ct × ${item.quantity}\n`;
+		body += `   SKU: ${item.sku || "N/A"}\n`;
 		body += `   Price: $${(item.unitPrice * item.quantity).toFixed(2)}\n`;
 
 		// Add toppings to order email
@@ -762,21 +763,22 @@ const formatToppingsForEmail = (toppings, count) => {
 		return "";
 	}
 
-	const toppingNames = allToppingIds
+	const toppingDetails = allToppingIds
 		.map((id) => {
 			const topping = getToppingById(id);
 			if (!topping) return null;
 
 			// Calculate dynamic price based on count
 			const price = calculateToppingPrice(topping.price, count);
+			// Include SKU for verification
 			if (price > 0) {
-				return `${topping.name} (+$${price})`;
+				return `${topping.name} [${topping.sku}] (+$${price})`;
 			}
-			return topping.name;
+			return `${topping.name} [${topping.sku}]`;
 		})
 		.filter(Boolean);
 
-	return toppingNames.join(", ");
+	return toppingDetails.join(", ");
 };
 
 /**

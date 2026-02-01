@@ -10,6 +10,7 @@ const products = defineCollection({
     priceOptions: z.array(z.object({
       count: z.number().positive(),
       price: z.number().positive(),
+      sku: z.string(), // Unique product variant identifier for order verification
     })),
     extraAddOns: z.number().default(5),
     order: z.number().default(999),
