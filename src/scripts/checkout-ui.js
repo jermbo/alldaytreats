@@ -77,6 +77,26 @@ export const initCheckoutUI = (modalElement) => {
 		setupFieldValidation(checkoutForm);
 	}
 
+	// Direct click handler on submit button for mobile compatibility
+	// Some mobile browsers don't properly trigger form submit on button click
+	if (submitBtn) {
+		submitBtn.addEventListener("click", () => {
+			if (!submitBtn.disabled && checkoutForm) {
+				const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
+				checkoutForm.dispatchEvent(submitEvent);
+			}
+		});
+
+		// Touchend handler for mobile devices where click might not fire
+		submitBtn.addEventListener("touchend", (e) => {
+			if (!submitBtn.disabled && checkoutForm) {
+				e.preventDefault();
+				const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
+				checkoutForm.dispatchEvent(submitEvent);
+			}
+		});
+	}
+
 	// Note: ESC key and backdrop click are NOT handled - modal is non-dismissable
 };
 
@@ -369,6 +389,7 @@ const handleFormSubmit = async (e) => {
 	try {
 		// Generate order ID and format the order
 		orderId = generateOrderId();
+		
 		const orderData = {
 			...formData,
 			items: getCartItems(),
@@ -381,8 +402,59 @@ const handleFormSubmit = async (e) => {
 
 		// Go to instructions step
 		goToStep("instructions");
+	} catch (error) {
+		console.error("Error during checkout:", error);
 	} finally {
 		setLoadingState(false);
+	}
+};
+
+/**
+ * Copy text to clipboard with fallback for mobile/HTTP
+ * @param {string} text - Text to copy
+ * @returns {Promise<boolean>} - Whether copy succeeded
+ */
+const copyToClipboard = async (text) => {
+	// Try modern clipboard API first (requires HTTPS)
+	if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+		try {
+			await navigator.clipboard.writeText(text);
+			return true;
+		} catch (err) {
+			// Fall through to legacy method
+		}
+	}
+
+	// Fallback: use legacy execCommand with temporary textarea
+	try {
+		const textarea = document.createElement("textarea");
+		textarea.value = text;
+		// Prevent scrolling to bottom on iOS
+		textarea.style.position = "fixed";
+		textarea.style.top = "0";
+		textarea.style.left = "0";
+		textarea.style.width = "2em";
+		textarea.style.height = "2em";
+		textarea.style.padding = "0";
+		textarea.style.border = "none";
+		textarea.style.outline = "none";
+		textarea.style.boxShadow = "none";
+		textarea.style.background = "transparent";
+		textarea.style.fontSize = "16px"; // Prevent zoom on iOS
+		
+		document.body.appendChild(textarea);
+		textarea.focus();
+		textarea.select();
+		
+		// For iOS
+		textarea.setSelectionRange(0, textarea.value.length);
+		
+		const success = document.execCommand("copy");
+		document.body.removeChild(textarea);
+		return success;
+	} catch (err) {
+		console.error("Fallback copy failed:", err);
+		return false;
 	}
 };
 
@@ -392,9 +464,9 @@ const handleFormSubmit = async (e) => {
  * @returns {Promise<void>}
  */
 const copyOrderToClipboard = async (button) => {
-	try {
-		await navigator.clipboard.writeText(formattedOrderText);
+	const success = await copyToClipboard(formattedOrderText);
 
+	if (success) {
 		// Show "Copied!" feedback
 		if (button) {
 			const textEl = button.querySelector(".checkout-modal__btn-text");
@@ -409,10 +481,8 @@ const copyOrderToClipboard = async (button) => {
 				if (copiedEl) copiedEl.hidden = true;
 			}, 2000);
 		}
-	} catch (error) {
-		console.error("Failed to copy to clipboard:", error);
-		// Fallback: show alert with the text
-		alert("Could not copy to clipboard. Please manually copy the order details from the preview below.");
+	} else {
+		alert("Could not copy to clipboard. Please manually copy the order details.");
 	}
 };
 
@@ -435,7 +505,7 @@ const openEmailClient = () => {
 	});
 
 	// Copy to clipboard as fallback (in case email client doesn't open)
-	navigator.clipboard.writeText(formattedOrderText).catch(() => {
+	copyToClipboard(formattedOrderText).catch(() => {
 		// Silently fail - this is just a backup
 	});
 
@@ -505,11 +575,24 @@ const startAutoCloseCountdown = () => {
 };
 
 /**
- * Generate unique order ID using Web Crypto API
+ * Generate unique order ID with broad browser compatibility
  * @returns {string} - 8 character unique ID
  */
 const generateOrderId = () => {
-	return crypto.randomUUID().substring(0, 8);
+	// Try crypto.randomUUID first (modern browsers with HTTPS)
+	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+		return crypto.randomUUID().substring(0, 8);
+	}
+	
+	// Fallback: use crypto.getRandomValues (broader support)
+	if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+		const array = new Uint8Array(4);
+		crypto.getRandomValues(array);
+		return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+	}
+	
+	// Final fallback: timestamp + random
+	return Date.now().toString(36).substring(-4) + Math.random().toString(36).substring(2, 6);
 };
 
 /**
