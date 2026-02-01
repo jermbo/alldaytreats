@@ -5,7 +5,7 @@
  */
 
 /* Invalid field state - using :user-invalid (only after user interaction) */
-.checkout__input:user-invalid {
+.checkout-modal__input:user-invalid {
 	border-color: var(--color-error);
 	background-color: rgba(255, 107, 107, 0.1);
 
@@ -16,7 +16,7 @@
 }
 
 /* Valid field state - using :user-valid (only after user interaction) */
-.checkout__input:user-valid {
+.checkout-modal__input:user-valid {
 	border-color: var(--color-success);
 
 	&:focus {
@@ -26,7 +26,7 @@
 }
 
 /* Error message container (still managed by JS for custom messages) */
-.checkout__error {
+.checkout-modal__error {
 	display: none;
 	color: var(--color-error-muted);
 	font-size: var(--font-size-xs);
@@ -34,7 +34,7 @@
 	line-height: 1.4;
 	font-weight: 500;
 
-	&.checkout__error--visible {
+	&.checkout-modal__error--visible {
 		display: block;
 		animation: slideDown var(--transition-fast) ease;
 	}
@@ -53,22 +53,22 @@
 }
 
 /* Form group with invalid field */
-.checkout__form-group:has(.checkout__input:user-invalid) {
-	.checkout__label {
+.checkout-modal__form-group:has(.checkout-modal__input:user-invalid) {
+	.checkout-modal__label {
 		color: var(--color-error-muted);
 	}
 }
 
 /* Form group with valid field */
-.checkout__form-group:has(.checkout__input:user-valid) {
-	.checkout__label {
+.checkout-modal__form-group:has(.checkout-modal__input:user-valid) {
+	.checkout-modal__label {
 		color: var(--color-success);
 	}
 }
 
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
-	.checkout__error {
+	.checkout-modal__error {
 		animation: none;
 	}
 }

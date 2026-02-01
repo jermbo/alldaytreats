@@ -26,7 +26,7 @@ export const showFieldError = (field, message) => {
 
 	// Display error message
 	errorContainer.textContent = message;
-	errorContainer.classList.add("checkout__error--visible");
+	errorContainer.classList.add("checkout-modal__error--visible");
 };
 
 /**
@@ -50,7 +50,7 @@ export const clearFieldError = (field) => {
 
 	// Clear error message
 	errorContainer.textContent = "";
-	errorContainer.classList.remove("checkout__error--visible");
+	errorContainer.classList.remove("checkout-modal__error--visible");
 };
 
 /**
@@ -62,16 +62,16 @@ export const clearAllErrors = (form) => {
 	if (!form) return;
 
 	// Clear all input field ARIA attributes
-	const fields = form.querySelectorAll(".checkout__input");
+	const fields = form.querySelectorAll(".checkout-modal__input");
 	fields.forEach((field) => {
 		field.setAttribute("aria-invalid", "false");
 	});
 
 	// Clear all error messages
-	const errorContainers = form.querySelectorAll(".checkout__error");
+	const errorContainers = form.querySelectorAll(".checkout-modal__error");
 	errorContainers.forEach((container) => {
 		container.textContent = "";
-		container.classList.remove("checkout__error--visible");
+		container.classList.remove("checkout-modal__error--visible");
 	});
 };
 

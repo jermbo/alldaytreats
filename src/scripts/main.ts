@@ -21,9 +21,9 @@ const initializeApp = () => {
   }
 
   // Initialize checkout UI
-  const checkoutPanel = document.querySelector(".checkout") as HTMLElement;
-  if (checkoutPanel) {
-    initCheckoutUI(checkoutPanel);
+  const checkoutModal = document.querySelector(".checkout-modal") as HTMLElement;
+  if (checkoutModal) {
+    initCheckoutUI(checkoutModal);
   }
 
   // Initialize cart badge

@@ -15,65 +15,62 @@ import {
 import { initPhoneFormatter } from "./phone-formatter.js";
 import { getToppingById, calculateToppingPrice } from "../config/toppings.ts";
 
-let checkoutPanel = null;
+// Modal element references
+let checkoutModal = null;
 let checkoutForm = null;
+
+// Step elements
+let stepInfo = null;
+let stepInstructions = null;
+let stepSuccess = null;
 
 // Cached DOM references
 let summaryItemsContainer = null;
 let summarySubtotalEl = null;
 let summaryTotalEl = null;
-let contentSection = null;
-let successSection = null;
-let errorSection = null;
 let submitBtn = null;
+let previewTextEl = null;
+let countdownEl = null;
+
+// State
+let currentStep = "info";
+let formattedOrderText = "";
+let orderId = "";
+let autoCloseTimer = null;
+let countdownInterval = null;
 
 /**
  * Initialize checkout UI
- * @param {HTMLElement} panelElement - Checkout panel element
+ * @param {HTMLElement} modalElement - Checkout modal element
  * @returns {void}
  */
-export const initCheckoutUI = (panelElement) => {
-	checkoutPanel = panelElement;
+export const initCheckoutUI = (modalElement) => {
+	checkoutModal = modalElement;
 
-	if (!checkoutPanel) return;
+	if (!checkoutModal) return;
+
+	// Cache step elements
+	stepInfo = checkoutModal.querySelector('[data-step="info"]');
+	stepInstructions = checkoutModal.querySelector('[data-step="instructions"]');
+	stepSuccess = checkoutModal.querySelector('[data-step="success"]');
 
 	// Cache DOM references
-	summaryItemsContainer = checkoutPanel.querySelector(".checkout__summary-items");
-	summarySubtotalEl = checkoutPanel.querySelector(".checkout__summary-subtotal");
-	summaryTotalEl = checkoutPanel.querySelector(".checkout__summary-total");
-	contentSection = checkoutPanel.querySelector(".checkout__content");
-	successSection = checkoutPanel.querySelector(".checkout__success");
-	errorSection = checkoutPanel.querySelector(".checkout__error-state");
-	checkoutForm = checkoutPanel.querySelector("#checkout-form");
-	submitBtn = checkoutPanel.querySelector(".checkout__submit-btn");
+	summaryItemsContainer = checkoutModal.querySelector(".checkout-modal__summary-items");
+	summarySubtotalEl = checkoutModal.querySelector(".checkout-modal__summary-subtotal");
+	summaryTotalEl = checkoutModal.querySelector(".checkout-modal__summary-total");
+	checkoutForm = checkoutModal.querySelector("#checkout-form");
+	submitBtn = checkoutModal.querySelector(".checkout-modal__btn--primary");
+	previewTextEl = checkoutModal.querySelector(".checkout-modal__preview-text");
+	countdownEl = checkoutModal.querySelector(".checkout-modal__countdown-value");
 
-	const closeBtn = checkoutPanel.querySelector(".checkout__close");
-	const backdrop = checkoutPanel.querySelector(".checkout__backdrop");
-	const retryBtn = checkoutPanel.querySelector(".checkout__retry-btn");
-
-	// Close button handler
-	if (closeBtn) {
-		closeBtn.addEventListener("click", closeCheckout);
-	}
-
-	// Backdrop click handler
-	if (backdrop) {
-		backdrop.addEventListener("click", closeCheckout);
-	}
-
-	// Retry button handler
-	if (retryBtn) {
-		retryBtn.addEventListener("click", () => {
-			showContent();
-		});
-	}
+	// Setup button handlers using data-action attributes
+	checkoutModal.addEventListener("click", handleModalClick);
 
 	// Form submission handler
 	if (checkoutForm) {
 		checkoutForm.addEventListener("submit", handleFormSubmit);
 
-		// Initialize phone number formatter BEFORE validation
-		// This ensures formatter runs first on input events
+		// Initialize phone number formatter
 		const phoneField = checkoutForm.querySelector("#checkout-phone");
 		if (phoneField) {
 			initPhoneFormatter(phoneField);
@@ -82,12 +79,73 @@ export const initCheckoutUI = (panelElement) => {
 		setupFieldValidation(checkoutForm);
 	}
 
-	// Close on ESC key
-	document.addEventListener("keydown", (e) => {
-		if (e.key === "Escape" && isCheckoutOpen()) {
+	// Note: ESC key and backdrop click are NOT handled - modal is non-dismissable
+};
+
+/**
+ * Handle clicks on modal buttons via data-action
+ * @param {Event} e - Click event
+ * @returns {void}
+ */
+const handleModalClick = (e) => {
+	const action = e.target.closest("[data-action]")?.dataset.action;
+	if (!action) return;
+
+	switch (action) {
+		case "cancel":
 			closeCheckout();
-		}
-	});
+			break;
+		case "back":
+			goToStep("info");
+			break;
+		case "copy":
+			copyOrderToClipboard(e.target.closest("[data-action]"));
+			break;
+		case "email":
+			openEmailClient();
+			break;
+		case "confirm":
+			confirmOrderSent();
+			break;
+		case "close":
+			closeCheckout();
+			break;
+	}
+};
+
+/**
+ * Navigate to a specific step
+ * @param {string} step - Step name: "info", "instructions", or "success"
+ * @returns {void}
+ */
+const goToStep = (step) => {
+	currentStep = step;
+
+	// Hide all steps
+	if (stepInfo) stepInfo.hidden = true;
+	if (stepInstructions) stepInstructions.hidden = true;
+	if (stepSuccess) stepSuccess.hidden = true;
+
+	// Show the target step
+	switch (step) {
+		case "info":
+			if (stepInfo) stepInfo.hidden = false;
+			// Focus on first form field
+			if (checkoutForm) {
+				const firstField = checkoutForm.querySelector("#checkout-name");
+				if (firstField) {
+					setTimeout(() => firstField.focus(), 100);
+				}
+			}
+			break;
+		case "instructions":
+			if (stepInstructions) stepInstructions.hidden = false;
+			break;
+		case "success":
+			if (stepSuccess) stepSuccess.hidden = false;
+			startAutoCloseCountdown();
+			break;
+	}
 };
 
 /**
@@ -226,19 +284,19 @@ const setupFieldValidation = (form) => {
 	}
 
 	// Character counter for notes field
-	const charCountValue = form.querySelector(".checkout__char-count-value");
+	const charCountValue = form.querySelector(".checkout-modal__char-count-value");
 	const updateCharCount = () => {
 		if (charCountValue && notesField) {
 			const length = notesField.value.length;
 			charCountValue.textContent = length;
 
 			// Add warning class if approaching limit
-			const charCountContainer = charCountValue.closest(".checkout__char-count");
+			const charCountContainer = charCountValue.closest(".checkout-modal__char-count");
 			if (charCountContainer) {
 				if (length > 400) {
-					charCountContainer.classList.add("checkout__char-count--warning");
+					charCountContainer.classList.add("checkout-modal__char-count--warning");
 				} else {
-					charCountContainer.classList.remove("checkout__char-count--warning");
+					charCountContainer.classList.remove("checkout-modal__char-count--warning");
 				}
 			}
 		}
@@ -261,7 +319,7 @@ const setupFieldValidation = (form) => {
 };
 
 /**
- * Handle form submission
+ * Handle form submission - validates and moves to step 2
  * @param {Event} e - Submit event
  * @returns {void}
  */
@@ -307,32 +365,150 @@ const handleFormSubmit = async (e) => {
 		return;
 	}
 
-	// Form is valid, proceed with submission
+	// Form is valid, prepare order and go to instructions step
 	setLoadingState(true);
 
 	try {
-		const result = await submitOrder({
+		// Generate order ID and format the order
+		orderId = generateOrderId();
+		const orderData = {
 			...formData,
 			items: getCartItems(),
 			subtotal: getCartSubtotal(),
-		});
+		};
 
-		// Show success state with instructions
-		const successMessage = "Your email client has been opened with your order details. Please review and click send to complete your order.";
-		showSuccess(successMessage, result.formattedOrder);
+		const subject = `Treat Order #${orderId}`;
+		const body = formatOrderEmail(orderData);
+		formattedOrderText = `${subject}\n\n${body}`;
 
-		// Clear cart
-		clearCart();
+		// Update the preview text
+		if (previewTextEl) {
+			previewTextEl.textContent = formattedOrderText;
+		}
 
-		// Reset form
-		checkoutForm.reset();
-		clearAllErrors(checkoutForm);
-	} catch (error) {
-		// Show error state
-		showError(error.message || "An error occurred while preparing your order. Please try again.");
+		// Go to instructions step
+		goToStep("instructions");
 	} finally {
 		setLoadingState(false);
 	}
+};
+
+/**
+ * Copy order text to clipboard
+ * @param {HTMLElement} button - The copy button element
+ * @returns {Promise<void>}
+ */
+const copyOrderToClipboard = async (button) => {
+	try {
+		await navigator.clipboard.writeText(formattedOrderText);
+
+		// Show "Copied!" feedback
+		if (button) {
+			const textEl = button.querySelector(".checkout-modal__btn-text");
+			const copiedEl = button.querySelector(".checkout-modal__btn-copied");
+
+			if (textEl) textEl.hidden = true;
+			if (copiedEl) copiedEl.hidden = false;
+
+			// Reset after 2 seconds
+			setTimeout(() => {
+				if (textEl) textEl.hidden = false;
+				if (copiedEl) copiedEl.hidden = true;
+			}, 2000);
+		}
+	} catch (error) {
+		console.error("Failed to copy to clipboard:", error);
+		// Fallback: show alert with the text
+		alert("Could not copy to clipboard. Please manually copy the order details from the preview below.");
+	}
+};
+
+/**
+ * Open email client with order details
+ * Also copies to clipboard as fallback
+ * @returns {void}
+ */
+const openEmailClient = () => {
+	const businessEmail = "alldaytreats@gmail.com";
+	const subject = `Treat Order #${orderId}`;
+	const body = formatOrderEmail({
+		name: (checkoutForm?.querySelector("#checkout-name")?.value || "").trim(),
+		email: (checkoutForm?.querySelector("#checkout-email")?.value || "").trim(),
+		phone: (checkoutForm?.querySelector("#checkout-phone")?.value || "").trim(),
+		address: (checkoutForm?.querySelector("#checkout-address")?.value || "").trim(),
+		notes: (checkoutForm?.querySelector("#checkout-notes")?.value || "").trim(),
+		items: getCartItems(),
+		subtotal: getCartSubtotal(),
+	});
+
+	// Copy to clipboard as fallback (in case email client doesn't open)
+	navigator.clipboard.writeText(formattedOrderText).catch(() => {
+		// Silently fail - this is just a backup
+	});
+
+	// Create mailto link
+	const mailtoLink = `mailto:${businessEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+	// Try to open email client
+	const anchor = document.createElement("a");
+	anchor.href = mailtoLink;
+	anchor.target = "_blank";
+	anchor.rel = "noopener noreferrer";
+	document.body.appendChild(anchor);
+	anchor.click();
+	document.body.removeChild(anchor);
+};
+
+/**
+ * Confirm order has been sent - clears cart and shows success
+ * @returns {void}
+ */
+const confirmOrderSent = () => {
+	// Clear cart
+	clearCart();
+
+	// Reset form
+	if (checkoutForm) {
+		checkoutForm.reset();
+		clearAllErrors(checkoutForm);
+	}
+
+	// Go to success step
+	goToStep("success");
+};
+
+/**
+ * Start auto-close countdown for success step
+ * @returns {void}
+ */
+const startAutoCloseCountdown = () => {
+	let countdown = 5;
+
+	// Update countdown display
+	if (countdownEl) {
+		countdownEl.textContent = countdown;
+	}
+
+	// Clear any existing timers
+	if (countdownInterval) clearInterval(countdownInterval);
+	if (autoCloseTimer) clearTimeout(autoCloseTimer);
+
+	// Start countdown
+	countdownInterval = setInterval(() => {
+		countdown--;
+		if (countdownEl) {
+			countdownEl.textContent = countdown;
+		}
+		if (countdown <= 0) {
+			clearInterval(countdownInterval);
+		}
+	}, 1000);
+
+	// Auto-close after 5 seconds
+	autoCloseTimer = setTimeout(() => {
+		clearInterval(countdownInterval);
+		closeCheckout();
+	}, 5000);
 };
 
 /**
@@ -385,36 +561,6 @@ const formatOrderEmail = (orderData) => {
 };
 
 /**
- * Submit order via email
- * @param {Object} orderData - Order data
- * @returns {Promise}
- */
-const submitOrder = async (orderData) => {
-	const orderId = generateOrderId();
-	const businessEmail = "alldaytreats@gmail.com";
-	const subject = `Treat Order #${orderId}`;
-	const body = formatOrderEmail(orderData);
-
-	// Create mailto link
-	const mailtoLink = `mailto:${businessEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-	// Try to open email client in new context (prevents page navigation)
-	try {
-		const anchor = document.createElement('a');
-		anchor.href = mailtoLink;
-		anchor.target = '_blank';
-		anchor.rel = 'noopener noreferrer';
-		document.body.appendChild(anchor);
-		anchor.click();
-		document.body.removeChild(anchor);
-		return Promise.resolve({ success: true, orderId, formattedOrder: `${subject}\n\n${body}` });
-	} catch (error) {
-		// If mailto fails, still return success with fallback data
-		return Promise.resolve({ success: true, orderId, formattedOrder: `${subject}\n\n${body}`, requiresFallback: true });
-	}
-};
-
-/**
  * Set loading state on submit button
  * @param {boolean} isLoading - Loading state
  * @returns {void}
@@ -423,102 +569,20 @@ const setLoadingState = (isLoading) => {
 	if (!submitBtn) return;
 
 	if (isLoading) {
-		submitBtn.classList.add("checkout__submit-btn--loading");
+		submitBtn.classList.add("checkout-modal__btn--loading");
 		submitBtn.disabled = true;
 	} else {
-		submitBtn.classList.remove("checkout__submit-btn--loading");
+		submitBtn.classList.remove("checkout-modal__btn--loading");
 		submitBtn.disabled = false;
 	}
 };
 
 /**
- * Show content section
- * @returns {void}
- */
-const showContent = () => {
-	if (contentSection) contentSection.hidden = false;
-	if (successSection) successSection.hidden = true;
-	if (errorSection) errorSection.hidden = true;
-};
-
-/**
- * Show success state
- * @param {string} message - Success message
- * @param {string} formattedOrder - Formatted order text for fallback
- * @returns {void}
- */
-const showSuccess = (message, formattedOrder = null) => {
-	if (contentSection) contentSection.hidden = true;
-	if (errorSection) errorSection.hidden = true;
-	if (successSection) {
-		successSection.hidden = false;
-		const messageEl = successSection.querySelector(".checkout__success-message");
-		if (messageEl) {
-			messageEl.textContent = message;
-		}
-
-		// Show fallback section with copy functionality
-		if (formattedOrder) {
-			const fallbackSection = successSection.querySelector(".checkout__success-fallback");
-			const orderTextEl = successSection.querySelector(".checkout__success-order-text");
-			const copyBtn = successSection.querySelector(".checkout__success-copy-btn");
-
-			if (fallbackSection && orderTextEl) {
-				fallbackSection.hidden = false;
-				orderTextEl.textContent = formattedOrder;
-			}
-
-			// Setup copy button
-			if (copyBtn && orderTextEl) {
-				// Remove existing listeners
-				const newCopyBtn = copyBtn.cloneNode(true);
-				copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
-
-				newCopyBtn.addEventListener("click", async () => {
-					try {
-						await navigator.clipboard.writeText(formattedOrder);
-						newCopyBtn.classList.add("checkout__success-copy-btn--copied");
-						setTimeout(() => {
-							newCopyBtn.classList.remove("checkout__success-copy-btn--copied");
-						}, 2000);
-					} catch (error) {
-						console.error("Failed to copy to clipboard:", error);
-						// Fallback: select the text
-						const range = document.createRange();
-						range.selectNodeContents(orderTextEl);
-						const selection = window.getSelection();
-						selection.removeAllRanges();
-						selection.addRange(range);
-					}
-				});
-			}
-		}
-	}
-};
-
-/**
- * Show error state
- * @param {string} message - Error message
- * @returns {void}
- */
-const showError = (message) => {
-	if (contentSection) contentSection.hidden = true;
-	if (successSection) successSection.hidden = true;
-	if (errorSection) {
-		errorSection.hidden = false;
-		const messageEl = errorSection.querySelector(".checkout__error-message");
-		if (messageEl) {
-			messageEl.textContent = message;
-		}
-	}
-};
-
-/**
- * Open checkout panel
+ * Open checkout modal
  * @returns {void}
  */
 export const openCheckout = () => {
-	if (!checkoutPanel) return;
+	if (!checkoutModal) return;
 
 	// Make sure we have items in cart
 	const cartItems = getCartItems();
@@ -527,8 +591,17 @@ export const openCheckout = () => {
 		return;
 	}
 
-	// Reset to content view
-	showContent();
+	// Reset state
+	currentStep = "info";
+	formattedOrderText = "";
+	orderId = "";
+
+	// Clear any existing timers
+	if (countdownInterval) clearInterval(countdownInterval);
+	if (autoCloseTimer) clearTimeout(autoCloseTimer);
+
+	// Reset to step 1
+	goToStep("info");
 
 	// Render order summary
 	renderOrderSummary();
@@ -538,34 +611,30 @@ export const openCheckout = () => {
 		updateSubmitButtonState(checkoutForm);
 	}
 
-	// Show panel
-	checkoutPanel.hidden = false;
-	checkoutPanel.classList.add("checkout--open");
+	// Show modal
+	checkoutModal.hidden = false;
+	checkoutModal.classList.add("checkout-modal--open");
 	document.body.style.overflow = "hidden";
-
-	// Focus on first form field
-	if (checkoutForm) {
-		const firstField = checkoutForm.querySelector("#checkout-name");
-		if (firstField) {
-			setTimeout(() => firstField.focus(), 100);
-		}
-	}
 };
 
 /**
- * Close checkout panel
+ * Close checkout modal
  * @returns {void}
  */
 export const closeCheckout = () => {
-	if (!checkoutPanel) return;
+	if (!checkoutModal) return;
 
-	checkoutPanel.classList.remove("checkout--open");
+	// Clear timers
+	if (countdownInterval) clearInterval(countdownInterval);
+	if (autoCloseTimer) clearTimeout(autoCloseTimer);
+
+	checkoutModal.classList.remove("checkout-modal--open");
 	document.body.style.overflow = "";
 
-	// Hide panel after animation
+	// Hide modal after animation
 	setTimeout(() => {
-		if (!checkoutPanel.classList.contains("checkout--open")) {
-			checkoutPanel.hidden = true;
+		if (!checkoutModal.classList.contains("checkout-modal--open")) {
+			checkoutModal.hidden = true;
 		}
 	}, 300);
 };
@@ -575,7 +644,7 @@ export const closeCheckout = () => {
  * @returns {boolean}
  */
 const isCheckoutOpen = () => {
-	return checkoutPanel?.classList.contains("checkout--open");
+	return checkoutModal?.classList.contains("checkout-modal--open");
 };
 
 /**
@@ -593,7 +662,6 @@ const renderOrderSummary = () => {
 
 	// Render each item
 	cartItems.forEach((item) => {
-		const product = window.PRODUCTS.find((p) => p.id === item.productId);
 		const quantity = item.quantity || 1;
 		const unitPrice = item.unitPrice !== undefined ? item.unitPrice : item.price;
 		const lineTotal = unitPrice * quantity;
@@ -602,14 +670,14 @@ const renderOrderSummary = () => {
 		const toppingsText = formatToppingsForDisplay(item.toppings, item.count);
 
 		const itemEl = document.createElement("div");
-		itemEl.className = "checkout__summary-item";
+		itemEl.className = "checkout-modal__summary-item";
 		itemEl.innerHTML = `
-			<div class="checkout__summary-item-details">
-				<span class="checkout__summary-item-name">${escapeHtml(item.name)}</span>
-				<span class="checkout__summary-item-meta">${item.count}ct × ${quantity}</span>
-				${toppingsText ? `<span class="checkout__summary-item-toppings">${toppingsText}</span>` : ""}
+			<div class="checkout-modal__summary-item-details">
+				<span class="checkout-modal__summary-item-name">${escapeHtml(item.name)}</span>
+				<span class="checkout-modal__summary-item-meta">${item.count}ct × ${quantity}</span>
+				${toppingsText ? `<span class="checkout-modal__summary-item-toppings">${toppingsText}</span>` : ""}
 			</div>
-			<span class="checkout__summary-item-price">$${lineTotal.toFixed(2)}</span>
+			<span class="checkout-modal__summary-item-price">$${lineTotal.toFixed(2)}</span>
 		`;
 		summaryItemsContainer.appendChild(itemEl);
 	});
