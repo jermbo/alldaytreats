@@ -84,7 +84,7 @@ Cart Panel (empty)
 - Order summary displayed at top showing all cart items
 - Real-time validation on blur
 - Submit button disabled until all required fields are valid
-- Honeypot field for spam prevention
+- Spam prevention measures (see [Spam Prevention](#spam-prevention) section)
 
 **Actions:**
 - **Cancel** - Closes modal, returns to cart (cart preserved)
@@ -215,6 +215,37 @@ The success screen auto-closes after 5 seconds to return the user to browsing. T
 - Sets expectations for the user
 - Allows them to close sooner if desired
 - Gives time to read the disclaimer
+
+## Spam Prevention
+
+The checkout form includes two layers of bot detection. These are intentionally undocumented in code comments to avoid detection by bots that parse source code.
+
+### Layer 1: Hidden Field
+
+A visually hidden form field (`#checkout-website`) is included in the form. Real users cannot see or interact with it due to CSS. Bots that fill all form fields will populate this field, triggering rejection.
+
+**Implementation details:**
+- Field uses `name="website"` to appear as a legitimate optional field
+- Hidden using `clip-path` technique rather than `display: none` (which bots commonly detect)
+- CSS class uses generic naming (`--alt` modifier) to avoid detection
+- No inline comments in HTML/CSS/JS that reveal its purpose
+
+### Layer 2: Timing Validation
+
+A hidden timestamp field (`#checkout-form-ts`) records when the form was opened. Submissions that occur in under 3 seconds are rejected.
+
+**Rationale:** Humans need time to read and fill a form. Bots typically submit instantly.
+
+### Rejection Behavior
+
+Both checks fail silently with an early `return` - no error messages, console warnings, or user feedback. This prevents attackers from knowing which check they failed.
+
+### Future Considerations
+
+If bot attacks increase, consider:
+- Rate limiting by IP (requires server-side implementation)
+- CAPTCHA integration (last resort - impacts UX)
+- Additional timing checks (e.g., detecting fields filled too uniformly)
 
 ## Accessibility
 

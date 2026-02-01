@@ -346,12 +346,20 @@ const handleFormSubmit = async (e) => {
 
 	if (!checkoutForm) return;
 
-	// Check honeypot field
-	const honeypot = checkoutForm.querySelector("#checkout-honeypot");
-	if (honeypot && honeypot.value) {
-		// Likely spam, silently fail
-		console.warn("Honeypot field filled, ignoring submission");
+	const websiteField = checkoutForm.querySelector("#checkout-website");
+	const timestampField = checkoutForm.querySelector("#checkout-form-ts");
+
+	if (websiteField && websiteField.value) {
 		return;
+	}
+
+	if (timestampField && timestampField.value) {
+		const loadTime = parseInt(timestampField.value, 10);
+		const elapsedSeconds = (Date.now() - loadTime) / 1000;
+
+		if (elapsedSeconds < 3) {
+			return;
+		}
 	}
 
 	// Get form data (trim all values)
@@ -686,6 +694,11 @@ export const openCheckout = () => {
 	// Reset submit button state
 	if (checkoutForm) {
 		updateSubmitButtonState(checkoutForm);
+	}
+
+	const timestampField = checkoutForm?.querySelector("#checkout-form-ts");
+	if (timestampField) {
+		timestampField.value = Date.now().toString();
 	}
 
 	// Show modal

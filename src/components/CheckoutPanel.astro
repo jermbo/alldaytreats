@@ -126,18 +126,24 @@
               </div>
             </div>
 
-            <!-- Honeypot field for spam prevention - uses obscure name to avoid mobile autofill -->
-            <input
-              type="text"
-              name="fax_number_do_not_fill"
-              id="checkout-honeypot"
-              class="checkout-modal__honeypot"
-              tabindex="-1"
-              autocomplete="new-password"
-              aria-hidden="true"
-              data-lpignore="true"
-              data-1p-ignore="true"
-            />
+            <div class="checkout-modal__form-group checkout-modal__form-group--alt">
+              <label for="checkout-website" class="checkout-modal__label">
+                Website (leave blank)
+              </label>
+              <input
+                type="text"
+                name="website"
+                id="checkout-website"
+                class="checkout-modal__input"
+                tabindex="-1"
+                autocomplete="off"
+                aria-hidden="true"
+                data-lpignore="true"
+                data-1p-ignore="true"
+              />
+            </div>
+
+            <input type="hidden" name="form_loaded" id="checkout-form-ts" value="" />
 
             <div class="checkout-modal__form-actions">
               <button
