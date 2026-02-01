@@ -29,7 +29,6 @@ let summaryItemsContainer = null;
 let summarySubtotalEl = null;
 let summaryTotalEl = null;
 let submitBtn = null;
-let previewTextEl = null;
 let countdownEl = null;
 
 // State
@@ -60,7 +59,6 @@ export const initCheckoutUI = (modalElement) => {
 	summaryTotalEl = checkoutModal.querySelector(".checkout-modal__summary-total");
 	checkoutForm = checkoutModal.querySelector("#checkout-form");
 	submitBtn = checkoutModal.querySelector(".checkout-modal__btn--primary");
-	previewTextEl = checkoutModal.querySelector(".checkout-modal__preview-text");
 	countdownEl = checkoutModal.querySelector(".checkout-modal__countdown-value");
 
 	// Setup button handlers using data-action attributes
@@ -381,11 +379,6 @@ const handleFormSubmit = async (e) => {
 		const body = formatOrderEmail(orderData);
 		formattedOrderText = `${subject}\n\n${body}`;
 
-		// Update the preview text
-		if (previewTextEl) {
-			previewTextEl.textContent = formattedOrderText;
-		}
-
 		// Go to instructions step
 		goToStep("instructions");
 	} finally {
@@ -538,8 +531,8 @@ const formatOrderEmail = (orderData) => {
 	body += `\n------\nOrder:\n------\n\n`;
 
 	items.forEach((item, index) => {
-		body += `${index + 1}. ${item.name} - ${item.count}ct × ${item.quantity}\n`;
-		body += `   SKU: ${item.sku || "N/A"}\n`;
+		const sku = item.sku ? ` [${item.sku}]` : "";
+		body += `${index + 1}. ${item.name}${sku} - ${item.count}ct × ${item.quantity}\n`;
 		body += `   Price: $${(item.unitPrice * item.quantity).toFixed(2)}\n`;
 
 		// Add toppings to order email

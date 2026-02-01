@@ -72,14 +72,13 @@ When you receive an order email, each line item will include:
 
 Example order line:
 ```
-1. Candy Strawberries - 8ct × 1
-   SKU: CS08
+1. Candy Strawberries [CS08] - 8ct × 1
    Price: $24.00
    Toppings: Nerds [NERD] (+$3), Starburst [STRB] (+$3)
 ```
 
 To verify:
-- CS08 = Candy Strawberries 8ct = $18.00
-- NERD (8ct) = $3.00
-- STRB (8ct) = $3.00
+- [CS08] = Candy Strawberries 8ct = $18.00
+- [NERD] (8ct) = $3.00
+- [STRB] (8ct) = $3.00
 - Total: $18 + $3 + $3 = $24.00 ✓
