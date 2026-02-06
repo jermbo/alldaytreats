@@ -27,8 +27,12 @@
               <span>Subtotal</span>
               <span class="checkout-modal__summary-subtotal">$0.00</span>
             </div>
+            <div class="checkout-modal__summary-row">
+              <span>Delivery</span>
+              <span class="checkout-modal__summary-delivery">--</span>
+            </div>
             <div class="checkout-modal__summary-row checkout-modal__summary-row--total">
-              <span>Estimated Total</span>
+              <span>Total</span>
               <span class="checkout-modal__summary-total">$0.00</span>
             </div>
           </div>
@@ -92,6 +96,23 @@
             </div>
 
             <div class="checkout-modal__form-group">
+              <label for="checkout-zipcode" class="checkout-modal__label">
+                Delivery Zip Code <span class="checkout-modal__required" aria-label="required">*</span>
+              </label>
+              <select
+                id="checkout-zipcode"
+                name="zipcode"
+                class="checkout-modal__input checkout-modal__select"
+                required
+                aria-required="true"
+                aria-describedby="checkout-zipcode-error"
+              >
+                <option value="">Select your zip code...</option>
+              </select>
+              <div class="checkout-modal__error" id="checkout-zipcode-error" role="alert" aria-live="polite"></div>
+            </div>
+
+            <div class="checkout-modal__form-group">
               <label for="checkout-address" class="checkout-modal__label">
                 Delivery Address <span class="checkout-modal__required" aria-label="required">*</span>
               </label>
@@ -102,6 +123,7 @@
                 autocomplete="street-address"
                 minlength="10"
                 rows="3"
+                placeholder="Street address, apt/unit, city"
                 required
                 aria-required="true"
                 aria-describedby="checkout-address-error"
@@ -209,7 +231,7 @@
 
           <div class="checkout-modal__confirm-section">
             <div class="checkout-modal__warning">
-              <strong>Important:</strong> Clicking the button below will clear your cart. 
+              <strong>Important:</strong> Clicking the button below will clear your cart.
               If you have not actually sent the email, your order will NOT be placed.
             </div>
             <button

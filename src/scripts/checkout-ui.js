@@ -4,6 +4,7 @@ import {
 	validateEmail,
 	validatePhone,
 	validateAddress,
+	validateZipCode,
 	validateForm,
 } from "./validation.js";
 import {
@@ -14,6 +15,7 @@ import {
 } from "./validation-ui.js";
 import { initPhoneFormatter } from "./phone-formatter.js";
 import { getToppingById, calculateToppingPrice } from "../config/toppings.ts";
+import { getDeliveryOptions, getDeliveryFee } from "../config/delivery.ts";
 
 // Modal element references
 let checkoutModal = null;
@@ -27,9 +29,11 @@ let stepSuccess = null;
 // Cached DOM references
 let summaryItemsContainer = null;
 let summarySubtotalEl = null;
+let summaryDeliveryEl = null;
 let summaryTotalEl = null;
 let submitBtn = null;
 let countdownEl = null;
+let zipCodeField = null;
 
 // State
 let currentStep = "info";
@@ -37,6 +41,7 @@ let formattedOrderText = "";
 let orderId = "";
 let autoCloseTimer = null;
 let countdownInterval = null;
+let selectedDeliveryFee = null;
 
 /**
  * Initialize checkout UI
@@ -54,12 +59,27 @@ export const initCheckoutUI = (modalElement) => {
 	stepSuccess = checkoutModal.querySelector('[data-step="success"]');
 
 	// Cache DOM references
-	summaryItemsContainer = checkoutModal.querySelector(".checkout-modal__summary-items");
-	summarySubtotalEl = checkoutModal.querySelector(".checkout-modal__summary-subtotal");
-	summaryTotalEl = checkoutModal.querySelector(".checkout-modal__summary-total");
+	summaryItemsContainer = checkoutModal.querySelector(
+		".checkout-modal__summary-items"
+	);
+	summarySubtotalEl = checkoutModal.querySelector(
+		".checkout-modal__summary-subtotal"
+	);
+	summaryDeliveryEl = checkoutModal.querySelector(
+		".checkout-modal__summary-delivery"
+	);
+	summaryTotalEl = checkoutModal.querySelector(
+		".checkout-modal__summary-total"
+	);
 	checkoutForm = checkoutModal.querySelector("#checkout-form");
 	submitBtn = checkoutModal.querySelector(".checkout-modal__btn--primary");
 	countdownEl = checkoutModal.querySelector(".checkout-modal__countdown-value");
+	zipCodeField = checkoutModal.querySelector("#checkout-zipcode");
+
+	// Populate zip code dropdown
+	if (zipCodeField) {
+		populateZipCodeDropdown(zipCodeField);
+	}
 
 	// Setup button handlers using data-action attributes
 	checkoutModal.addEventListener("click", handleModalClick);
@@ -82,7 +102,10 @@ export const initCheckoutUI = (modalElement) => {
 	if (submitBtn) {
 		submitBtn.addEventListener("click", () => {
 			if (!submitBtn.disabled && checkoutForm) {
-				const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
+				const submitEvent = new Event("submit", {
+					bubbles: true,
+					cancelable: true,
+				});
 				checkoutForm.dispatchEvent(submitEvent);
 			}
 		});
@@ -91,13 +114,73 @@ export const initCheckoutUI = (modalElement) => {
 		submitBtn.addEventListener("touchend", (e) => {
 			if (!submitBtn.disabled && checkoutForm) {
 				e.preventDefault();
-				const submitEvent = new Event("submit", { bubbles: true, cancelable: true });
+				const submitEvent = new Event("submit", {
+					bubbles: true,
+					cancelable: true,
+				});
 				checkoutForm.dispatchEvent(submitEvent);
 			}
 		});
 	}
 
 	// Note: ESC key and backdrop click are NOT handled - modal is non-dismissable
+};
+
+/**
+ * Populate zip code dropdown with delivery options
+ * @param {HTMLSelectElement} selectElement - The zip code select element
+ * @returns {void}
+ */
+const populateZipCodeDropdown = (selectElement) => {
+	if (!selectElement) return;
+
+	const options = getDeliveryOptions();
+
+	options.forEach((option) => {
+		const optionEl = document.createElement("option");
+		optionEl.value = option.zipCode;
+		optionEl.textContent = `${option.zipCode} - ${option.area} ($${option.fee} delivery)`;
+		selectElement.appendChild(optionEl);
+	});
+};
+
+/**
+ * Handle zip code selection change
+ * Updates the delivery fee display in the order summary
+ * @returns {void}
+ */
+const handleZipCodeChange = () => {
+	if (!zipCodeField) return;
+
+	const selectedZip = zipCodeField.value;
+
+	if (selectedZip) {
+		selectedDeliveryFee = getDeliveryFee(selectedZip);
+	} else {
+		selectedDeliveryFee = null;
+	}
+
+	// Update the delivery display
+	updateDeliveryDisplay();
+};
+
+/**
+ * Update the delivery fee display in the order summary
+ * @returns {void}
+ */
+const updateDeliveryDisplay = () => {
+	if (!summaryDeliveryEl || !summaryTotalEl || !summarySubtotalEl) return;
+
+	const subtotal = getCartSubtotal();
+
+	if (selectedDeliveryFee !== null) {
+		summaryDeliveryEl.textContent = `$${selectedDeliveryFee.toFixed(2)}`;
+		const total = subtotal + selectedDeliveryFee;
+		summaryTotalEl.textContent = `$${total.toFixed(2)}`;
+	} else {
+		summaryDeliveryEl.textContent = "--";
+		summaryTotalEl.textContent = `$${subtotal.toFixed(2)}`;
+	}
 };
 
 /**
@@ -187,15 +270,20 @@ const updateSubmitButtonState = (form) => {
 	const nameField = form.querySelector("#checkout-name");
 	const emailField = form.querySelector("#checkout-email");
 	const phoneField = form.querySelector("#checkout-phone");
+	const zipCodeFieldLocal = form.querySelector("#checkout-zipcode");
 	const addressField = form.querySelector("#checkout-address");
 
 	// Check if all required fields have valid values
 	const nameValid = validateRequired(nameField?.value.trim() || "").isValid;
 	const emailValid = validateEmail(emailField?.value.trim() || "").isValid;
 	const phoneValid = validatePhone(phoneField?.value.trim() || "").isValid;
-	const addressValid = validateAddress(addressField?.value.trim() || "").isValid;
+	const zipCodeValid = validateZipCode(zipCodeFieldLocal?.value || "").isValid;
+	const addressValid = validateAddress(
+		addressField?.value.trim() || ""
+	).isValid;
 
-	const allValid = nameValid && emailValid && phoneValid && addressValid;
+	const allValid =
+		nameValid && emailValid && phoneValid && zipCodeValid && addressValid;
 
 	// Enable/disable submit button
 	submitBtn.disabled = !allValid;
@@ -212,8 +300,24 @@ const setupFieldValidation = (form) => {
 	const nameField = form.querySelector("#checkout-name");
 	const emailField = form.querySelector("#checkout-email");
 	const phoneField = form.querySelector("#checkout-phone");
+	const zipCodeFieldLocal = form.querySelector("#checkout-zipcode");
 	const addressField = form.querySelector("#checkout-address");
 	const notesField = form.querySelector("#checkout-notes");
+
+	// Validate zip code on change
+	if (zipCodeFieldLocal) {
+		zipCodeFieldLocal.addEventListener("change", () => {
+			const validation = validateZipCode(zipCodeFieldLocal.value);
+			if (!validation.isValid) {
+				showFieldError(zipCodeFieldLocal, validation.message);
+			} else {
+				clearFieldError(zipCodeFieldLocal);
+			}
+			// Update delivery fee display
+			handleZipCodeChange();
+			updateSubmitButtonState(form);
+		});
+	}
 
 	// Validate on blur
 	if (nameField) {
@@ -231,7 +335,10 @@ const setupFieldValidation = (form) => {
 		// Clear error on input if field becomes valid
 		nameField.addEventListener("input", () => {
 			const validation = validateRequired(nameField.value.trim());
-			if (validation.isValid && nameField.getAttribute("aria-invalid") === "true") {
+			if (
+				validation.isValid &&
+				nameField.getAttribute("aria-invalid") === "true"
+			) {
 				clearFieldError(nameField);
 			}
 			updateSubmitButtonState(form);
@@ -252,7 +359,10 @@ const setupFieldValidation = (form) => {
 
 		emailField.addEventListener("input", () => {
 			const validation = validateEmail(emailField.value.trim());
-			if (validation.isValid && emailField.getAttribute("aria-invalid") === "true") {
+			if (
+				validation.isValid &&
+				emailField.getAttribute("aria-invalid") === "true"
+			) {
 				clearFieldError(emailField);
 			}
 			updateSubmitButtonState(form);
@@ -273,7 +383,10 @@ const setupFieldValidation = (form) => {
 
 		phoneField.addEventListener("input", () => {
 			const validation = validatePhone(phoneField.value.trim());
-			if (validation.isValid && phoneField.getAttribute("aria-invalid") === "true") {
+			if (
+				validation.isValid &&
+				phoneField.getAttribute("aria-invalid") === "true"
+			) {
 				clearFieldError(phoneField);
 			}
 			updateSubmitButtonState(form);
@@ -294,7 +407,10 @@ const setupFieldValidation = (form) => {
 
 		addressField.addEventListener("input", () => {
 			const validation = validateAddress(addressField.value.trim());
-			if (validation.isValid && addressField.getAttribute("aria-invalid") === "true") {
+			if (
+				validation.isValid &&
+				addressField.getAttribute("aria-invalid") === "true"
+			) {
 				clearFieldError(addressField);
 			}
 			updateSubmitButtonState(form);
@@ -302,19 +418,27 @@ const setupFieldValidation = (form) => {
 	}
 
 	// Character counter for notes field
-	const charCountValue = form.querySelector(".checkout-modal__char-count-value");
+	const charCountValue = form.querySelector(
+		".checkout-modal__char-count-value"
+	);
 	const updateCharCount = () => {
 		if (charCountValue && notesField) {
 			const length = notesField.value.length;
 			charCountValue.textContent = length;
 
 			// Add warning class if approaching limit
-			const charCountContainer = charCountValue.closest(".checkout-modal__char-count");
+			const charCountContainer = charCountValue.closest(
+				".checkout-modal__char-count"
+			);
 			if (charCountContainer) {
 				if (length > 400) {
-					charCountContainer.classList.add("checkout-modal__char-count--warning");
+					charCountContainer.classList.add(
+						"checkout-modal__char-count--warning"
+					);
 				} else {
-					charCountContainer.classList.remove("checkout-modal__char-count--warning");
+					charCountContainer.classList.remove(
+						"checkout-modal__char-count--warning"
+					);
 				}
 			}
 		}
@@ -367,7 +491,10 @@ const handleFormSubmit = async (e) => {
 		name: (checkoutForm.querySelector("#checkout-name")?.value || "").trim(),
 		email: (checkoutForm.querySelector("#checkout-email")?.value || "").trim(),
 		phone: (checkoutForm.querySelector("#checkout-phone")?.value || "").trim(),
-		address: (checkoutForm.querySelector("#checkout-address")?.value || "").trim(),
+		zipcode: checkoutForm.querySelector("#checkout-zipcode")?.value || "",
+		address: (
+			checkoutForm.querySelector("#checkout-address")?.value || ""
+		).trim(),
 		notes: (checkoutForm.querySelector("#checkout-notes")?.value || "").trim(),
 	};
 
@@ -397,11 +524,17 @@ const handleFormSubmit = async (e) => {
 	try {
 		// Generate order ID and format the order
 		orderId = generateOrderId();
-		
+
+		// Get delivery fee from selected zip code
+		const deliveryFee = getDeliveryFee(formData.zipcode) || 0;
+		const subtotal = getCartSubtotal();
+
 		const orderData = {
 			...formData,
 			items: getCartItems(),
-			subtotal: getCartSubtotal(),
+			subtotal,
+			deliveryFee,
+			total: subtotal + deliveryFee,
 		};
 
 		const subject = `Treat Order #${orderId}`;
@@ -424,7 +557,10 @@ const handleFormSubmit = async (e) => {
  */
 const copyToClipboard = async (text) => {
 	// Try modern clipboard API first (requires HTTPS)
-	if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+	if (
+		navigator.clipboard &&
+		typeof navigator.clipboard.writeText === "function"
+	) {
 		try {
 			await navigator.clipboard.writeText(text);
 			return true;
@@ -449,14 +585,14 @@ const copyToClipboard = async (text) => {
 		textarea.style.boxShadow = "none";
 		textarea.style.background = "transparent";
 		textarea.style.fontSize = "16px"; // Prevent zoom on iOS
-		
+
 		document.body.appendChild(textarea);
 		textarea.focus();
 		textarea.select();
-		
+
 		// For iOS
 		textarea.setSelectionRange(0, textarea.value.length);
-		
+
 		const success = document.execCommand("copy");
 		document.body.removeChild(textarea);
 		return success;
@@ -490,7 +626,9 @@ const copyOrderToClipboard = async (button) => {
 			}, 2000);
 		}
 	} else {
-		alert("Could not copy to clipboard. Please manually copy the order details.");
+		alert(
+			"Could not copy to clipboard. Please manually copy the order details."
+		);
 	}
 };
 
@@ -502,14 +640,22 @@ const copyOrderToClipboard = async (button) => {
 const openEmailClient = () => {
 	const businessEmail = "alldaytreats@gmail.com";
 	const subject = `Treat Order #${orderId}`;
+	const zipcode = checkoutForm?.querySelector("#checkout-zipcode")?.value || "";
+	const deliveryFee = getDeliveryFee(zipcode) || 0;
+	const subtotal = getCartSubtotal();
 	const body = formatOrderEmail({
 		name: (checkoutForm?.querySelector("#checkout-name")?.value || "").trim(),
 		email: (checkoutForm?.querySelector("#checkout-email")?.value || "").trim(),
 		phone: (checkoutForm?.querySelector("#checkout-phone")?.value || "").trim(),
-		address: (checkoutForm?.querySelector("#checkout-address")?.value || "").trim(),
+		zipcode,
+		address: (
+			checkoutForm?.querySelector("#checkout-address")?.value || ""
+		).trim(),
 		notes: (checkoutForm?.querySelector("#checkout-notes")?.value || "").trim(),
 		items: getCartItems(),
-		subtotal: getCartSubtotal(),
+		subtotal,
+		deliveryFee,
+		total: subtotal + deliveryFee,
 	});
 
 	// Copy to clipboard as fallback (in case email client doesn't open)
@@ -518,7 +664,9 @@ const openEmailClient = () => {
 	});
 
 	// Create mailto link
-	const mailtoLink = `mailto:${businessEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+	const mailtoLink = `mailto:${businessEmail}?subject=${encodeURIComponent(
+		subject
+	)}&body=${encodeURIComponent(body)}`;
 
 	// Try to open email client
 	const anchor = document.createElement("a");
@@ -588,19 +736,30 @@ const startAutoCloseCountdown = () => {
  */
 const generateOrderId = () => {
 	// Try crypto.randomUUID first (modern browsers with HTTPS)
-	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+	if (
+		typeof crypto !== "undefined" &&
+		typeof crypto.randomUUID === "function"
+	) {
 		return crypto.randomUUID().substring(0, 8);
 	}
-	
+
 	// Fallback: use crypto.getRandomValues (broader support)
-	if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+	if (
+		typeof crypto !== "undefined" &&
+		typeof crypto.getRandomValues === "function"
+	) {
 		const array = new Uint8Array(4);
 		crypto.getRandomValues(array);
-		return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+		return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+			""
+		);
 	}
-	
+
 	// Final fallback: timestamp + random
-	return Date.now().toString(36).substring(-4) + Math.random().toString(36).substring(2, 6);
+	return (
+		Date.now().toString(36).substring(-4) +
+		Math.random().toString(36).substring(2, 6)
+	);
 };
 
 /**
@@ -609,11 +768,23 @@ const generateOrderId = () => {
  * @returns {string} - Formatted email body
  */
 const formatOrderEmail = (orderData) => {
-	const { name, email, phone, address, notes, items, subtotal } = orderData;
+	const {
+		name,
+		email,
+		phone,
+		zipcode,
+		address,
+		notes,
+		items,
+		subtotal,
+		deliveryFee,
+		total,
+	} = orderData;
 
 	let body = `Name - ${name}\n`;
 	body += `Email - ${email}\n`;
 	body += `Phone - ${phone}\n`;
+	body += `Zip Code - ${zipcode}\n`;
 	body += `Address - ${address}\n`;
 	if (notes) {
 		body += `Special Instructions - ${notes}\n`;
@@ -623,7 +794,9 @@ const formatOrderEmail = (orderData) => {
 
 	items.forEach((item, index) => {
 		const sku = item.sku ? ` [${item.sku}]` : "";
-		body += `${index + 1}. ${item.name}${sku} - ${item.count}ct × ${item.quantity}\n`;
+		body += `${index + 1}. ${item.name}${sku} - ${item.count}ct × ${
+			item.quantity
+		}\n`;
 		body += `   Price: $${(item.unitPrice * item.quantity).toFixed(2)}\n`;
 
 		// Add toppings to order email
@@ -640,7 +813,12 @@ const formatOrderEmail = (orderData) => {
 		body += `\n`;
 	});
 
-	body += `------\nSubtotal: $${subtotal.toFixed(2)}\n------`;
+	body += `------\n`;
+	body += `Subtotal: $${subtotal.toFixed(2)}\n`;
+	body += `Delivery: $${deliveryFee.toFixed(2)}\n`;
+	body += `------\n`;
+	body += `Total: $${total.toFixed(2)}\n`;
+	body += `------`;
 
 	return body;
 };
@@ -680,6 +858,12 @@ export const openCheckout = () => {
 	currentStep = "info";
 	formattedOrderText = "";
 	orderId = "";
+	selectedDeliveryFee = null;
+
+	// Reset zip code dropdown
+	if (zipCodeField) {
+		zipCodeField.value = "";
+	}
 
 	// Clear any existing timers
 	if (countdownInterval) clearInterval(countdownInterval);
@@ -753,7 +937,8 @@ const renderOrderSummary = () => {
 	// Render each item
 	cartItems.forEach((item) => {
 		const quantity = item.quantity || 1;
-		const unitPrice = item.unitPrice !== undefined ? item.unitPrice : item.price;
+		const unitPrice =
+			item.unitPrice !== undefined ? item.unitPrice : item.price;
 		const lineTotal = unitPrice * quantity;
 
 		// Format toppings for display
@@ -764,17 +949,25 @@ const renderOrderSummary = () => {
 		itemEl.innerHTML = `
 			<div class="checkout-modal__summary-item-details">
 				<span class="checkout-modal__summary-item-name">${escapeHtml(item.name)}</span>
-				<span class="checkout-modal__summary-item-meta">${item.count}ct × ${quantity}</span>
-				${toppingsText ? `<span class="checkout-modal__summary-item-toppings">${toppingsText}</span>` : ""}
+				<span class="checkout-modal__summary-item-meta">${
+					item.count
+				}ct × ${quantity}</span>
+				${
+					toppingsText
+						? `<span class="checkout-modal__summary-item-toppings">${toppingsText}</span>`
+						: ""
+				}
 			</div>
 			<span class="checkout-modal__summary-item-price">$${lineTotal.toFixed(2)}</span>
 		`;
 		summaryItemsContainer.appendChild(itemEl);
 	});
 
-	// Update totals
+	// Update subtotal
 	summarySubtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-	summaryTotalEl.textContent = `$${subtotal.toFixed(2)}`;
+
+	// Update delivery and total display
+	updateDeliveryDisplay();
 };
 
 /**
@@ -794,10 +987,7 @@ const formatToppingsForDisplay = (toppings, count) => {
 		allToppingIds = toppings;
 	} else if (toppings.included || toppings.premium) {
 		// Legacy format support
-		allToppingIds = [
-			...(toppings.included || []),
-			...(toppings.premium || []),
-		];
+		allToppingIds = [...(toppings.included || []), ...(toppings.premium || [])];
 	}
 
 	if (allToppingIds.length === 0) {
@@ -842,10 +1032,7 @@ const formatToppingsForEmail = (toppings, count) => {
 		allToppingIds = toppings;
 	} else if (toppings.included || toppings.premium) {
 		// Legacy format support
-		allToppingIds = [
-			...(toppings.included || []),
-			...(toppings.premium || []),
-		];
+		allToppingIds = [...(toppings.included || []), ...(toppings.premium || [])];
 	}
 
 	if (allToppingIds.length === 0) {

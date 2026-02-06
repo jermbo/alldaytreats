@@ -8,7 +8,9 @@ export const ERROR_MESSAGES = {
 	REQUIRED: "This field is required",
 	EMAIL_INVALID: "Please enter a valid email address",
 	PHONE_INVALID: "Please enter a valid 10-digit phone number",
-	ADDRESS_TOO_SHORT: "Please enter a complete delivery address (minimum 10 characters)",
+	ZIPCODE_REQUIRED: "Please select a delivery zip code",
+	ADDRESS_TOO_SHORT:
+		"Please enter a complete delivery address (minimum 10 characters)",
 };
 
 /**
@@ -31,7 +33,7 @@ export const validateRequired = (value) => {
  */
 export const validateEmail = (email) => {
 	const trimmedEmail = email?.trim() || "";
-	
+
 	// Check if required first
 	if (trimmedEmail.length === 0) {
 		return {
@@ -44,9 +46,9 @@ export const validateEmail = (email) => {
 	// Allows: alphanumeric, dots, hyphens, underscores, plus signs
 	// Requires @ symbol and domain with at least one dot
 	const emailPattern = /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-	
+
 	const isValid = emailPattern.test(trimmedEmail);
-	
+
 	return {
 		isValid,
 		message: ERROR_MESSAGES.EMAIL_INVALID,
@@ -61,7 +63,7 @@ export const validateEmail = (email) => {
  */
 export const validatePhone = (phone) => {
 	const trimmedPhone = phone?.trim() || "";
-	
+
 	// Check if required first
 	if (trimmedPhone.length === 0) {
 		return {
@@ -72,14 +74,28 @@ export const validatePhone = (phone) => {
 
 	// Remove all non-digit characters to check length
 	const digitsOnly = trimmedPhone.replace(/\D/g, "");
-	
+
 	// Must have exactly 10 digits for US phone
 	// Auto-formatter ensures proper (XXX) XXX-XXXX format
 	const isValid = digitsOnly.length === 10;
-	
+
 	return {
 		isValid,
 		message: ERROR_MESSAGES.PHONE_INVALID,
+	};
+};
+
+/**
+ * Validate zip code selection
+ * @param {string} zipCode - Selected zip code
+ * @returns {Object} - { isValid: boolean, message: string }
+ */
+export const validateZipCode = (zipCode) => {
+	const trimmedZip = zipCode?.trim() || "";
+
+	return {
+		isValid: trimmedZip.length > 0,
+		message: ERROR_MESSAGES.ZIPCODE_REQUIRED,
 	};
 };
 
@@ -90,7 +106,7 @@ export const validatePhone = (phone) => {
  */
 export const validateAddress = (address) => {
 	const trimmedAddress = address?.trim() || "";
-	
+
 	// Check if required first
 	if (trimmedAddress.length === 0) {
 		return {
@@ -101,9 +117,9 @@ export const validateAddress = (address) => {
 
 	// Minimum length for a complete address
 	const MIN_ADDRESS_LENGTH = 10;
-	
+
 	const isValid = trimmedAddress.length >= MIN_ADDRESS_LENGTH;
-	
+
 	return {
 		isValid,
 		message: ERROR_MESSAGES.ADDRESS_TOO_SHORT,
@@ -137,6 +153,13 @@ export const validateForm = (formData) => {
 	const phoneValidation = validatePhone(formData.phone);
 	if (!phoneValidation.isValid) {
 		errors.phone = phoneValidation.message;
+		isValid = false;
+	}
+
+	// Validate zip code
+	const zipCodeValidation = validateZipCode(formData.zipcode);
+	if (!zipCodeValidation.isValid) {
+		errors.zipcode = zipCodeValidation.message;
 		isValid = false;
 	}
 
