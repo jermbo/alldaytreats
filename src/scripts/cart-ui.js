@@ -238,8 +238,8 @@ const createCartItemElement = (item) => {
 	const unitPrice = item.unitPrice !== undefined ? item.unitPrice : item.price;
 	const lineTotal = unitPrice * quantity;
 
-	// Format toppings for display
-	const toppingsHtml = formatToppingsDisplay(item.toppings, item.count);
+	// Format toppings for display (skip for chocolate covered treats)
+	const toppingsHtml = formatToppingsDisplay(item.toppings, item.count, item.productId);
 
 	itemEl.innerHTML = `
 		<div class="cart__item-main">
@@ -437,10 +437,10 @@ const refreshCartItemElement = (itemId) => {
 		optionEl.textContent = `${unitCount}ct $${unitPrice.toFixed(2)}`;
 	}
 
-	// Update toppings display
+	// Update toppings display (skip for chocolate covered treats)
 	const toppingsEl = itemElement.querySelector(".cart__item-toppings");
 	const contentEl = itemElement.querySelector(".cart__item-content");
-	const toppingsHtml = formatToppingsDisplay(item.toppings, item.count);
+	const toppingsHtml = formatToppingsDisplay(item.toppings, item.count, item.productId);
 
 	if (toppingsHtml) {
 		if (toppingsEl) {
@@ -549,10 +549,17 @@ const handleClearCart = () => {
  * Format toppings for display in cart
  * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
  * @param {number} count - Product count for price calculation
+ * @param {string} productId - Product ID to check category
  * @returns {string} HTML string for toppings display
  */
-const formatToppingsDisplay = (toppings, count) => {
+const formatToppingsDisplay = (toppings, count, productId) => {
 	if (!toppings) {
+		return "";
+	}
+
+	// Skip toppings for chocolate covered treats
+	const product = window.PRODUCTS?.find((p) => p.id === productId);
+	if (product?.category === 'chocolate') {
 		return "";
 	}
 

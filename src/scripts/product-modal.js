@@ -82,13 +82,17 @@ export const initProductModal = (dialogElement) => {
 				? instructionsInput.value.trim().slice(0, 250)
 				: "";
 
-			// Calculate total price including toppings
-			const toppingsPrice = calculateToppingsPrice(selectedToppings, selectedPriceOption.count);
+			// Check if product is chocolate covered
+			const isChocolateCovered = currentProduct?.category === 'chocolate';
+
+			// Calculate total price including toppings (skip toppings for chocolate covered treats)
+			const toppingsPrice = isChocolateCovered ? 0 : calculateToppingsPrice(selectedToppings, selectedPriceOption.count);
 			const totalPrice = selectedPriceOption.price + toppingsPrice;
 
-			// Prepare toppings data (only include if selections exist)
-			const toppingsData =
-				selectedToppings.length > 0 ? [...selectedToppings] : undefined;
+			// Prepare toppings data (only include if selections exist and not chocolate covered)
+			const toppingsData = isChocolateCovered 
+				? undefined 
+				: (selectedToppings.length > 0 ? [...selectedToppings] : undefined);
 
 			if (editingItemId) {
 				// Update existing item
@@ -134,8 +138,15 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 	currentProduct = product;
 	selectedPriceOption = null;
 	editingItemId = editData?.itemId || null;
+	
+	// Check if product is chocolate covered
+	const isChocolateCovered = product?.category === 'chocolate';
+	
 	// Handle both old format {included: [], premium: []} and new format []
-	if (editData?.toppings) {
+	// Clear toppings for chocolate covered treats
+	if (isChocolateCovered) {
+		selectedToppings = [];
+	} else if (editData?.toppings) {
 		selectedToppings = Array.isArray(editData.toppings)
 			? [...editData.toppings]
 			: [...(editData.toppings.included || []), ...(editData.toppings.premium || [])];
@@ -187,12 +198,20 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 		});
 	}
 
-	// Generate topping options
-	populateToppings(dialogElement);
+	// Hide toppings section for chocolate covered treats
+	const toppingsSection = dialogElement.querySelector('[data-toppings-section]');
+	if (toppingsSection) {
+		toppingsSection.hidden = isChocolateCovered;
+	}
 
-	// Update toppings state if editing (to disable options if at limit)
-	if (selectedToppings.length > 0) {
-		updateToppingsState(dialogElement);
+	// Generate topping options (skip for chocolate covered treats)
+	if (!isChocolateCovered) {
+		populateToppings(dialogElement);
+
+		// Update toppings state if editing (to disable options if at limit)
+		if (selectedToppings.length > 0) {
+			updateToppingsState(dialogElement);
+		}
 	}
 
 	// Pre-select option if editing
@@ -278,20 +297,23 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 			);
 			selectedPriceOption = { count, price, sku: fullOption?.sku || "" };
 
-			// Regenerate toppings with new prices based on count
-			populateToppings(dialogElement);
+			// Regenerate toppings with new prices based on count (skip for chocolate covered treats)
+			const isChocolateCovered = currentProduct?.category === 'chocolate';
+			if (!isChocolateCovered) {
+				populateToppings(dialogElement);
 
-			// Update toppings state to re-apply disabled state if at limit
-			updateToppingsState(dialogElement);
+				// Update toppings state to re-apply disabled state if at limit
+				updateToppingsState(dialogElement);
+			}
 
-			// Update add button with toppings price
-			const toppingsPrice = calculateToppingsPrice(selectedToppings, count);
+			// Update add button with toppings price (skip toppings for chocolate covered treats)
+			const toppingsPrice = isChocolateCovered ? 0 : calculateToppingsPrice(selectedToppings, count);
 			updateAddButton(addBtn, price + toppingsPrice, editingItemId !== null);
 		});
 	});
 
-	// Update initial add button price with toppings if editing
-	const initialToppingsPrice = calculateToppingsPrice(
+	// Update initial add button price with toppings if editing (skip toppings for chocolate covered treats)
+	const initialToppingsPrice = isChocolateCovered ? 0 : calculateToppingsPrice(
 		selectedToppings,
 		preSelectedOption?.count || 6
 	);
@@ -446,6 +468,12 @@ const createToppingOption = (topping, count, dialogElement) => {
  * @returns {void}
  */
 const handleToppingChange = (toppingId, isChecked, dialogElement) => {
+	// Prevent toppings for chocolate covered treats
+	const isChocolateCovered = currentProduct?.category === 'chocolate';
+	if (isChocolateCovered) {
+		return;
+	}
+
 	if (isChecked) {
 		// Check limit for toppings
 		if (selectedToppings.length >= MAX_TOPPINGS) {

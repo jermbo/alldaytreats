@@ -799,9 +799,9 @@ const formatOrderEmail = (orderData) => {
 		}\n`;
 		body += `   Price: $${(item.unitPrice * item.quantity).toFixed(2)}\n`;
 
-		// Add toppings to order email
+		// Add toppings to order email (skip for chocolate covered treats)
 		if (item.toppings) {
-			const toppingsText = formatToppingsForEmail(item.toppings, item.count);
+			const toppingsText = formatToppingsForEmail(item.toppings, item.count, item.productId);
 			if (toppingsText) {
 				body += `   Toppings: ${toppingsText}\n`;
 			}
@@ -941,8 +941,8 @@ const renderOrderSummary = () => {
 			item.unitPrice !== undefined ? item.unitPrice : item.price;
 		const lineTotal = unitPrice * quantity;
 
-		// Format toppings for display
-		const toppingsText = formatToppingsForDisplay(item.toppings, item.count);
+		// Format toppings for display (skip for chocolate covered treats)
+		const toppingsText = formatToppingsForDisplay(item.toppings, item.count, item.productId);
 
 		const itemEl = document.createElement("div");
 		itemEl.className = "checkout-modal__summary-item";
@@ -974,10 +974,17 @@ const renderOrderSummary = () => {
  * Format toppings for display in checkout summary
  * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
  * @param {number} count - Product count for price calculation
+ * @param {string} productId - Product ID to check category
  * @returns {string} Formatted toppings text
  */
-const formatToppingsForDisplay = (toppings, count) => {
+const formatToppingsForDisplay = (toppings, count, productId) => {
 	if (!toppings) {
+		return "";
+	}
+
+	// Skip toppings for chocolate covered treats
+	const product = window.PRODUCTS?.find((p) => p.id === productId);
+	if (product?.category === 'chocolate') {
 		return "";
 	}
 
@@ -1019,10 +1026,17 @@ const formatToppingsForDisplay = (toppings, count) => {
  * Format toppings for email body
  * @param {Array|Object} toppings - Toppings array or legacy object with included and premium arrays
  * @param {number} count - Product count for price calculation
+ * @param {string} productId - Product ID to check category
  * @returns {string} Formatted toppings text for email
  */
-const formatToppingsForEmail = (toppings, count) => {
+const formatToppingsForEmail = (toppings, count, productId) => {
 	if (!toppings) {
+		return "";
+	}
+
+	// Skip toppings for chocolate covered treats
+	const product = window.PRODUCTS?.find((p) => p.id === productId);
+	if (product?.category === 'chocolate') {
 		return "";
 	}
 

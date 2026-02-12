@@ -119,7 +119,15 @@ const loadCartFromStorage = () => {
 
 		const parsed = JSON.parse(stored);
 		if (isValidCartData(parsed)) {
-			return parsed.map(normalizeCartItem);
+			const normalized = parsed.map(normalizeCartItem);
+			// Safety check: remove toppings for chocolate covered products when loading
+			return normalized.map((item) => {
+				const product = window.PRODUCTS?.find((p) => p.id === item.productId);
+				if (product?.category === 'chocolate' && item.toppings) {
+					item.toppings = undefined;
+				}
+				return item;
+			});
 		}
 
 		// Invalid data, clear it
@@ -158,6 +166,11 @@ const saveCartToStorage = () => {
  * @returns {void}
  */
 export const addToCart = (item) => {
+	// Safety check: remove toppings for chocolate covered products
+	const product = window.PRODUCTS?.find((p) => p.id === item.productId);
+	const isChocolateCovered = product?.category === 'chocolate';
+	const safeToppings = isChocolateCovered ? undefined : (item.toppings || undefined);
+
 	const normalizedItem = normalizeCartItem({
 		id: `${item.productId}-${Date.now()}-${Math.random()}`,
 		productId: item.productId,
@@ -167,7 +180,7 @@ export const addToCart = (item) => {
 		specialInstructions: item.specialInstructions || "",
 		quantity: item.quantity || 1,
 		unitPrice: item.price,
-		toppings: item.toppings || undefined,
+		toppings: safeToppings,
 		sku: item.sku || "",
 	});
 
@@ -234,6 +247,16 @@ export const updateCartItem = (itemId, updates) => {
 		return false;
 	}
 
+	// Safety check: remove toppings for chocolate covered products
+	const productId = updates.productId !== undefined ? updates.productId : item.productId;
+	const product = window.PRODUCTS?.find((p) => p.id === productId);
+	const isChocolateCovered = product?.category === 'chocolate';
+	
+	// If updating toppings and product is chocolate covered, remove toppings
+	if (updates.toppings !== undefined && isChocolateCovered) {
+		updates.toppings = undefined;
+	}
+
 	// Update fields
 	if (updates.productId !== undefined) item.productId = updates.productId;
 	if (updates.name !== undefined) item.name = updates.name;
@@ -245,6 +268,11 @@ export const updateCartItem = (itemId, updates) => {
 	if (updates.unitPrice !== undefined) item.unitPrice = updates.unitPrice;
 	if (updates.toppings !== undefined) item.toppings = updates.toppings;
 	if (updates.sku !== undefined) item.sku = updates.sku;
+
+	// Safety check: ensure toppings are removed if product is chocolate covered
+	if (isChocolateCovered) {
+		item.toppings = undefined;
+	}
 
 	// Ensure normalized structure
 	const normalized = normalizeCartItem(item);
