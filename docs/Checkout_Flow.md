@@ -17,7 +17,8 @@ Cart Panel
 │ Step 1: Customer Information    │
 │                                 │
 │ • Order Summary                 │
-│ • Name, Email, Phone, Address   │
+│ • Name, Email, Phone, Zip Code  │
+│ • Delivery Address              │
 │ • Optional Notes                │
 │                                 │
 │ [Cancel]              [Continue]│
@@ -77,12 +78,15 @@ Cart Panel (empty)
 | Full Name | Yes | Non-empty |
 | Email Address | Yes | Valid email format |
 | Phone Number | Yes | (XXX) XXX-XXXX format |
+| Delivery Zip Code | Yes | Must select from dropdown (valid delivery area) |
 | Delivery Address | Yes | Minimum 10 characters |
 | Order Notes | No | Max 500 characters |
 
 **Features:**
 
-- Order summary displayed at top showing all cart items
+- Order summary displayed at top showing all cart items with subtotal, delivery fee, and total
+- Delivery fee calculated automatically based on selected zip code
+- Zip code dropdown populated with available delivery areas and fees
 - Real-time validation on blur
 - Submit button disabled until all required fields are valid
 - Spam prevention measures (see [Spam Prevention](#spam-prevention) section)
@@ -140,6 +144,7 @@ Cart Panel (empty)
 | `src/scripts/validation-ui.js`       | Error display utilities                       |
 | `src/scripts/validation.js`          | Validation functions                          |
 | `src/scripts/phone-formatter.js`     | Phone number formatting                       |
+| `src/config/delivery.ts`             | Delivery zone configuration and fee lookup    |
 
 ### State Management
 
@@ -150,6 +155,7 @@ let formattedOrderText = ""; // Pre-formatted order for clipboard/email
 let orderId = ""; // Generated unique order ID
 let autoCloseTimer = null; // Timer for auto-close on success
 let countdownInterval = null; // Interval for countdown display
+let selectedDeliveryFee = null; // Delivery fee based on selected zip code
 ```
 
 ### Key Functions
@@ -160,6 +166,9 @@ let countdownInterval = null; // Interval for countdown display
 | `closeCheckout()`           | Closes modal, clears timers                          |
 | `goToStep(step)`            | Navigates to specified step                          |
 | `handleFormSubmit(e)`       | Validates form, generates order text, goes to Step 2 |
+| `populateZipCodeDropdown()` | Populates zip code dropdown with delivery options    |
+| `handleZipCodeChange()`     | Updates delivery fee when zip code changes           |
+| `updateDeliveryDisplay()`   | Updates delivery fee and total in order summary      |
 | `copyOrderToClipboard(btn)` | Copies order text to clipboard                       |
 | `openEmailClient()`         | Opens mailto: link, copies to clipboard as backup    |
 | `confirmOrderSent()`        | Clears cart, goes to Step 3                          |
@@ -175,6 +184,7 @@ Treat Order #[8-char-id]
 Name - [Customer Name]
 Email - [Customer Email]
 Phone - [Customer Phone]
+Zip Code - [Selected Zip Code]
 Address - [Customer Address]
 Special Instructions - [Notes if any]
 
@@ -189,9 +199,27 @@ Order:
    Notes: [item notes if any]
 
 ------
-Subtotal: $[total]
+Subtotal: $[subtotal]
+Delivery: $[delivery fee]
+------
+Total: $[total]
 ------
 ```
+
+### Delivery Fee System
+
+The checkout form includes a zip code dropdown that determines delivery fees:
+
+- **Zip Code Selection**: Users must select their delivery zip code from a dropdown populated with available delivery areas
+- **Dynamic Pricing**: Delivery fee is calculated automatically based on the selected zip code
+- **Order Summary**: The order summary displays:
+  - Subtotal (cart items total)
+  - Delivery fee (based on zip code)
+  - Total (subtotal + delivery fee)
+- **Real-time Updates**: When a zip code is selected, the delivery fee and total update immediately in the order summary
+- **Configuration**: Delivery zones and fees are configured in `src/config/delivery.ts` and `src/config/site.ts`
+
+The delivery fee is included in the order email and added to the total order amount.
 
 ### SKU Verification
 
