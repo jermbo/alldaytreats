@@ -60,16 +60,16 @@ export const initCheckoutUI = (modalElement) => {
 
 	// Cache DOM references
 	summaryItemsContainer = checkoutModal.querySelector(
-		".checkout-modal__summary-items"
+		".checkout-modal__summary-items",
 	);
 	summarySubtotalEl = checkoutModal.querySelector(
-		".checkout-modal__summary-subtotal"
+		".checkout-modal__summary-subtotal",
 	);
 	summaryDeliveryEl = checkoutModal.querySelector(
-		".checkout-modal__summary-delivery"
+		".checkout-modal__summary-delivery",
 	);
 	summaryTotalEl = checkoutModal.querySelector(
-		".checkout-modal__summary-total"
+		".checkout-modal__summary-total",
 	);
 	checkoutForm = checkoutModal.querySelector("#checkout-form");
 	submitBtn = checkoutModal.querySelector(".checkout-modal__btn--primary");
@@ -279,7 +279,7 @@ const updateSubmitButtonState = (form) => {
 	const phoneValid = validatePhone(phoneField?.value.trim() || "").isValid;
 	const zipCodeValid = validateZipCode(zipCodeFieldLocal?.value || "").isValid;
 	const addressValid = validateAddress(
-		addressField?.value.trim() || ""
+		addressField?.value.trim() || "",
 	).isValid;
 
 	const allValid =
@@ -419,7 +419,7 @@ const setupFieldValidation = (form) => {
 
 	// Character counter for notes field
 	const charCountValue = form.querySelector(
-		".checkout-modal__char-count-value"
+		".checkout-modal__char-count-value",
 	);
 	const updateCharCount = () => {
 		if (charCountValue && notesField) {
@@ -428,16 +428,16 @@ const setupFieldValidation = (form) => {
 
 			// Add warning class if approaching limit
 			const charCountContainer = charCountValue.closest(
-				".checkout-modal__char-count"
+				".checkout-modal__char-count",
 			);
 			if (charCountContainer) {
 				if (length > 400) {
 					charCountContainer.classList.add(
-						"checkout-modal__char-count--warning"
+						"checkout-modal__char-count--warning",
 					);
 				} else {
 					charCountContainer.classList.remove(
-						"checkout-modal__char-count--warning"
+						"checkout-modal__char-count--warning",
 					);
 				}
 			}
@@ -627,7 +627,7 @@ const copyOrderToClipboard = async (button) => {
 		}
 	} else {
 		alert(
-			"Could not copy to clipboard. Please manually copy the order details."
+			"Could not copy to clipboard. Please manually copy the order details.",
 		);
 	}
 };
@@ -638,7 +638,7 @@ const copyOrderToClipboard = async (button) => {
  * @returns {void}
  */
 const openEmailClient = () => {
-	const businessEmail = "alldaytreats@gmail.com";
+	const businessEmail = "alldaytreat@gmail.com";
 	const subject = `Treat Order #${orderId}`;
 	const zipcode = checkoutForm?.querySelector("#checkout-zipcode")?.value || "";
 	const deliveryFee = getDeliveryFee(zipcode) || 0;
@@ -665,7 +665,7 @@ const openEmailClient = () => {
 
 	// Create mailto link
 	const mailtoLink = `mailto:${businessEmail}?subject=${encodeURIComponent(
-		subject
+		subject,
 	)}&body=${encodeURIComponent(body)}`;
 
 	// Try to open email client
@@ -751,7 +751,7 @@ const generateOrderId = () => {
 		const array = new Uint8Array(4);
 		crypto.getRandomValues(array);
 		return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
-			""
+			"",
 		);
 	}
 

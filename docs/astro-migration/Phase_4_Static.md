@@ -58,7 +58,7 @@ const { cartCount = 0 } = Astro.props;
     </div>
     <nav class="header__nav">
       <a href="tel:555-555-5555" class="header__contact">📞 (555) 555-5555</a>
-      <a href="mailto:alldaytreats@gmail.com" class="header__contact">✉️ Email</a>
+      <a href="mailto:alldaytreat@gmail.com" class="header__contact" target="_blank">✉️ Email</a>
       <a href="https://instagram.com/alldaytreats" class="header__contact" target="_blank">📷 Instagram</a>
       <button class="header__cart-btn" id="cart-button">
         🛒 Cart
@@ -194,7 +194,7 @@ None
     <div class="footer__section">
       <h3 class="footer__heading">Contact Us</h3>
       <p><a href="tel:555-555-5555">📞 (555) 555-5555</a></p>
-      <p><a href="mailto:alldaytreats@gmail.com">✉️ alldaytreats@gmail.com</a></p>
+      <p><a href="mailto:alldaytreat@gmail.com">✉️ alldaytreat@gmail.com</a></p>
       <p><a href="https://instagram.com/alldaytreats" target="_blank">📷 @alldaytreats</a></p>
     </div>
     <div class="footer__section">
@@ -446,9 +446,9 @@ Phase 4 is complete when:
 
 ## Version History
 
-| Date | Version | Changes |
-|------|---------|---------|
-| 2026-01-18 | 1.0 | Initial Phase 4 user stories |
+| Date       | Version | Changes                      |
+| ---------- | ------- | ---------------------------- |
+| 2026-01-18 | 1.0     | Initial Phase 4 user stories |
 
 ---
 

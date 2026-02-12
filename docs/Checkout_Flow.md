@@ -29,7 +29,7 @@ Cart Panel
 │ Step 2: Email Instructions      │
 │                                 │
 │ "Send an email to:              │
-│  alldaytreats@gmail.com"        │
+│  alldaytreat@gmail.com"         │
 │                                 │
 │ [Copy Order Details]            │
 │ [Open Email Client]             │
@@ -81,12 +81,14 @@ Cart Panel (empty)
 | Order Notes | No | Max 500 characters |
 
 **Features:**
+
 - Order summary displayed at top showing all cart items
 - Real-time validation on blur
 - Submit button disabled until all required fields are valid
 - Spam prevention measures (see [Spam Prevention](#spam-prevention) section)
 
 **Actions:**
+
 - **Cancel** - Closes modal, returns to cart (cart preserved)
 - **Continue** - Validates form, proceeds to Step 2
 
@@ -95,11 +97,13 @@ Cart Panel (empty)
 **Purpose:** Guide the user through sending their order via email.
 
 **Display:**
+
 - Business email address prominently displayed
 - Order preview showing the formatted email content
 - Clear instructions for sending the order
 
 **Actions:**
+
 - **Copy Order Details** - Copies formatted order text to clipboard, shows "Copied!" feedback
 - **Open Email Client** - Opens default email client with pre-filled subject and body. Also copies to clipboard as fallback in case email client doesn't open.
 - **Confirm Order Has Been Sent** - Proceeds to success step. Includes prominent warning that clicking this without actually sending the email will NOT place the order.
@@ -110,12 +114,14 @@ Cart Panel (empty)
 **Purpose:** Confirm the order process is complete and provide final instructions.
 
 **Display:**
+
 - Success icon with animation
 - Thank you message
 - Disclaimer: "If you did not send the email, your order was not placed"
 - Countdown timer (5 seconds)
 
 **Behavior:**
+
 - Cart is cleared when entering this step
 - Form is reset
 - Modal auto-closes after 5 seconds
@@ -125,39 +131,39 @@ Cart Panel (empty)
 
 ### Files
 
-| File | Purpose |
-|------|---------|
-| `src/components/CheckoutPanel.astro` | Modal HTML structure with 3 step containers |
-| `src/styles/checkout.css` | Centered modal styles, step transitions |
-| `src/styles/form-validation.css` | Form input validation states |
-| `src/scripts/checkout-ui.js` | Modal logic, step management, email functions |
-| `src/scripts/validation-ui.js` | Error display utilities |
-| `src/scripts/validation.js` | Validation functions |
-| `src/scripts/phone-formatter.js` | Phone number formatting |
+| File                                 | Purpose                                       |
+| ------------------------------------ | --------------------------------------------- |
+| `src/components/CheckoutPanel.astro` | Modal HTML structure with 3 step containers   |
+| `src/styles/checkout.css`            | Centered modal styles, step transitions       |
+| `src/styles/form-validation.css`     | Form input validation states                  |
+| `src/scripts/checkout-ui.js`         | Modal logic, step management, email functions |
+| `src/scripts/validation-ui.js`       | Error display utilities                       |
+| `src/scripts/validation.js`          | Validation functions                          |
+| `src/scripts/phone-formatter.js`     | Phone number formatting                       |
 
 ### State Management
 
 ```javascript
 // Modal state
-let currentStep = "info";      // "info" | "instructions" | "success"
-let formattedOrderText = "";   // Pre-formatted order for clipboard/email
-let orderId = "";              // Generated unique order ID
-let autoCloseTimer = null;     // Timer for auto-close on success
-let countdownInterval = null;  // Interval for countdown display
+let currentStep = "info"; // "info" | "instructions" | "success"
+let formattedOrderText = ""; // Pre-formatted order for clipboard/email
+let orderId = ""; // Generated unique order ID
+let autoCloseTimer = null; // Timer for auto-close on success
+let countdownInterval = null; // Interval for countdown display
 ```
 
 ### Key Functions
 
-| Function | Description |
-|----------|-------------|
-| `openCheckout()` | Opens modal, resets to Step 1, renders order summary |
-| `closeCheckout()` | Closes modal, clears timers |
-| `goToStep(step)` | Navigates to specified step |
-| `handleFormSubmit(e)` | Validates form, generates order text, goes to Step 2 |
-| `copyOrderToClipboard(btn)` | Copies order text to clipboard |
-| `openEmailClient()` | Opens mailto: link, copies to clipboard as backup |
-| `confirmOrderSent()` | Clears cart, goes to Step 3 |
-| `startAutoCloseCountdown()` | Starts 5-second countdown with auto-close |
+| Function                    | Description                                          |
+| --------------------------- | ---------------------------------------------------- |
+| `openCheckout()`            | Opens modal, resets to Step 1, renders order summary |
+| `closeCheckout()`           | Closes modal, clears timers                          |
+| `goToStep(step)`            | Navigates to specified step                          |
+| `handleFormSubmit(e)`       | Validates form, generates order text, goes to Step 2 |
+| `copyOrderToClipboard(btn)` | Copies order text to clipboard                       |
+| `openEmailClient()`         | Opens mailto: link, copies to clipboard as backup    |
+| `confirmOrderSent()`        | Clears cart, goes to Step 3                          |
+| `startAutoCloseCountdown()` | Starts 5-second countdown with auto-close            |
 
 ### Email Format
 
@@ -196,22 +202,29 @@ For the complete SKU reference with all products, quantities, and prices, see **
 ## UX Decisions
 
 ### Non-Dismissable Modal
+
 The modal cannot be closed by clicking the backdrop or pressing ESC. This prevents users from accidentally losing their form data during checkout. Only the Cancel button (Step 1) or Close Now button (Step 3) can close the modal.
 
 ### Copy + Email Fallback
+
 The "Open Email Client" button also copies to clipboard. This handles cases where:
+
 - User's email client doesn't open (no default set)
 - mailto: link fails silently
 - User wants to use a web-based email client
 
 ### Explicit Confirmation
+
 Users must explicitly click "Confirm Order Has Been Sent" with a visible warning. This ensures they understand that:
+
 1. The system cannot verify if the email was actually sent
 2. Clicking confirm without sending the email will only clear their cart
 3. They are responsible for actually sending the email
 
 ### Auto-Close with Countdown
+
 The success screen auto-closes after 5 seconds to return the user to browsing. The visible countdown:
+
 - Sets expectations for the user
 - Allows them to close sooner if desired
 - Gives time to read the disclaimer
@@ -225,6 +238,7 @@ The checkout form includes two layers of bot detection. These are intentionally 
 A visually hidden form field (`#checkout-website`) is included in the form. Real users cannot see or interact with it due to CSS. Bots that fill all form fields will populate this field, triggering rejection.
 
 **Implementation details:**
+
 - Field uses `name="website"` to appear as a legitimate optional field
 - Hidden using `clip-path` technique rather than `display: none` (which bots commonly detect)
 - CSS class uses generic naming (`--alt` modifier) to avoid detection
@@ -243,6 +257,7 @@ Both checks fail silently with an early `return` - no error messages, console wa
 ### Future Considerations
 
 If bot attacks increase, consider:
+
 - Rate limiting by IP (requires server-side implementation)
 - CAPTCHA integration (last resort - impacts UX)
 - Additional timing checks (e.g., detecting fields filled too uniformly)
