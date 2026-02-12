@@ -215,15 +215,13 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 	}
 
 	// Pre-select option if editing
+	// Match by count only, since editData.price might include toppings
 	let preSelectedOption = null;
 	if (editData) {
 		preSelectedOption = product.priceOptions.find(
-			(opt) => opt.count === editData.count && opt.price === editData.price
+			(opt) => opt.count === editData.count
 		);
 	}
-
-	// Reset add button
-	updateAddButton(addBtn, preSelectedOption?.price || 0, editingItemId !== null);
 
 	// Pre-fill instructions if editing and update character count
 	const charCountValue = dialogElement.querySelector(
@@ -276,8 +274,8 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 		const count = parseInt(option.dataset.count);
 		const price = parseFloat(option.dataset.price);
 
-		// Pre-select if editing
-		if (preSelectedOption && count === preSelectedOption.count && price === preSelectedOption.price) {
+		// Pre-select if editing (match by count only)
+		if (preSelectedOption && count === preSelectedOption.count) {
 			option.classList.add("product-modal__quantity-option--selected");
 			selectedPriceOption = { count, price, sku: preSelectedOption.sku || "" };
 		}
@@ -312,16 +310,22 @@ export const openProductModal = (dialogElement, product, editData = null) => {
 		});
 	});
 
-	// Update initial add button price with toppings if editing (skip toppings for chocolate covered treats)
-	const initialToppingsPrice = isChocolateCovered ? 0 : calculateToppingsPrice(
-		selectedToppings,
-		preSelectedOption?.count || 6
-	);
-	updateAddButton(
-		addBtn,
-		(preSelectedOption?.price || 0) + initialToppingsPrice,
-		editingItemId !== null
-	);
+	// Update add button (disabled if no quantity selected)
+	if (preSelectedOption) {
+		// Editing: button enabled with correct price including toppings
+		const initialToppingsPrice = isChocolateCovered ? 0 : calculateToppingsPrice(
+			selectedToppings,
+			preSelectedOption.count
+		);
+		updateAddButton(
+			addBtn,
+			preSelectedOption.price + initialToppingsPrice,
+			editingItemId !== null
+		);
+	} else {
+		// New product: button disabled until quantity is selected
+		updateAddButton(addBtn, 0, false);
+	}
 
 	// Open modal
 	dialogElement.showModal();
@@ -349,28 +353,19 @@ const updateAddButton = (addBtn, price, isEditing = false) => {
 
 	const buttonText = isEditing ? "Update Cart" : "Add to Cart";
 
-	if (price > 0) {
-		addBtn.disabled = false;
-		if (textSpan) {
-			textSpan.textContent = `${buttonText} - $${price}`;
-		} else {
-			const newTextSpan = document.createElement("span");
-			newTextSpan.className = "product-modal__add-text";
-			newTextSpan.textContent = `${buttonText} - $${price}`;
-			if (checkmark) {
-				addBtn.insertBefore(newTextSpan, checkmark);
-			} else {
-				addBtn.appendChild(newTextSpan);
-			}
-		}
+	// Disable button if no quantity is selected (selectedPriceOption is null)
+	const isEnabled = selectedPriceOption !== null && price > 0;
+	addBtn.disabled = !isEnabled;
+
+	if (textSpan) {
+		textSpan.textContent = `${buttonText} - $${price.toFixed(2)}`;
 	} else {
-		addBtn.disabled = true;
-		if (textSpan) {
-			textSpan.textContent = `${buttonText} - $0`;
+		const newTextSpan = document.createElement("span");
+		newTextSpan.className = "product-modal__add-text";
+		newTextSpan.textContent = `${buttonText} - $${price.toFixed(2)}`;
+		if (checkmark) {
+			addBtn.insertBefore(newTextSpan, checkmark);
 		} else {
-			const newTextSpan = document.createElement("span");
-			newTextSpan.className = "product-modal__add-text";
-			newTextSpan.textContent = `${buttonText} - $0`;
 			addBtn.appendChild(newTextSpan);
 		}
 	}

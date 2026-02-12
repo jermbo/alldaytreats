@@ -62,11 +62,23 @@ const isValidCartItem = (item) => {
 
 /**
  * Validate cart data structure
+ * Supports both old format (array) and new format (object with items and orderId)
  * @param {any} data - Data to validate
  * @returns {boolean}
  */
 const isValidCartData = (data) => {
-	return Array.isArray(data) && data.every(isValidCartItem);
+	// New format: object with items array and optional orderId
+	if (data && typeof data === "object" && !Array.isArray(data)) {
+		if (data.items && Array.isArray(data.items)) {
+			return data.items.every(isValidCartItem);
+		}
+		return false;
+	}
+	// Old format: array of items (backward compatibility)
+	if (Array.isArray(data)) {
+		return data.every(isValidCartItem);
+	}
+	return false;
 };
 
 /**
@@ -119,11 +131,13 @@ const loadCartFromStorage = () => {
 
 		const parsed = JSON.parse(stored);
 		if (isValidCartData(parsed)) {
-			const normalized = parsed.map(normalizeCartItem);
+			// Handle new format (object with items) or old format (array)
+			const items = Array.isArray(parsed) ? parsed : parsed.items;
+			const normalized = items.map(normalizeCartItem);
 			// Safety check: remove toppings for chocolate covered products when loading
 			return normalized.map((item) => {
 				const product = window.PRODUCTS?.find((p) => p.id === item.productId);
-				if (product?.category === 'chocolate' && item.toppings) {
+				if (product?.category === "chocolate" && item.toppings) {
 					item.toppings = undefined;
 				}
 				return item;
@@ -141,23 +155,91 @@ const loadCartFromStorage = () => {
 };
 
 /**
+ * Get order ID from cart storage
+ * @returns {string} Order ID or empty string
+ */
+export const getOrderIdFromCart = () => {
+	if (!isLocalStorageAvailable()) {
+		return "";
+	}
+
+	try {
+		const stored = localStorage.getItem(STORAGE_KEY);
+		if (!stored) {
+			return "";
+		}
+
+		const parsed = JSON.parse(stored);
+		// New format: object with orderId
+		if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+			return parsed.orderId || "";
+		}
+		// Old format: array (no orderId)
+		return "";
+	} catch {
+		return "";
+	}
+};
+
+/**
  * Save cart to localStorage
+ * @param {string|null} orderId - Optional order ID to store with cart. null = preserve existing, empty string = clear
  * @returns {void}
  */
-const saveCartToStorage = () => {
+const saveCartToStorage = (orderId = null) => {
 	if (!isLocalStorageAvailable()) {
 		return;
 	}
 
 	try {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
+		// If cart is empty, always clear orderId
+		if (cartItems.length === 0) {
+			const cartData = {
+				items: [],
+				orderId: "",
+			};
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(cartData));
+			return;
+		}
+
+		// Get existing orderId if not provided
+		let orderIdToSave = orderId;
+		if (orderIdToSave === null) {
+			try {
+				const stored = localStorage.getItem(STORAGE_KEY);
+				if (stored) {
+					const parsed = JSON.parse(stored);
+					if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+						orderIdToSave = parsed.orderId || "";
+					}
+				}
+			} catch {
+				// Ignore errors when reading existing orderId
+			}
+		}
+
+		// Save as object with items and orderId
+		const cartData = {
+			items: cartItems,
+			orderId: orderIdToSave || "",
+		};
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(cartData));
 	} catch (error) {
 		if (error.name === "QuotaExceededError") {
 			console.warn(
-				"Cart storage quota exceeded. Cart will work in memory only."
+				"Cart storage quota exceeded. Cart will work in memory only.",
 			);
 		}
 	}
+};
+
+/**
+ * Save order ID to cart storage
+ * @param {string} orderId - Order ID to save
+ * @returns {void}
+ */
+export const saveOrderIdToCart = (orderId) => {
+	saveCartToStorage(orderId || "");
 };
 
 /**
@@ -168,11 +250,47 @@ const saveCartToStorage = () => {
 export const addToCart = (item) => {
 	// Safety check: remove toppings for chocolate covered products
 	const product = window.PRODUCTS?.find((p) => p.id === item.productId);
-	const isChocolateCovered = product?.category === 'chocolate';
-	const safeToppings = isChocolateCovered ? undefined : (item.toppings || undefined);
+	const isChocolateCovered = product?.category === "chocolate";
+	const safeToppings = isChocolateCovered
+		? undefined
+		: item.toppings || undefined;
+
+	// Generate unique ID using crypto.randomUUID() if available (first 8 chars)
+	// Fallback to timestamp + random for older browsers
+	const generateCartItemId = () => {
+		// Try crypto.randomUUID first (modern browsers with HTTPS)
+		if (
+			typeof crypto !== "undefined" &&
+			typeof crypto.randomUUID === "function"
+		) {
+			return crypto.randomUUID().substring(0, 8);
+		}
+
+		// Fallback: use crypto.getRandomValues (broader support)
+		if (
+			typeof crypto !== "undefined" &&
+			typeof crypto.getRandomValues === "function"
+		) {
+			const array = new Uint8Array(4);
+			crypto.getRandomValues(array);
+			return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+		}
+
+		// Final fallback: timestamp + random
+		return (
+			Date.now().toString(36).substring(-4) +
+			Math.random().toString(36).substring(2, 6)
+		);
+	};
+
+	// Generate ID with SKU prefix: [sku]-[id]
+	const uniqueId = generateCartItemId();
+	const itemId = item.sku 
+		? `${item.sku}-${uniqueId}`
+		: uniqueId;
 
 	const normalizedItem = normalizeCartItem({
-		id: `${item.productId}-${Date.now()}-${Math.random()}`,
+		id: itemId,
 		productId: item.productId,
 		name: item.name,
 		count: item.count,
@@ -248,10 +366,11 @@ export const updateCartItem = (itemId, updates) => {
 	}
 
 	// Safety check: remove toppings for chocolate covered products
-	const productId = updates.productId !== undefined ? updates.productId : item.productId;
+	const productId =
+		updates.productId !== undefined ? updates.productId : item.productId;
 	const product = window.PRODUCTS?.find((p) => p.id === productId);
-	const isChocolateCovered = product?.category === 'chocolate';
-	
+	const isChocolateCovered = product?.category === "chocolate";
+
 	// If updating toppings and product is chocolate covered, remove toppings
 	if (updates.toppings !== undefined && isChocolateCovered) {
 		updates.toppings = undefined;
@@ -302,7 +421,7 @@ export const getCartItemById = (itemId) => {
  */
 export const getCartSubtotal = () => {
 	return cartItems.reduce((total, item) => {
-		return total + (item.unitPrice * item.quantity);
+		return total + item.unitPrice * item.quantity;
 	}, 0);
 };
 

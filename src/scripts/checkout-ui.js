@@ -1,4 +1,10 @@
-import { getCartItems, getCartSubtotal, clearCart } from "./cart.js";
+import {
+	getCartItems,
+	getCartSubtotal,
+	clearCart,
+	getOrderIdFromCart,
+	saveOrderIdToCart,
+} from "./cart.js";
 import {
 	validateRequired,
 	validateEmail,
@@ -38,7 +44,7 @@ let zipCodeField = null;
 // State
 let currentStep = "info";
 let formattedOrderText = "";
-let orderId = "";
+let orderId = getOrderIdFromCart();
 let autoCloseTimer = null;
 let countdownInterval = null;
 let selectedDeliveryFee = null;
@@ -522,8 +528,13 @@ const handleFormSubmit = async (e) => {
 	setLoadingState(true);
 
 	try {
-		// Generate order ID and format the order
-		orderId = generateOrderId();
+		// Load order ID from cart storage (in case it was updated)
+		orderId = getOrderIdFromCart();
+		// Generate order ID if it doesn't exist (persist if user goes back and resubmits)
+		if (!orderId) {
+			orderId = generateOrderId();
+			saveOrderIdToCart(orderId);
+		}
 
 		// Get delivery fee from selected zip code
 		const deliveryFee = getDeliveryFee(formData.zipcode) || 0;
@@ -692,6 +703,8 @@ const confirmOrderSent = () => {
 		clearAllErrors(checkoutForm);
 	}
 
+	orderId = "";
+
 	// Go to success step
 	goToStep("success");
 };
@@ -801,7 +814,11 @@ const formatOrderEmail = (orderData) => {
 
 		// Add toppings to order email (skip for chocolate covered treats)
 		if (item.toppings) {
-			const toppingsText = formatToppingsForEmail(item.toppings, item.count, item.productId);
+			const toppingsText = formatToppingsForEmail(
+				item.toppings,
+				item.count,
+				item.productId,
+			);
 			if (toppingsText) {
 				body += `   Toppings: ${toppingsText}\n`;
 			}
@@ -850,6 +867,10 @@ export const openCheckout = () => {
 	// Make sure we have items in cart
 	const cartItems = getCartItems();
 	if (cartItems.length === 0) {
+		if (orderId) {
+			orderId = "";
+			saveOrderIdToCart("");
+		}
 		console.warn("Cannot open checkout with empty cart");
 		return;
 	}
@@ -857,7 +878,12 @@ export const openCheckout = () => {
 	// Reset state
 	currentStep = "info";
 	formattedOrderText = "";
-	orderId = "";
+	orderId = getOrderIdFromCart();
+
+	if (!orderId) {
+		orderId = generateOrderId();
+		saveOrderIdToCart(orderId);
+	}
 	selectedDeliveryFee = null;
 
 	// Reset zip code dropdown
@@ -942,7 +968,11 @@ const renderOrderSummary = () => {
 		const lineTotal = unitPrice * quantity;
 
 		// Format toppings for display (skip for chocolate covered treats)
-		const toppingsText = formatToppingsForDisplay(item.toppings, item.count, item.productId);
+		const toppingsText = formatToppingsForDisplay(
+			item.toppings,
+			item.count,
+			item.productId,
+		);
 
 		const itemEl = document.createElement("div");
 		itemEl.className = "checkout-modal__summary-item";
@@ -951,7 +981,7 @@ const renderOrderSummary = () => {
 				<span class="checkout-modal__summary-item-name">${escapeHtml(item.name)}</span>
 				<span class="checkout-modal__summary-item-meta">${
 					item.count
-				}ct × ${quantity}</span>
+				}ct x ${quantity}</span>
 				${
 					toppingsText
 						? `<span class="checkout-modal__summary-item-toppings">${toppingsText}</span>`
@@ -984,7 +1014,7 @@ const formatToppingsForDisplay = (toppings, count, productId) => {
 
 	// Skip toppings for chocolate covered treats
 	const product = window.PRODUCTS?.find((p) => p.id === productId);
-	if (product?.category === 'chocolate') {
+	if (product?.category === "chocolate") {
 		return "";
 	}
 
@@ -1036,7 +1066,7 @@ const formatToppingsForEmail = (toppings, count, productId) => {
 
 	// Skip toppings for chocolate covered treats
 	const product = window.PRODUCTS?.find((p) => p.id === productId);
-	if (product?.category === 'chocolate') {
+	if (product?.category === "chocolate") {
 		return "";
 	}
 
