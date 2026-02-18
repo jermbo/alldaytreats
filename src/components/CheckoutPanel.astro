@@ -29,7 +29,7 @@ const businessEmail = siteConfig.contact.email;
               <span class="checkout-modal__summary-subtotal">$0.00</span>
             </div>
             <div class="checkout-modal__summary-row">
-              <span>Delivery</span>
+              <span class="checkout-modal__summary-label">Delivery</span>
               <span class="checkout-modal__summary-delivery">--</span>
             </div>
             <div class="checkout-modal__summary-row checkout-modal__summary-row--total">
@@ -42,6 +42,41 @@ const businessEmail = siteConfig.contact.email;
         <section class="checkout-modal__section checkout-modal__section--form">
           <h3 class="checkout-modal__section-title">Customer Information</h3>
           <form class="checkout-modal__form" id="checkout-form" novalidate>
+            <div class="checkout-modal__form-group">
+              <fieldset class="checkout-modal__fieldset">
+                <legend class="checkout-modal__legend">
+                  Order Type <span class="checkout-modal__required" aria-label="required">*</span>
+                </legend>
+                <div class="checkout-modal__radio-group">
+                  <label class="checkout-modal__radio-label">
+                    <input
+                      type="radio"
+                      name="deliveryType"
+                      value="pickup"
+                      id="checkout-delivery-type-pickup"
+                      class="checkout-modal__radio"
+                      checked
+                      required
+                      aria-required="true"
+                    />
+                    <span>Pickup</span>
+                  </label>
+                  <label class="checkout-modal__radio-label">
+                    <input
+                      type="radio"
+                      name="deliveryType"
+                      value="delivery"
+                      id="checkout-delivery-type-delivery"
+                      class="checkout-modal__radio"
+                      required
+                      aria-required="true"
+                    />
+                    <span>Delivery</span>
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+
             <div class="checkout-modal__form-group">
               <label for="checkout-name" class="checkout-modal__label">
                 Full Name <span class="checkout-modal__required" aria-label="required">*</span>
@@ -96,7 +131,7 @@ const businessEmail = siteConfig.contact.email;
               <div class="checkout-modal__error" id="checkout-phone-error" role="alert" aria-live="polite"></div>
             </div>
 
-            <div class="checkout-modal__form-group">
+            <div class="checkout-modal__form-group checkout-modal__form-group--delivery" data-delivery-fields>
               <label for="checkout-zipcode" class="checkout-modal__label">
                 Delivery Zip Code <span class="checkout-modal__required" aria-label="required">*</span>
               </label>
@@ -113,7 +148,7 @@ const businessEmail = siteConfig.contact.email;
               <div class="checkout-modal__error" id="checkout-zipcode-error" role="alert" aria-live="polite"></div>
             </div>
 
-            <div class="checkout-modal__form-group">
+            <div class="checkout-modal__form-group checkout-modal__form-group--delivery" data-delivery-fields>
               <label for="checkout-address" class="checkout-modal__label">
                 Delivery Address <span class="checkout-modal__required" aria-label="required">*</span>
               </label>

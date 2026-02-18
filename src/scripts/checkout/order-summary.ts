@@ -7,6 +7,7 @@ import { calculateLineTotal } from "@/scripts/utils/product.ts";
 let summaryItemsContainer: HTMLElement | null = null;
 let summarySubtotalEl: HTMLElement | null = null;
 let summaryDeliveryEl: HTMLElement | null = null;
+let summaryDeliveryLabelEl: HTMLElement | null = null;
 let summaryTotalEl: HTMLElement | null = null;
 
 /**
@@ -21,6 +22,9 @@ export const initOrderSummary = (modal: HTMLElement): void => {
 	);
 	summaryDeliveryEl = modal.querySelector(
 		".checkout-modal__summary-delivery",
+	);
+	summaryDeliveryLabelEl = modal.querySelector(
+		".checkout-modal__summary-label",
 	);
 	summaryTotalEl = modal.querySelector(".checkout-modal__summary-total");
 };
@@ -66,12 +70,23 @@ export const renderOrderSummary = (): void => {
  */
 export const updateDeliveryDisplay = (
 	selectedDeliveryFee: number | null,
+	deliveryType: "pickup" | "delivery" = "delivery",
 ): void => {
 	if (!summaryDeliveryEl || !summaryTotalEl) return;
 
 	const subtotal = getCartSubtotal();
 
-	if (selectedDeliveryFee !== null) {
+	// Update label text
+	if (summaryDeliveryLabelEl) {
+		summaryDeliveryLabelEl.textContent =
+			deliveryType === "pickup" ? "Pickup" : "Delivery";
+	}
+
+	// Update fee display
+	if (deliveryType === "pickup") {
+		summaryDeliveryEl.textContent = formatCurrency(0);
+		summaryTotalEl.textContent = formatCurrency(subtotal);
+	} else if (selectedDeliveryFee !== null) {
 		summaryDeliveryEl.textContent = formatCurrency(selectedDeliveryFee);
 		summaryTotalEl.textContent = formatCurrency(
 			subtotal + selectedDeliveryFee,

@@ -7,6 +7,7 @@ import { formatCurrency } from "@/scripts/utils/format-currency.ts";
  */
 export const formatOrderEmail = (orderData: OrderData): string => {
 	const {
+		deliveryType,
 		name,
 		email,
 		phone,
@@ -22,8 +23,14 @@ export const formatOrderEmail = (orderData: OrderData): string => {
 	let body = `Name - ${name}\n`;
 	body += `Email - ${email}\n`;
 	body += `Phone - ${phone}\n`;
-	body += `Zip Code - ${zipcode}\n`;
-	body += `Address - ${address}\n`;
+
+	if (deliveryType === "pickup") {
+		body += `Pickup - Yes\n`;
+	} else {
+		body += `Zip Code - ${zipcode}\n`;
+		body += `Address - ${address}\n`;
+	}
+
 	if (notes) {
 		body += `Special Instructions - ${notes}\n`;
 	}
@@ -55,7 +62,11 @@ export const formatOrderEmail = (orderData: OrderData): string => {
 
 	body += `------\n`;
 	body += `Subtotal: ${formatCurrency(subtotal)}\n`;
-	body += `Delivery: ${formatCurrency(deliveryFee)}\n`;
+	if (deliveryType === "pickup") {
+		body += `Pickup: ${formatCurrency(0)}\n`;
+	} else {
+		body += `Delivery: ${formatCurrency(deliveryFee)}\n`;
+	}
 	body += `------\n`;
 	body += `Total: ${formatCurrency(total)}\n`;
 	body += `------`;

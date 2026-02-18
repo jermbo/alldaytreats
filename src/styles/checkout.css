@@ -309,6 +309,54 @@
 	border: 0;
 }
 
+.checkout-modal__form-group--delivery {
+	display: flex;
+}
+
+.checkout-modal__form-group--delivery[hidden] {
+	display: none;
+}
+
+.checkout-modal__fieldset {
+	border: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-sm);
+}
+
+.checkout-modal__legend {
+	font-weight: 600;
+	color: var(--color-text-dark);
+	font-size: var(--font-size-sm);
+	margin-bottom: 0;
+}
+
+.checkout-modal__radio-group {
+	display: flex;
+	gap: var(--spacing-lg);
+	flex-wrap: wrap;
+}
+
+.checkout-modal__radio-label {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	cursor: pointer;
+	font-size: var(--font-size-base);
+	color: var(--color-text-dark);
+	user-select: none;
+}
+
+.checkout-modal__radio {
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	accent-color: var(--color-accent-blue);
+	flex-shrink: 0;
+}
+
 .checkout-modal__label {
 	font-weight: 600;
 	color: var(--color-text-dark);

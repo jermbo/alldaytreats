@@ -86,9 +86,15 @@ export const validateForm = (
 		{ key: "name", validate: validateRequired },
 		{ key: "email", validate: validateEmail },
 		{ key: "phone", validate: validatePhone },
-		{ key: "zipcode", validate: validateZipCode },
-		{ key: "address", validate: validateAddress },
 	];
+
+	// Only validate zipcode and address for delivery orders
+	if (formData.deliveryType === "delivery") {
+		checks.push(
+			{ key: "zipcode", validate: validateZipCode },
+			{ key: "address", validate: validateAddress },
+		);
+	}
 
 	for (const { key, validate } of checks) {
 		const result = validate(formData[key]);

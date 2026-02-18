@@ -43,6 +43,8 @@ let checkoutForm: HTMLFormElement | null = null;
 let submitBtn: HTMLButtonElement | null = null;
 let countdownEl: HTMLElement | null = null;
 let zipCodeField: HTMLSelectElement | null = null;
+let deliveryTypeRadios: NodeListOf<HTMLInputElement> | null = null;
+let deliveryFields: NodeListOf<HTMLElement> | null = null;
 
 // Step elements
 let stepInfo: HTMLElement | null = null;
@@ -56,6 +58,7 @@ let orderId = "";
 let autoCloseTimer: ReturnType<typeof setTimeout> | null = null;
 let countdownInterval: ReturnType<typeof setInterval> | null = null;
 let selectedDeliveryFee: number | null = null;
+let deliveryType: "pickup" | "delivery" = "pickup";
 let focusTrap: FocusTrap | null = null;
 
 /**
@@ -81,6 +84,12 @@ export const initCheckoutUI = (modalElement: HTMLElement): void => {
 		".checkout-modal__countdown-value",
 	);
 	zipCodeField = checkoutModal.querySelector("#checkout-zipcode");
+	deliveryTypeRadios = checkoutModal.querySelectorAll<HTMLInputElement>(
+		'input[name="deliveryType"]',
+	);
+	deliveryFields = checkoutModal.querySelectorAll<HTMLElement>(
+		"[data-delivery-fields]",
+	);
 
 	// Focus trap
 	const container = checkoutModal.querySelector<HTMLElement>(
@@ -109,6 +118,9 @@ export const initCheckoutUI = (modalElement: HTMLElement): void => {
 			);
 		if (phoneField) initPhoneFormatter(phoneField);
 
+		// Setup delivery type selection
+		setupDeliveryTypeSelection();
+
 		setupFieldValidation(checkoutForm);
 	}
 
@@ -124,6 +136,83 @@ export const initCheckoutUI = (modalElement: HTMLElement): void => {
 		submitBtn.addEventListener("click", () => triggerSubmit());
 		submitBtn.addEventListener("touchend", (e) => triggerSubmit(e));
 	}
+};
+
+// --- Delivery Type Selection ---
+
+const setupDeliveryTypeSelection = (): void => {
+	if (!deliveryTypeRadios || !checkoutForm) return;
+
+	// Set initial state
+	const checkedRadio = Array.from(deliveryTypeRadios).find(
+		(radio) => radio.checked,
+	);
+	if (checkedRadio) {
+		deliveryType = checkedRadio.value as "pickup" | "delivery";
+		updateDeliveryFieldsVisibility();
+	}
+
+	// Add change listeners
+	deliveryTypeRadios.forEach((radio) => {
+		radio.addEventListener("change", handleDeliveryTypeChange);
+	});
+};
+
+const handleDeliveryTypeChange = (): void => {
+	if (!deliveryTypeRadios || !checkoutForm) return;
+
+	const checkedRadio = Array.from(deliveryTypeRadios).find(
+		(radio) => radio.checked,
+	);
+	if (!checkedRadio) return;
+
+	deliveryType = checkedRadio.value as "pickup" | "delivery";
+	updateDeliveryFieldsVisibility();
+
+	// Clear zipcode and address when switching to pickup
+	if (deliveryType === "pickup") {
+		if (zipCodeField) zipCodeField.value = "";
+		const addressField = checkoutForm.querySelector<HTMLTextAreaElement>(
+			"#checkout-address",
+		);
+		if (addressField) addressField.value = "";
+		selectedDeliveryFee = null;
+		updateDeliveryDisplay(null, deliveryType);
+	} else {
+		updateDeliveryDisplay(selectedDeliveryFee, deliveryType);
+	}
+
+	// Update validation state
+	clearAllErrors(checkoutForm);
+	updateSubmitButtonState();
+};
+
+const updateDeliveryFieldsVisibility = (): void => {
+	if (!deliveryFields) return;
+
+	deliveryFields.forEach((field) => {
+		if (deliveryType === "pickup") {
+			field.hidden = true;
+			// Remove required attribute when hidden
+			const input = field.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+				"input, select, textarea",
+			);
+			if (input) {
+				input.removeAttribute("required");
+				input.setAttribute("aria-required", "false");
+			}
+		} else {
+			field.hidden = false;
+			// Restore required attribute when visible
+			const input = field.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+				"input, select, textarea",
+			);
+			if (input) {
+				input.setAttribute("required", "");
+				input.setAttribute("aria-required", "true");
+			}
+		}
+	});
 };
 
 // --- Zip Code ---
@@ -142,7 +231,7 @@ const handleZipCodeChange = (): void => {
 	selectedDeliveryFee = zipCodeField.value
 		? getDeliveryFee(zipCodeField.value)
 		: null;
-	updateDeliveryDisplay(selectedDeliveryFee);
+	updateDeliveryDisplay(selectedDeliveryFee, deliveryType);
 };
 
 // --- Step Navigation ---
@@ -220,12 +309,18 @@ const updateSubmitButtonState = (): void => {
 			>(id)?.value || ""
 		).trim();
 
-	const allValid =
-		validateRequired(field("#checkout-name")).isValid &&
-		validateEmail(field("#checkout-email")).isValid &&
-		validatePhone(field("#checkout-phone")).isValid &&
-		validateZipCode(field("#checkout-zipcode")).isValid &&
-		validateAddress(field("#checkout-address")).isValid;
+	const nameValid = validateRequired(field("#checkout-name")).isValid;
+	const emailValid = validateEmail(field("#checkout-email")).isValid;
+	const phoneValid = validatePhone(field("#checkout-phone")).isValid;
+
+	let allValid = nameValid && emailValid && phoneValid;
+
+	// Only validate zipcode and address for delivery orders
+	if (deliveryType === "delivery") {
+		const zipcodeValid = validateZipCode(field("#checkout-zipcode")).isValid;
+		const addressValid = validateAddress(field("#checkout-address")).isValid;
+		allValid = allValid && zipcodeValid && addressValid;
+	}
 
 	submitBtn.disabled = !allValid;
 };
@@ -251,6 +346,7 @@ const setupFieldValidation = (form: HTMLFormElement): void => {
 		onUpdate,
 	);
 
+	// Always attach zipcode/address validation - validateForm handles conditional logic
 	attachFieldValidation(
 		form.querySelector("#checkout-zipcode"),
 		validateZipCode,
@@ -327,14 +423,20 @@ const handleFormSubmit = async (e: Event): Promise<void> => {
 	}
 
 	const formData: CheckoutFormData = {
+		deliveryType,
 		name: getFieldValue("#checkout-name"),
 		email: getFieldValue("#checkout-email"),
 		phone: getFieldValue("#checkout-phone"),
 		zipcode:
-			checkoutForm.querySelector<HTMLSelectElement>(
-				"#checkout-zipcode",
-			)?.value || "",
-		address: getFieldValue("#checkout-address"),
+			deliveryType === "delivery"
+				? checkoutForm.querySelector<HTMLSelectElement>(
+						"#checkout-zipcode",
+					)?.value || ""
+				: "",
+		address:
+			deliveryType === "delivery"
+				? getFieldValue("#checkout-address")
+				: "",
 		notes: getFieldValue("#checkout-notes"),
 	};
 
@@ -364,7 +466,10 @@ const handleFormSubmit = async (e: Event): Promise<void> => {
 			saveOrderIdToCart(orderId);
 		}
 
-		const deliveryFee = getDeliveryFee(formData.zipcode) || 0;
+		const deliveryFee =
+			deliveryType === "delivery"
+				? getDeliveryFee(formData.zipcode) || 0
+				: 0;
 		const subtotal = getCartSubtotal();
 
 		const orderData: OrderData = {
@@ -426,18 +531,25 @@ const openEmailClient = (): void => {
 	const businessEmail = siteConfig.contact.email;
 	const subject = `Treat Order #${orderId}`;
 	const zipcode =
-		checkoutForm?.querySelector<HTMLSelectElement>(
-			"#checkout-zipcode",
-		)?.value || "";
-	const deliveryFee = getDeliveryFee(zipcode) || 0;
+		deliveryType === "delivery"
+			? checkoutForm?.querySelector<HTMLSelectElement>(
+					"#checkout-zipcode",
+				)?.value || ""
+			: "";
+	const deliveryFee =
+		deliveryType === "delivery" ? getDeliveryFee(zipcode) || 0 : 0;
 	const subtotal = getCartSubtotal();
 
 	const body = formatOrderEmail({
+		deliveryType,
 		name: getFieldValue("#checkout-name"),
 		email: getFieldValue("#checkout-email"),
 		phone: getFieldValue("#checkout-phone"),
 		zipcode,
-		address: getFieldValue("#checkout-address"),
+		address:
+			deliveryType === "delivery"
+				? getFieldValue("#checkout-address")
+				: "",
 		notes: getFieldValue("#checkout-notes"),
 		items: getCartItems(),
 		subtotal,
@@ -530,13 +642,23 @@ export const openCheckout = (): void => {
 		saveOrderIdToCart(orderId);
 	}
 	selectedDeliveryFee = null;
+	deliveryType = "pickup";
 
+	// Reset form and delivery type selection
+	if (checkoutForm) {
+		const pickupRadio = checkoutForm.querySelector<HTMLInputElement>(
+			'input[name="deliveryType"][value="pickup"]',
+		);
+		if (pickupRadio) pickupRadio.checked = true;
+	}
 	if (zipCodeField) zipCodeField.value = "";
+
+	updateDeliveryFieldsVisibility();
 
 	clearTimers();
 	goToStep("info");
 	renderOrderSummary();
-	updateDeliveryDisplay(null);
+	updateDeliveryDisplay(null, deliveryType);
 
 	if (checkoutForm) updateSubmitButtonState();
 

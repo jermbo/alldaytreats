@@ -39,6 +39,7 @@ export interface FormValidationResult {
 }
 
 export interface CheckoutFormData {
+	deliveryType: "pickup" | "delivery";
 	name: string;
 	email: string;
 	phone: string;
