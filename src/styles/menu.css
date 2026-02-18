@@ -13,7 +13,7 @@
 .menu__title {
 	font-family: var(--font-family-serif);
 	font-size: var(--font-size-4xl);
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 	font-weight: 700;
 	text-align: center;
 	margin-bottom: var(--spacing-sm);
@@ -106,7 +106,9 @@
 	background: var(--color-bg-elevated);
 	border-radius: var(--radius-lg);
 	overflow: hidden;
-	transition: transform var(--transition-base), box-shadow var(--transition-base);
+	transition:
+		transform var(--transition-base),
+		box-shadow var(--transition-base);
 	contain: layout;
 	transform-origin: center center;
 	box-shadow: var(--shadow-card);
@@ -149,7 +151,7 @@
 .menu__item-image-wrapper {
 	width: 100%;
 	height: var(--size-image-2xl);
-	background: var(--product-bg-color, var(--color-pastel-pink));
+	background: var(--product-bg-color, var(--color-accent-blue));
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -162,10 +164,10 @@
 	object-fit: cover;
 	display: block;
 	transition: transform var(--transition-base);
+}
 
-	.menu__item:hover & {
-		transform: scale(1.05);
-	}
+.menu__item:hover .menu__item-image {
+	transform: scale(1.05);
 }
 
 .menu__item-content {
@@ -201,14 +203,16 @@
 .menu__item-price {
 	margin-top: auto;
 	font-size: var(--font-size-lg);
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 	font-weight: 700;
 }
 
 /* Fallback for browsers without View Transitions support */
 @supports not (view-transition-name: none) {
 	.menu__item {
-		transition: transform var(--transition-base), opacity var(--transition-base);
+		transition:
+			transform var(--transition-base),
+			opacity var(--transition-base);
 
 		&[hidden] {
 			display: none;

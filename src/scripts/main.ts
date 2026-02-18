@@ -1,167 +1,176 @@
-import { getCartItemCount } from "./cart.js";
-import { initProductModal, openProductModal } from "./product-modal.js";
-import { initCartUI, openCart } from "./cart-ui.js";
-import { initCheckoutUI } from "./checkout-ui.js";
+import { getCartItemCount } from "@/scripts/cart.ts";
+import {
+	initProductModal,
+	openProductModal,
+} from "@/scripts/product-modal.ts";
+import { initCartUI, openCart } from "@/scripts/cart-ui.ts";
+import { initCheckoutUI } from "@/scripts/checkout-ui.ts";
+import { buildProductMap } from "@/scripts/utils/product.ts";
+import type { Product } from "@/scripts/types/index.ts";
 
-// Initialize components once DOM is ready
-const initializeApp = () => {
-  // Get product data from window global
-  const products = (window as any).PRODUCTS || [];
+const initializeApp = (): void => {
+	// Build product lookup map for fast access
+	buildProductMap();
 
-  // Initialize product modal
-  const productModal = document.querySelector(".product-modal") as HTMLElement;
-  if (productModal) {
-    initProductModal(productModal);
-  }
+	const products: Product[] = window.PRODUCTS || [];
 
-  // Initialize cart UI
-  const cartPanel = document.querySelector(".cart") as HTMLElement;
-  if (cartPanel && productModal) {
-    initCartUI(cartPanel, productModal);
-  }
+	// Initialize product modal
+	const productModal =
+		document.querySelector<HTMLDialogElement>(".product-modal");
+	if (productModal) {
+		initProductModal(productModal);
+	}
 
-  // Initialize checkout UI
-  const checkoutModal = document.querySelector(".checkout-modal") as HTMLElement;
-  if (checkoutModal) {
-    initCheckoutUI(checkoutModal);
-  }
+	// Initialize cart UI
+	const cartPanel = document.querySelector<HTMLElement>(".cart");
+	if (cartPanel && productModal) {
+		initCartUI(cartPanel, productModal);
+	}
 
-  // Initialize cart badge
-  const cartBadge = document.getElementById("cart-badge");
-  const updateCartBadge = () => {
-    const count = getCartItemCount();
-    if (cartBadge) {
-      if (count > 0) {
-        cartBadge.textContent = count.toString();
-        cartBadge.removeAttribute("aria-hidden");
-        cartBadge.classList.add("header__cart-badge--animate");
-        setTimeout(() => {
-          cartBadge.classList.remove("header__cart-badge--animate");
-        }, 400);
-      } else {
-        cartBadge.setAttribute("aria-hidden", "true");
-      }
-    }
-  };
+	// Initialize checkout UI
+	const checkoutModal =
+		document.querySelector<HTMLElement>(".checkout-modal");
+	if (checkoutModal) {
+		initCheckoutUI(checkoutModal);
+	}
 
-  // Listen for cart updates
-  document.addEventListener("cartUpdate", updateCartBadge);
+	// Cart badge
+	const cartBadge = document.getElementById("cart-badge");
+	const updateCartBadge = (): void => {
+		const count = getCartItemCount();
+		if (!cartBadge) return;
 
-  // Initialize cart badge on load
-  updateCartBadge();
+		if (count > 0) {
+			cartBadge.textContent = count.toString();
+			cartBadge.removeAttribute("aria-hidden");
+			cartBadge.classList.add("header__cart-badge--animate");
+			setTimeout(() => {
+				cartBadge.classList.remove("header__cart-badge--animate");
+			}, 400);
+		} else {
+			cartBadge.textContent = "";
+			cartBadge.setAttribute("aria-hidden", "true");
+		}
+	};
 
-  // Helper function to find product by name (case-insensitive, flexible matching)
-  const findProductByName = (name: string) => {
-    const normalizedName = name.toLowerCase().trim();
-    return products.find((product: any) => {
-      const productName = product.name.toLowerCase();
-      // Match exact or handle variations
-      return (
-        productName === normalizedName ||
-        productName.includes(normalizedName) ||
-        normalizedName.includes(productName)
-      );
-    });
-  };
+	document.addEventListener("cartUpdate", updateCartBadge);
+	updateCartBadge();
 
-  // Add click handlers to menu item buttons
-  const menuItemButtons = document.querySelectorAll(".menu__item-button");
-  menuItemButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const titleElement = button.querySelector(".menu__item-title");
-      if (titleElement) {
-        const productName = titleElement.textContent?.trim() || "";
-        const product = findProductByName(productName);
-        if (product && productModal) {
-          openProductModal(productModal, product);
-        }
-      }
-    });
-  });
+	// Product name → product data lookup
+	const findProductByName = (name: string): Product | undefined => {
+		const normalized = name.toLowerCase().trim();
+		return products.find((product) => {
+			const productName = product.name.toLowerCase();
+			return (
+				productName === normalized ||
+				productName.includes(normalized) ||
+				normalized.includes(productName)
+			);
+		});
+	};
 
-  // Wire up cart button
-  const cartBtn = document.getElementById("cart-btn");
-  if (cartBtn) {
-    cartBtn.addEventListener("click", () => {
-      openCart();
-    });
-  }
+	// Menu item click handlers
+	document
+		.querySelectorAll(".menu__item-button")
+		.forEach((button) => {
+			button.addEventListener("click", () => {
+				const titleEl =
+					button.querySelector(".menu__item-title");
+				if (!titleEl) return;
 
-  // Category filtering with View Transitions API
-  const tabs = document.querySelectorAll(".menu__tab");
-  const menuItems = document.querySelectorAll(".menu__item");
+				const productName =
+					titleEl.textContent?.trim() || "";
+				const product = findProductByName(productName);
+				if (product && productModal) {
+					openProductModal(productModal, product);
+				}
+			});
+		});
 
-  // Assign unique, stable view-transition-name to each menu item based on title
-  menuItems.forEach((item) => {
-    const titleElement = item.querySelector(".menu__item-title");
-    if (titleElement) {
-      const titleText = titleElement.textContent?.trim().toLowerCase() || "";
-      const itemId = titleText.replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-      (item as HTMLElement).style.viewTransitionName = `item-${itemId}`;
-    }
-  });
+	// Cart button
+	const cartBtn = document.getElementById("cart-btn");
+	if (cartBtn) {
+		cartBtn.addEventListener("click", () => openCart());
+	}
 
-  const updateFilter = (filter: string) => {
-    menuItems.forEach((item) => {
-      const itemElement = item as HTMLElement;
-      const category = itemElement.dataset.category;
-      if (filter === "all" || category === filter) {
-        itemElement.removeAttribute("hidden");
-      } else {
-        itemElement.setAttribute("hidden", "");
-      }
-    });
-  };
+	// Category filtering with View Transitions API
+	const tabs =
+		document.querySelectorAll<HTMLElement>(".menu__tab");
+	const menuItems =
+		document.querySelectorAll<HTMLElement>(".menu__item");
 
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      const filter = (tab as HTMLElement).dataset.filter || "all";
+	// Assign stable view-transition-name to each menu item
+	menuItems.forEach((item) => {
+		const titleEl = item.querySelector(".menu__item-title");
+		if (titleEl) {
+			const titleText =
+				titleEl.textContent?.trim().toLowerCase() || "";
+			const itemId = titleText
+				.replace(/\s+/g, "-")
+				.replace(/[^a-z0-9-]/g, "");
+			item.style.viewTransitionName = `item-${itemId}`;
+		}
+	});
 
-      // Check if View Transitions API is supported
-      if (!(document as any).startViewTransition) {
-        // Fallback for browsers without View Transitions support
-        tabs.forEach((t) => {
-          t.classList.remove("menu__tab--active");
-          t.setAttribute("aria-selected", "false");
-        });
-        tab.classList.add("menu__tab--active");
-        tab.setAttribute("aria-selected", "true");
-        updateFilter(filter);
-        return;
-      }
+	const updateFilter = (filter: string): void => {
+		menuItems.forEach((item) => {
+			const category = item.dataset.category;
+			if (filter === "all" || category === filter) {
+				item.removeAttribute("hidden");
+			} else {
+				item.setAttribute("hidden", "");
+			}
+		});
+	};
 
-      // Use View Transitions API for smooth animations
-      (document as any).startViewTransition(() => {
-        // Update active tab
-        tabs.forEach((t) => {
-          t.classList.remove("menu__tab--active");
-          t.setAttribute("aria-selected", "false");
-        });
-        tab.classList.add("menu__tab--active");
-        tab.setAttribute("aria-selected", "true");
+	tabs.forEach((tab) => {
+		tab.addEventListener("click", () => {
+			const filter = tab.dataset.filter || "all";
 
-        // Filter menu items
-        updateFilter(filter);
-      });
-    });
-  });
+			const applyFilter = (): void => {
+				tabs.forEach((t) => {
+					t.classList.remove("menu__tab--active");
+					t.setAttribute("aria-selected", "false");
+				});
+				tab.classList.add("menu__tab--active");
+				tab.setAttribute("aria-selected", "true");
+				updateFilter(filter);
+			};
 
-  // Smooth scroll for "View Menu" button
-  const viewMenuLink = document.querySelector(".hero__cta");
-  if (viewMenuLink) {
-    viewMenuLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      const menuSection = document.querySelector("#menu");
-      if (menuSection) {
-        menuSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
-  }
+			if (
+				!(document as unknown as { startViewTransition?: unknown })
+					.startViewTransition
+			) {
+				applyFilter();
+				return;
+			}
+
+			(
+				document as unknown as {
+					startViewTransition: (cb: () => void) => void;
+				}
+			).startViewTransition(applyFilter);
+		});
+	});
+
+	// Smooth scroll for hero CTA
+	const viewMenuLink = document.querySelector(".hero__cta");
+	if (viewMenuLink) {
+		viewMenuLink.addEventListener("click", (e) => {
+			e.preventDefault();
+			document
+				.querySelector("#menu")
+				?.scrollIntoView({
+					behavior: "smooth",
+					block: "start",
+				});
+		});
+	}
 };
 
 // Initialize when DOM is ready
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initializeApp);
+	document.addEventListener("DOMContentLoaded", initializeApp);
 } else {
-  initializeApp();
+	initializeApp();
 }

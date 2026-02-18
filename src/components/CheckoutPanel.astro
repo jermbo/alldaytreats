@@ -1,5 +1,6 @@
 ---
-// No props needed - JS manages state
+import { siteConfig } from '../config/site.ts';
+const businessEmail = siteConfig.contact.email;
 ---
 
 <div class="checkout-modal" role="dialog" aria-labelledby="checkout-title" aria-modal="true" hidden>
@@ -148,9 +149,13 @@
               </div>
             </div>
 
-            <div class="checkout-modal__form-group checkout-modal__form-group--alt">
-              <label for="checkout-website" class="checkout-modal__label">
-                Website (leave blank)
+            <!-- Honeypot: visually hidden, no instructional text -->
+            <div class="checkout-modal__form-group checkout-modal__form-group--alt" aria-hidden="true">
+              <label
+                for="checkout-website"
+                class="checkout-modal__label sr-only"
+              >
+                Website
               </label>
               <input
                 type="text"
@@ -159,7 +164,6 @@
                 class="checkout-modal__input"
                 tabindex="-1"
                 autocomplete="off"
-                aria-hidden="true"
                 data-lpignore="true"
                 data-1p-ignore="true"
               />
@@ -202,7 +206,7 @@
             To complete your order, you need to send an email to:
           </p>
           <div class="checkout-modal__email-address">
-            alldaytreat@gmail.com
+            {businessEmail}
           </div>
           <p class="checkout-modal__instructions-text">
             Choose one of the options below to send your order details:

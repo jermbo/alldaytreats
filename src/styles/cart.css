@@ -80,7 +80,7 @@
 
 .cart__icon {
 	font-size: var(--font-size-2xl);
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 }
 
 .cart__title {
@@ -251,7 +251,7 @@
 
 .cart__item-toppings {
 	font-size: var(--font-size-xs);
-	color: var(--color-accent-pink);
+	color: var(--color-accent-blue);
 	margin: 0;
 	font-weight: 500;
 	line-height: 1.4;
@@ -354,7 +354,7 @@
 .cart__item-price {
 	font-size: var(--font-size-lg);
 	font-weight: 700;
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 	min-width: 70px;
 	text-align: right;
 	flex-shrink: 0;
@@ -442,7 +442,7 @@
 .cart__total-value {
 	font-size: var(--font-size-xl);
 	font-weight: 700;
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 }
 
 .cart__actions {

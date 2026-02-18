@@ -33,11 +33,11 @@
 	margin-top: var(--spacing-2xs);
 	line-height: 1.4;
 	font-weight: 500;
+}
 
-	&.checkout-modal__error--visible {
-		display: block;
-		animation: slideDown var(--transition-fast) ease;
-	}
+.checkout-modal__error--visible {
+	display: block;
+	animation: slideDown var(--transition-fast) ease;
 }
 
 /* Slide down animation for error messages */
@@ -53,17 +53,15 @@
 }
 
 /* Form group with invalid field */
-.checkout-modal__form-group:has(.checkout-modal__input:user-invalid) {
+.checkout-modal__form-group:has(.checkout-modal__input:user-invalid)
 	.checkout-modal__label {
-		color: var(--color-error-muted);
-	}
+	color: var(--color-error-muted);
 }
 
 /* Form group with valid field */
-.checkout-modal__form-group:has(.checkout-modal__input:user-valid) {
+.checkout-modal__form-group:has(.checkout-modal__input:user-valid)
 	.checkout-modal__label {
-		color: var(--color-success);
-	}
+	color: var(--color-success);
 }
 
 /* Reduce motion for users who prefer it */

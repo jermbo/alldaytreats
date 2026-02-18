@@ -24,7 +24,7 @@
 .footer__title {
 	font-family: var(--font-family-serif);
 	font-size: var(--font-size-xl);
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 	font-weight: 700;
 	margin-bottom: var(--spacing-base);
 	line-height: 1.3;
@@ -78,7 +78,7 @@
 		content: "•";
 		position: absolute;
 		left: 0;
-		color: var(--color-burgundy);
+		color: var(--color-accent-blue);
 	}
 }
 

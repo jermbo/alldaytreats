@@ -74,7 +74,8 @@
 	flex-direction: column;
 	opacity: 0;
 	transform: scale(0.95);
-	transition: transform var(--transition-base) var(--easing-smooth),
+	transition:
+		transform var(--transition-base) var(--easing-smooth),
 		opacity var(--transition-base) var(--easing-smooth);
 	overflow: hidden;
 
@@ -96,10 +97,10 @@
 	min-height: 0;
 	overflow: hidden;
 	animation: stepFadeIn var(--transition-base) ease-out;
-}
 
-.checkout-modal__step[hidden] {
-	display: none;
+	&[hidden] {
+		display: none;
+	}
 }
 
 @keyframes stepFadeIn {
@@ -149,7 +150,8 @@
 	border-radius: var(--radius-base);
 	font-size: var(--font-size-sm);
 	font-weight: 600;
-	transition: background var(--transition-fast),
+	transition:
+		background var(--transition-fast),
 		border-color var(--transition-fast);
 
 	&:hover {
@@ -192,7 +194,7 @@
 .checkout-modal__section-title {
 	font-size: var(--font-size-lg);
 	font-weight: 700;
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 	margin: 0 0 var(--spacing-base) 0;
 	letter-spacing: 0.025em;
 	text-transform: uppercase;
@@ -236,14 +238,14 @@
 
 .checkout-modal__summary-item-toppings {
 	font-size: var(--font-size-xs);
-	color: var(--color-accent-pink);
+	color: var(--color-accent-blue);
 	font-weight: 500;
 	margin-top: var(--spacing-3xs);
 }
 
 .checkout-modal__summary-item-price {
 	font-weight: 700;
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 	font-size: var(--font-size-base);
 	white-space: nowrap;
 }
@@ -276,7 +278,7 @@
 .checkout-modal__summary-delivery,
 .checkout-modal__summary-total {
 	font-weight: 700;
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 }
 
 /* ============================================
@@ -295,6 +297,18 @@
 	gap: var(--spacing-sm);
 }
 
+.checkout-modal__form-group--alt {
+	position: absolute;
+	clip-path: inset(100%);
+	overflow: hidden;
+	white-space: nowrap;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+}
+
 .checkout-modal__label {
 	font-weight: 600;
 	color: var(--color-text-dark);
@@ -302,7 +316,7 @@
 }
 
 .checkout-modal__required {
-	color: var(--color-accent-pink);
+	color: var(--color-accent-blue);
 	font-weight: 700;
 }
 
@@ -314,7 +328,8 @@
 	font-family: inherit;
 	background: var(--color-bg-cream);
 	color: var(--color-text-dark);
-	transition: border-color var(--transition-fast),
+	transition:
+		border-color var(--transition-fast),
 		box-shadow var(--transition-fast);
 
 	&:focus {
@@ -357,24 +372,12 @@
 }
 
 .checkout-modal__char-count--warning {
-	color: var(--color-accent-pink);
+	color: var(--color-accent-blue);
 	opacity: 1;
 }
 
 .checkout-modal__char-count-value {
 	font-weight: 600;
-}
-
-.checkout-modal__form-group--alt {
-	position: absolute;
-	clip-path: inset(100%);
-	overflow: hidden;
-	white-space: nowrap;
-	width: 1px;
-	height: 1px;
-	margin: -1px;
-	padding: 0;
-	border: 0;
 }
 
 .checkout-modal__error {
@@ -401,8 +404,10 @@
 	font-size: var(--font-size-base);
 	font-weight: 700;
 	cursor: pointer;
-	transition: transform var(--transition-fast),
-		box-shadow var(--transition-fast), background var(--transition-fast);
+	transition:
+		transform var(--transition-fast),
+		box-shadow var(--transition-fast),
+		background var(--transition-fast);
 	text-transform: uppercase;
 	letter-spacing: 0.025em;
 
@@ -458,7 +463,7 @@
 
 .checkout-modal__btn--confirm {
 	width: 100%;
-	background: var(--color-burgundy);
+	background: var(--color-accent-blue);
 	color: var(--color-text-light);
 	border: none;
 	box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3);
@@ -558,7 +563,7 @@
 	font-family: "Courier New", monospace;
 	font-size: var(--font-size-lg);
 	font-weight: 600;
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 	margin-bottom: var(--spacing-lg);
 }
 
@@ -667,7 +672,7 @@
 
 .checkout-modal__countdown-value {
 	font-weight: 700;
-	color: var(--color-burgundy);
+	color: var(--color-accent-blue);
 }
 
 /* ============================================

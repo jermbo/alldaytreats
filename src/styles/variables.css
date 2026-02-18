@@ -12,22 +12,11 @@
 	--color-text-on-accent: #262A2C;
 
 	/* Primary Accent - Blue */
-	--color-burgundy: #20a6fd;
-	--color-burgundy-light: #4db8ff;
 	--color-accent-blue: #20a6fd;
 	--color-accent-blue-light: #4db8ff;
 	--color-accent-blue-subtle: rgba(32, 166, 253, 0.2);
 
-	/* Legacy mappings - all point to blue */
-	--color-accent-red: #20a6fd;
-	--color-accent-red-light: #4db8ff;
-	--color-accent-red-subtle: rgba(32, 166, 253, 0.15);
-	--color-pastel-pink: #20a6fd;
-	--color-pastel-pink-light: #4db8ff;
-	--color-gold: #20a6fd;
-	--color-gold-light: #4db8ff;
-	--color-accent-pink: #20a6fd;
-	--color-accent-purple: #20a6fd;
+	/* Success */
 	--color-accent-green: #51cf66;
 
 	/* UI Colors */
