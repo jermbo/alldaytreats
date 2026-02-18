@@ -93,19 +93,37 @@
 - [ ] Order summary displays correctly
 - [ ] All cart items listed
 - [ ] Total matches cart total
+- [ ] Pickup/Delivery selection:
+  - [ ] "Pickup" is selected by default
+  - [ ] "Pickup" appears first in the radio button list
+  - [ ] Zip code and address fields are hidden when pickup is selected
+  - [ ] Order summary shows "Pickup: $0.00" when pickup is selected
+  - [ ] Can switch to "Delivery" - zip code and address fields appear
+  - [ ] Order summary shows "Delivery: $[fee]" when delivery is selected
+  - [ ] Switching back to "Pickup" hides zip code and address fields again
 - [ ] Form fields present:
+  - [ ] Order Type (Pickup/Delivery) - required, default: Pickup
   - [ ] Full Name (required)
   - [ ] Email (required)
   - [ ] Phone (required, formatted)
-  - [ ] Delivery Address (required)
+  - [ ] Delivery Zip Code (required only when Delivery is selected)
+  - [ ] Delivery Address (required only when Delivery is selected)
   - [ ] Order Notes (optional)
 - [ ] Form validation works:
   - [ ] Empty required field - shows error
   - [ ] Invalid email - shows error
   - [ ] Invalid phone - shows error
-  - [ ] Short address - shows error
+  - [ ] For pickup: Can submit with only name, email, phone
+  - [ ] For delivery: Short address - shows error
+  - [ ] For delivery: Missing zip code - shows error
 - [ ] Phone number formats as you type: (555) 555-5555
-- [ ] Submit valid form - success message shows
+- [ ] Submit valid pickup form - proceeds to email instructions
+- [ ] Submit valid delivery form - proceeds to email instructions
+- [ ] Email format:
+  - [ ] Pickup orders show "Pickup - Yes" instead of address
+  - [ ] Pickup orders show "Pickup: $0.00" in totals
+  - [ ] Delivery orders show zip code and address
+  - [ ] Delivery orders show "Delivery: $[fee]" in totals
 - [ ] Success message displays confirmation
 - [ ] Close checkout - panel closes
 - [ ] Cart cleared after successful order

@@ -17,8 +17,9 @@ Cart Panel
 │ Step 1: Customer Information    │
 │                                 │
 │ • Order Summary                 │
-│ • Name, Email, Phone, Zip Code  │
-│ • Delivery Address              │
+│ • Pickup/Delivery Selection     │
+│ • Name, Email, Phone            │
+│ • Zip Code & Address (Delivery) │
 │ • Optional Notes                │
 │                                 │
 │ [Cancel]              [Continue]│
@@ -70,25 +71,30 @@ Cart Panel (empty)
 
 ### Step 1: Customer Information
 
-**Purpose:** Collect customer contact and delivery information.
+**Purpose:** Collect customer contact information and order type (pickup or delivery).
 
 **Fields:**
 | Field | Required | Validation |
 |-------|----------|------------|
+| Order Type (Pickup/Delivery) | Yes | Must select pickup or delivery |
 | Full Name | Yes | Non-empty |
 | Email Address | Yes | Valid email format |
 | Phone Number | Yes | (XXX) XXX-XXXX format |
-| Delivery Zip Code | Yes | Must select from dropdown (valid delivery area) |
-| Delivery Address | Yes | Minimum 10 characters |
+| Delivery Zip Code | Yes (Delivery only) | Must select from dropdown (valid delivery area) |
+| Delivery Address | Yes (Delivery only) | Minimum 10 characters |
 | Order Notes | No | Max 500 characters |
 
 **Features:**
 
-- Order summary displayed at top showing all cart items with subtotal, delivery fee, and total
-- Delivery fee calculated automatically based on selected zip code
-- Zip code dropdown populated with available delivery areas and fees
+- Order summary displayed at top showing all cart items with subtotal, pickup/delivery fee, and total
+- **Pickup/Delivery Selection**: Radio buttons at the top allow users to choose between pickup and delivery
+  - **Pickup**: Default selection. Hides zip code and address fields. No delivery fee ($0.00).
+  - **Delivery**: Shows zip code and address fields (required). Calculates delivery fee based on selected zip code.
+- Delivery fee calculated automatically based on selected zip code (delivery orders only)
+- Zip code dropdown populated with available delivery areas and fees (shown only for delivery orders)
 - Real-time validation on blur
 - Submit button disabled until all required fields are valid
+- Conditional field display: zip code and address fields are hidden when pickup is selected
 - Spam prevention measures (see [Spam Prevention](#spam-prevention) section)
 
 **Actions:**
@@ -135,16 +141,17 @@ Cart Panel (empty)
 
 ### Files
 
-| File                                 | Purpose                                       |
-| ------------------------------------ | --------------------------------------------- |
-| `src/components/CheckoutPanel.astro` | Modal HTML structure with 3 step containers   |
-| `src/styles/checkout.css`            | Centered modal styles, step transitions       |
-| `src/styles/form-validation.css`     | Form input validation states                  |
-| `src/scripts/checkout-ui.js`         | Modal logic, step management, email functions |
-| `src/scripts/validation-ui.js`       | Error display utilities                       |
-| `src/scripts/validation.js`          | Validation functions                          |
-| `src/scripts/phone-formatter.js`     | Phone number formatting                       |
-| `src/config/delivery.ts`             | Delivery zone configuration and fee lookup    |
+| File                                      | Purpose                                                                 |
+| ----------------------------------------- | ----------------------------------------------------------------------- |
+| `src/components/CheckoutPanel.astro`      | Modal HTML structure with 3 step containers                             |
+| `src/styles/checkout.css`                 | Centered modal styles, step transitions                                 |
+| `src/styles/form-validation.css`          | Form input validation states                                            |
+| `src/scripts/checkout-ui.ts`              | Modal logic, step management, email functions, pickup/delivery handling |
+| `src/scripts/validation-ui.ts`            | Error display utilities                                                 |
+| `src/scripts/validation.ts`               | Validation functions (conditional for pickup/delivery)                  |
+| `src/scripts/phone-formatter.ts`          | Phone number formatting                                                 |
+| `src/scripts/checkout/order-formatter.ts` | Formats order email (handles pickup vs delivery)                        |
+| `src/config/delivery.ts`                  | Delivery zone configuration and fee lookup                              |
 
 ### State Management
 
@@ -155,28 +162,34 @@ let formattedOrderText = ""; // Pre-formatted order for clipboard/email
 let orderId = ""; // Generated unique order ID
 let autoCloseTimer = null; // Timer for auto-close on success
 let countdownInterval = null; // Interval for countdown display
-let selectedDeliveryFee = null; // Delivery fee based on selected zip code
+let deliveryType = "pickup"; // "pickup" | "delivery" (default: "pickup")
+let selectedDeliveryFee = null; // Delivery fee based on selected zip code (null for pickup)
 ```
 
 ### Key Functions
 
-| Function                    | Description                                          |
-| --------------------------- | ---------------------------------------------------- |
-| `openCheckout()`            | Opens modal, resets to Step 1, renders order summary |
-| `closeCheckout()`           | Closes modal, clears timers                          |
-| `goToStep(step)`            | Navigates to specified step                          |
-| `handleFormSubmit(e)`       | Validates form, generates order text, goes to Step 2 |
-| `populateZipCodeDropdown()` | Populates zip code dropdown with delivery options    |
-| `handleZipCodeChange()`     | Updates delivery fee when zip code changes           |
-| `updateDeliveryDisplay()`   | Updates delivery fee and total in order summary      |
-| `copyOrderToClipboard(btn)` | Copies order text to clipboard                       |
-| `openEmailClient()`         | Opens mailto: link, copies to clipboard as backup    |
-| `confirmOrderSent()`        | Clears cart, goes to Step 3                          |
-| `startAutoCloseCountdown()` | Starts 5-second countdown with auto-close            |
+| Function                           | Description                                                |
+| ---------------------------------- | ---------------------------------------------------------- |
+| `openCheckout()`                   | Opens modal, resets to Step 1, renders order summary       |
+| `closeCheckout()`                  | Closes modal, clears timers                                |
+| `goToStep(step)`                   | Navigates to specified step                                |
+| `handleFormSubmit(e)`              | Validates form, generates order text, goes to Step 2       |
+| `setupDeliveryTypeSelection()`     | Initializes pickup/delivery radio button handlers          |
+| `handleDeliveryTypeChange()`       | Handles pickup/delivery selection changes                  |
+| `updateDeliveryFieldsVisibility()` | Shows/hides zip code and address fields based on selection |
+| `populateZipCodeDropdown()`        | Populates zip code dropdown with delivery options          |
+| `handleZipCodeChange()`            | Updates delivery fee when zip code changes                 |
+| `updateDeliveryDisplay()`          | Updates pickup/delivery fee and total in order summary     |
+| `copyOrderToClipboard(btn)`        | Copies order text to clipboard                             |
+| `openEmailClient()`                | Opens mailto: link, copies to clipboard as backup          |
+| `confirmOrderSent()`               | Clears cart, goes to Step 3                                |
+| `startAutoCloseCountdown()`        | Starts 5-second countdown with auto-close                  |
 
 ### Email Format
 
-The order is formatted as plain text for email:
+The order is formatted as plain text for email. The format differs based on whether the order is pickup or delivery:
+
+**Delivery Order Format:**
 
 ```
 Treat Order #[8-char-id]
@@ -206,20 +219,60 @@ Total: $[total]
 ------
 ```
 
-### Delivery Fee System
+**Pickup Order Format:**
 
-The checkout form includes a zip code dropdown that determines delivery fees:
+```
+Treat Order #[8-char-id]
 
-- **Zip Code Selection**: Users must select their delivery zip code from a dropdown populated with available delivery areas
-- **Dynamic Pricing**: Delivery fee is calculated automatically based on the selected zip code
+Name - [Customer Name]
+Email - [Customer Email]
+Phone - [Customer Phone]
+Pickup - Yes
+Special Instructions - [Notes if any]
+
+------
+Order:
+------
+
+1. [Product Name] - [count]ct × [quantity]
+   SKU: [product variant SKU]
+   Price: $[line total]
+   Toppings: [topping names with prices]
+   Notes: [item notes if any]
+
+------
+Subtotal: $[subtotal]
+Pickup: $0.00
+------
+Total: $[total]
+------
+```
+
+### Pickup/Delivery System
+
+The checkout form allows users to choose between pickup and delivery:
+
+- **Order Type Selection**: Radio buttons at the top of the form let users select "Pickup" (default) or "Delivery"
+- **Pickup Orders**:
+  - No zip code or address fields required
+  - No delivery fee ($0.00)
+  - Order summary shows "Pickup: $0.00"
+  - Email format shows "Pickup - Yes" instead of address information
+- **Delivery Orders**:
+  - Zip code and address fields are required and visible
+  - **Zip Code Selection**: Users must select their delivery zip code from a dropdown populated with available delivery areas
+  - **Dynamic Pricing**: Delivery fee is calculated automatically based on the selected zip code
+  - Order summary shows "Delivery: $[fee]"
 - **Order Summary**: The order summary displays:
   - Subtotal (cart items total)
-  - Delivery fee (based on zip code)
-  - Total (subtotal + delivery fee)
-- **Real-time Updates**: When a zip code is selected, the delivery fee and total update immediately in the order summary
+  - Pickup/Delivery fee (Pickup: $0.00, Delivery: based on zip code)
+  - Total (subtotal + fee)
+- **Real-time Updates**:
+  - When switching between pickup/delivery, fields show/hide accordingly
+  - When a zip code is selected (delivery), the delivery fee and total update immediately in the order summary
 - **Configuration**: Delivery zones and fees are configured in `src/config/delivery.ts` and `src/config/site.ts`
 
-The delivery fee is included in the order email and added to the total order amount.
+The pickup/delivery fee is included in the order email and added to the total order amount.
 
 ### SKU Verification
 
