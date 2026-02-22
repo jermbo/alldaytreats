@@ -4,7 +4,7 @@ export const siteConfig = {
 	description:
 		"Handcrafted candy-coated and chocolate-covered treats made fresh in Omaha, NE.",
 	contact: {
-		email: "alldaytreat@gmail.com",
+		email: "alldaytreatomaha@gmail.com",
 		instagram: {
 			handle: "@all_day_treats",
 			url: "https://instagram.com/all_day_treats",

@@ -31,12 +31,12 @@ Cart Panel
 │ Step 2: Email Instructions      │
 │                                 │
 │ "Send an email to:              │
-│  alldaytreat@gmail.com"         │
+│  alldaytreatomaha@gmail.com"    │
 │                                 │
 │ [Copy Order Details]            │
 │ [Open Email Client]             │
 │                                 │
-│ ⚠️ Warning: Confirming clears   │
+│  Warning: Confirming clears     │
 │    cart without placing order   │
 │    if email was not sent.       │
 │                                 │
