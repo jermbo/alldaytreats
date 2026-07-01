@@ -1,7 +1,7 @@
 {
 	"name": "all-day-treats",
 	"type": "module",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"scripts": {
 		"dev": "astro dev --port 4444 --open --host",
 		"build": "astro build",
@@ -9,6 +9,6 @@
 		"astro": "astro"
 	},
 	"dependencies": {
-		"astro": "^5.16.11"
+		"astro": "7.0.4"
 	}
 }

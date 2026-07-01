@@ -1,7 +1,9 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const products = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/products' }),
   schema: z.object({
     name: z.string(),
     category: z.enum(['candy', 'chocolate', 'platter']),
@@ -10,7 +12,7 @@ const products = defineCollection({
     priceOptions: z.array(z.object({
       count: z.number().positive(),
       price: z.number().positive(),
-      sku: z.string(), // Unique product variant identifier for order verification
+      sku: z.string(),
     })),
     extraAddOns: z.number().default(5),
     order: z.number().default(999),
