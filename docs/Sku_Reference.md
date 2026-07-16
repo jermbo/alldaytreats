@@ -38,23 +38,85 @@ This document provides a complete reference of all product and topping SKUs for 
 | CCRK08 | Chocolate Covered Rice Krispies | 8ct | $20.00 |
 | CCRK12 | Chocolate Covered Rice Krispies | 12ct | $25.00 |
 
-### Platters
+### Party Packages (Chocolate)
 
-| SKU | Name | Quantity | Price |
+| SKU | Name | Includes | Price |
 |-----|------|----------|-------|
-| PP01 | Party Platter | 1ct | $50.00 |
-| PP02 | Party Platter | 2ct | $60.00 |
-| PP03 | Party Platter | 3ct | $80.00 |
+| CCT08 | Classic Chocolate Trio | Strawberries, Rice Krispies, Oreos (8ct each) | $85.00 |
+| SSM08 | Sweet & Salty Mix | Strawberries, pretzels, Oreos (8ct each) | $75.00 |
+| DTS08 | Dessert Table Starter | Cake pops, Oreos, Rice Krispies (8ct each) | $80.00 |
+| SLB06 | Strawberry Lover's Box | Strawberries, pretzels (6ct) + 1 breakable heart | $50.00 |
+| COL08 | Chocolate Overload | All 5 chocolate items (8ct each) | $130.00 |
+
+### Party Packages (Candy Fruit)
+
+| SKU | Name | Includes | Price |
+|-----|------|----------|-------|
+| CCR08 | Candy Crazeee | Grapes, strawberries, pineapple (8ct each) | $85.00 |
+| BBL06 | Berry Blast | Grapes + strawberries (6ct each) | $45.00 |
+| TCB08 | Tropical Candy Box | Pineapple + grapes (8ct each) | $75.00 |
+| CFD12 | Candy Fruit Deluxe | 12ct grapes, 12ct strawberries, 6ct pineapple | $100.00 |
+
+Candy fruit packages require at least one flavor. First flavor included; each additional flavor +$1 (`XFLV`).
+
+## Themes (Packages)
+
+Optional theme upcharge: **$20** per package.
+
+| SKU | Theme |
+|-----|-------|
+| THTS | Toy Story |
+| THSC | School |
+| THBD | Birthday (any age) |
+| THWP | Winnie the Pooh |
+| THMM | Mickey Mouse |
+| THMN | Minions |
+| THCC | Cookies and Cream |
+| THSS | Strawberry Shortcake |
+| THCW | Cow |
+| THHL | Holiday |
+| THBS | Baby Shower |
+| THSP | Sports Team / Organization |
+| THCU | Custom / Other |
+
+## Flavors (Candy Fruit Packages)
+
+| SKU | Flavor |
+|-----|--------|
+| FLST | Strawberry |
+| FLWM | Watermelon |
+| FLGA | Green Apple |
+| FLGR | Grape |
+| FLCH | Cherry |
+| FLBR | Blue Raspberry |
+| FLCC | Cotton Candy |
+| FLFP | Fruit Punch |
+
+| SKU | Fee |
+|-----|-----|
+| XFLV | Extra flavor (+$1 each after the first) |
+
+## Order Fees
+
+| SKU | Fee | Amount |
+|-----|-----|--------|
+| RUSH | Rush (sooner than 1 week) | $15.00 |
 
 ## Toppings / Add-Ons
+
+### A la carte candy products
 
 Topping prices vary based on product quantity:
 - **6ct**: Base price
 - **8ct**: Base price + $1
 - **12ct**: Base price + $2
 
-| SKU | Name | Base Price (6ct) | 8ct Price | 12ct Price |
-|-----|------|------------------|-----------|------------|
+### Packages
+
+Package add-ons use **flat base prices** (no quantity scaling). Max 2 add-ons.
+
+| SKU | Name | Base / Package Price | 8ct (a la carte) | 12ct (a la carte) |
+|-----|------|----------------------|------------------|-------------------|
 | JYRS | Jolly Ranchers | $2.00 | $3.00 | $4.00 |
 | NERD | Nerds | $2.00 | $3.00 | $4.00 |
 | STRB | Starburst | $2.00 | $3.00 | $4.00 |
@@ -67,18 +129,23 @@ Topping prices vary based on product quantity:
 
 When you receive an order email, each line item will include:
 1. **Product SKU** - Match against the Products tables above
-2. **Topping SKUs** - Match against the Toppings table above
-3. **Prices** - Verify the price matches the SKU
+2. **Theme / Flavor SKUs** - Match against Themes and Flavors tables
+3. **Topping SKUs** - Match against the Toppings table above
+4. **Rush Fee** - `[RUSH]` if selected
+5. **Prices** - Verify the price matches the SKU + upcharges
 
-Example order line:
+Example package line:
 ```
-1. Candy Strawberries [CS08] - 8ct × 1
-   Price: $24.00
-   Toppings: Nerds [NERD] (+$3), Starburst [STRB] (+$3)
+1. Candy Crazeee [CCR08] - Package × 1
+   Price: $108.00
+   Theme: Birthday (any age) [THBD] (+$20)
+   Flavors: Strawberry [FLST], Grape [FLGR] (+$1 extra flavors)
+   Toppings: Nerds [NERD] (+$2)
 ```
 
 To verify:
-- [CS08] = Candy Strawberries 8ct = $18.00
-- [NERD] (8ct) = $3.00
-- [STRB] (8ct) = $3.00
-- Total: $18 + $3 + $3 = $24.00 ✓
+- [CCR08] = Candy Crazeee = $85.00
+- Theme [THBD] = $20.00
+- Extra flavor = $1.00
+- [NERD] (package flat) = $2.00
+- Total: $85 + $20 + $1 + $2 = $108.00 ✓

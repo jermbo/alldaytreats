@@ -10,7 +10,8 @@ import { openCheckout } from "@/scripts/checkout-ui.ts";
 import { escapeHtml } from "@/scripts/utils/escape-html.ts";
 import { formatCurrency } from "@/scripts/utils/format-currency.ts";
 import { formatToppings } from "@/scripts/utils/toppings.ts";
-import { findProduct } from "@/scripts/utils/product.ts";
+import { findProduct, isPackage } from "@/scripts/utils/product.ts";
+import { formatPackageOptions } from "@/scripts/utils/package-options.ts";
 import {
 	createFocusTrap,
 	type FocusTrap,
@@ -202,6 +203,11 @@ const createCartItemElement = (item: CartItem): HTMLElement => {
 		item.productId,
 		"html",
 	);
+	const packageOptionsHtml = formatPackageOptions(item, "html");
+	const productIsPackage = isPackage(item.productId);
+	const optionLabel = productIsPackage
+		? `Package ${formatCurrency(unitPrice)}`
+		: `${unitCount}ct ${formatCurrency(unitPrice)}`;
 
 	itemEl.innerHTML = `
 		<div class="cart__item-main">
@@ -213,7 +219,8 @@ const createCartItemElement = (item: CartItem): HTMLElement => {
 						✏️
 					</button>
 				</div>
-				<p class="cart__item-option">${unitCount}ct ${formatCurrency(unitPrice)}</p>
+				<p class="cart__item-option">${optionLabel}</p>
+				${packageOptionsHtml}
 				${toppingsHtml}
 				${item.specialInstructions ? `<p class="cart__item-instructions">${escapeHtml(item.specialInstructions)}</p>` : ""}
 			</div>
@@ -348,12 +355,24 @@ const refreshCartItemElement = (itemId: string): void => {
 	// Update option display
 	const optionEl = itemElement.querySelector(".cart__item-option");
 	if (optionEl) {
-		optionEl.textContent = `${unitCount}ct ${formatCurrency(unitPrice)}`;
+		const productIsPackage = isPackage(item.productId);
+		optionEl.textContent = productIsPackage
+			? `Package ${formatCurrency(unitPrice)}`
+			: `${unitCount}ct ${formatCurrency(unitPrice)}`;
+	}
+
+	// Update package options (theme / flavors)
+	const contentEl = itemElement.querySelector(".cart__item-content");
+	itemElement
+		.querySelectorAll(".cart__item-package-option")
+		.forEach((el) => el.remove());
+	const packageOptionsHtml = formatPackageOptions(item, "html");
+	if (packageOptionsHtml && contentEl && optionEl) {
+		optionEl.insertAdjacentHTML("afterend", packageOptionsHtml);
 	}
 
 	// Update toppings
 	const toppingsEl = itemElement.querySelector(".cart__item-toppings");
-	const contentEl = itemElement.querySelector(".cart__item-content");
 	const toppingsHtml = formatToppings(
 		item.toppings,
 		item.count,
@@ -365,7 +384,10 @@ const refreshCartItemElement = (itemId: string): void => {
 		if (toppingsEl) {
 			toppingsEl.outerHTML = toppingsHtml;
 		} else if (contentEl && optionEl) {
-			optionEl.insertAdjacentHTML("afterend", toppingsHtml);
+			const insertAfter =
+				contentEl.querySelector(".cart__item-package-option:last-of-type") ||
+				optionEl;
+			insertAfter.insertAdjacentHTML("afterend", toppingsHtml);
 		}
 	} else if (toppingsEl) {
 		toppingsEl.remove();
@@ -417,6 +439,8 @@ const handleEditItem = (item: CartItem): void => {
 		price: item.unitPrice || item.price,
 		specialInstructions: item.specialInstructions,
 		toppings: item.toppings,
+		theme: item.theme,
+		flavors: item.flavors,
 	});
 };
 

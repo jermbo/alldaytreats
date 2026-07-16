@@ -1,6 +1,6 @@
 import type { CartItem, ToppingsData } from "@/scripts/types/index.ts";
 import { generateId } from "@/scripts/utils/generate-id.ts";
-import { isChocolateCovered } from "@/scripts/utils/product.ts";
+import { supportsToppings } from "@/scripts/utils/product.ts";
 import { normalizeToppingIds } from "@/scripts/utils/toppings.ts";
 
 const STORAGE_KEY = "alldaytreats-cart";
@@ -41,6 +41,9 @@ const isValidCartItem = (item: unknown): item is CartItem => {
 		if (t.premium !== undefined && !Array.isArray(t.premium)) return false;
 	}
 
+	if (obj.theme !== undefined && typeof obj.theme !== "string") return false;
+	if (obj.flavors !== undefined && !Array.isArray(obj.flavors)) return false;
+
 	return true;
 };
 
@@ -80,6 +83,9 @@ const normalizeCartItem = (item: CartItem): CartItem => {
 		);
 	}
 
+	if (item.theme) normalized.theme = item.theme;
+	if (item.flavors?.length) normalized.flavors = [...item.flavors];
+
 	return normalized;
 };
 
@@ -101,7 +107,7 @@ const loadCartFromStorage = (): CartItem[] => {
 			: (parsed as CartData).items;
 
 		return (items as CartItem[]).map(normalizeCartItem).map((item) => {
-			if (isChocolateCovered(item.productId) && item.toppings) {
+			if (!supportsToppings(item.productId) && item.toppings) {
 				return { ...item, toppings: undefined };
 			}
 			return item;
@@ -201,10 +207,12 @@ export const addToCart = (item: {
 	quantity?: number;
 	toppings?: ToppingsData;
 	sku?: string;
+	theme?: string;
+	flavors?: string[];
 }): void => {
-	const safeToppings = isChocolateCovered(item.productId)
-		? undefined
-		: item.toppings || undefined;
+	const safeToppings = supportsToppings(item.productId)
+		? item.toppings || undefined
+		: undefined;
 
 	const uniqueId = generateId();
 	const itemId = item.sku ? `${item.sku}-${uniqueId}` : uniqueId;
@@ -222,6 +230,8 @@ export const addToCart = (item: {
 			? normalizeToppingIds(safeToppings)
 			: undefined,
 		sku: item.sku || "",
+		theme: item.theme,
+		flavors: item.flavors,
 	});
 
 	normalizedItem.price = normalizedItem.unitPrice * normalizedItem.quantity;
@@ -259,10 +269,9 @@ export const updateCartItem = (
 	if (!item) return false;
 
 	const productId = updates.productId ?? item.productId;
-	const isChocolate = isChocolateCovered(productId);
+	const canHaveToppings = supportsToppings(productId);
 
-	// Sanitize toppings for chocolate products
-	if (updates.toppings !== undefined && isChocolate) {
+	if (updates.toppings !== undefined && !canHaveToppings) {
 		updates = { ...updates, toppings: undefined };
 	}
 
@@ -275,8 +284,14 @@ export const updateCartItem = (
 	if (updates.unitPrice !== undefined) item.unitPrice = updates.unitPrice;
 	if (updates.toppings !== undefined) item.toppings = updates.toppings;
 	if (updates.sku !== undefined) item.sku = updates.sku;
+	if (updates.theme !== undefined) item.theme = updates.theme || undefined;
+	if (updates.flavors !== undefined) {
+		item.flavors = updates.flavors?.length
+			? [...updates.flavors]
+			: undefined;
+	}
 
-	if (isChocolate) item.toppings = undefined;
+	if (!canHaveToppings) item.toppings = undefined;
 
 	const normalized = normalizeCartItem(item);
 	Object.assign(item, normalized);

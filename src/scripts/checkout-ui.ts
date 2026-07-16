@@ -20,6 +20,7 @@ import {
 } from "@/scripts/validation-ui.ts";
 import { initPhoneFormatter } from "@/scripts/phone-formatter.ts";
 import { getDeliveryOptions, getDeliveryFee } from "@/config/delivery.ts";
+import { RUSH_FEE } from "@/config/order-fees.ts";
 import { siteConfig } from "@/config/site.ts";
 import { generateId } from "@/scripts/utils/generate-id.ts";
 import { formatCurrency } from "@/scripts/utils/format-currency.ts";
@@ -59,6 +60,7 @@ let autoCloseTimer: ReturnType<typeof setTimeout> | null = null;
 let countdownInterval: ReturnType<typeof setInterval> | null = null;
 let selectedDeliveryFee: number | null = null;
 let deliveryType: "pickup" | "delivery" = "pickup";
+let rushSelected = false;
 let focusTrap: FocusTrap | null = null;
 
 /**
@@ -121,6 +123,8 @@ export const initCheckoutUI = (modalElement: HTMLElement): void => {
 		// Setup delivery type selection
 		setupDeliveryTypeSelection();
 
+		setupRushFeeSelection();
+
 		setupFieldValidation(checkoutForm);
 	}
 
@@ -177,9 +181,9 @@ const handleDeliveryTypeChange = (): void => {
 		);
 		if (addressField) addressField.value = "";
 		selectedDeliveryFee = null;
-		updateDeliveryDisplay(null, deliveryType);
+		updateDeliveryDisplay(null, deliveryType, getRushFee());
 	} else {
-		updateDeliveryDisplay(selectedDeliveryFee, deliveryType);
+		updateDeliveryDisplay(selectedDeliveryFee, deliveryType, getRushFee());
 	}
 
 	// Update validation state
@@ -231,7 +235,25 @@ const handleZipCodeChange = (): void => {
 	selectedDeliveryFee = zipCodeField.value
 		? getDeliveryFee(zipCodeField.value)
 		: null;
-	updateDeliveryDisplay(selectedDeliveryFee, deliveryType);
+	updateDeliveryDisplay(selectedDeliveryFee, deliveryType, getRushFee());
+};
+
+const getRushFee = (): number => (rushSelected ? RUSH_FEE : 0);
+
+const setupRushFeeSelection = (): void => {
+	if (!checkoutForm) return;
+	const rushCheckbox =
+		checkoutForm.querySelector<HTMLInputElement>("#checkout-rush");
+	if (!rushCheckbox) return;
+
+	rushCheckbox.addEventListener("change", () => {
+		rushSelected = rushCheckbox.checked;
+		updateDeliveryDisplay(
+			selectedDeliveryFee,
+			deliveryType,
+			getRushFee(),
+		);
+	});
 };
 
 // --- Step Navigation ---
@@ -471,13 +493,15 @@ const handleFormSubmit = async (e: Event): Promise<void> => {
 				? getDeliveryFee(formData.zipcode) || 0
 				: 0;
 		const subtotal = getCartSubtotal();
+		const rushFee = getRushFee();
 
 		const orderData: OrderData = {
 			...formData,
 			items: getCartItems(),
 			subtotal,
 			deliveryFee,
-			total: subtotal + deliveryFee,
+			rushFee,
+			total: subtotal + deliveryFee + rushFee,
 		};
 
 		const subject = `Treat Order #${orderId}`;
@@ -539,6 +563,7 @@ const openEmailClient = (): void => {
 	const deliveryFee =
 		deliveryType === "delivery" ? getDeliveryFee(zipcode) || 0 : 0;
 	const subtotal = getCartSubtotal();
+	const rushFee = getRushFee();
 
 	const body = formatOrderEmail({
 		deliveryType,
@@ -554,7 +579,8 @@ const openEmailClient = (): void => {
 		items: getCartItems(),
 		subtotal,
 		deliveryFee,
-		total: subtotal + deliveryFee,
+		rushFee,
+		total: subtotal + deliveryFee + rushFee,
 	});
 
 	// Copy as fallback
@@ -643,6 +669,7 @@ export const openCheckout = (): void => {
 	}
 	selectedDeliveryFee = null;
 	deliveryType = "pickup";
+	rushSelected = false;
 
 	// Reset form and delivery type selection
 	if (checkoutForm) {
@@ -650,6 +677,9 @@ export const openCheckout = (): void => {
 			'input[name="deliveryType"][value="pickup"]',
 		);
 		if (pickupRadio) pickupRadio.checked = true;
+		const rushCheckbox =
+			checkoutForm.querySelector<HTMLInputElement>("#checkout-rush");
+		if (rushCheckbox) rushCheckbox.checked = false;
 	}
 	if (zipCodeField) zipCodeField.value = "";
 
@@ -658,7 +688,7 @@ export const openCheckout = (): void => {
 	clearTimers();
 	goToStep("info");
 	renderOrderSummary();
-	updateDeliveryDisplay(null, deliveryType);
+	updateDeliveryDisplay(null, deliveryType, getRushFee());
 
 	if (checkoutForm) updateSubmitButtonState();
 

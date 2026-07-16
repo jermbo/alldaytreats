@@ -257,6 +257,14 @@
 	line-height: 1.4;
 }
 
+.cart__item-package-option {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-dark);
+	margin: 0;
+	opacity: var(--opacity-secondary);
+	line-height: 1.4;
+}
+
 .cart__item-instructions {
 	font-size: var(--font-size-xs);
 	color: var(--color-text-dark);
@@ -281,7 +289,9 @@
 	justify-content: center;
 	border-radius: var(--radius-sm);
 	font-size: var(--font-size-sm);
-	transition: background var(--transition-fast), transform var(--transition-fast);
+	transition:
+		background var(--transition-fast),
+		transform var(--transition-fast);
 	flex-shrink: 0;
 	opacity: var(--opacity-secondary);
 	padding: 0;
@@ -326,7 +336,9 @@
 	justify-content: center;
 	font-size: var(--font-size-xl);
 	line-height: 1;
-	transition: background var(--transition-fast), border-color var(--transition-fast);
+	transition:
+		background var(--transition-fast),
+		border-color var(--transition-fast);
 
 	&:hover {
 		background: var(--color-overlay-light);
@@ -377,7 +389,9 @@
 	justify-content: center;
 	border-radius: var(--radius-sm);
 	font-size: var(--font-size-lg);
-	transition: background var(--transition-fast), transform var(--transition-fast);
+	transition:
+		background var(--transition-fast),
+		transform var(--transition-fast);
 	flex-shrink: 0;
 
 	&:hover {
@@ -462,7 +476,9 @@
 	color: var(--color-text-dark);
 	font-size: var(--font-size-base);
 	cursor: pointer;
-	transition: opacity var(--transition-fast), transform var(--transition-fast);
+	transition:
+		opacity var(--transition-fast),
+		transform var(--transition-fast);
 
 	&:hover {
 		opacity: var(--opacity-hover);
@@ -482,7 +498,9 @@
 	color: var(--color-text-dark);
 	font-size: var(--font-size-base);
 	cursor: pointer;
-	transition: background var(--transition-fast), opacity var(--transition-fast);
+	transition:
+		background var(--transition-fast),
+		opacity var(--transition-fast);
 	white-space: nowrap;
 
 	&:hover {

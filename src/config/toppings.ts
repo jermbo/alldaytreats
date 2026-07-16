@@ -13,12 +13,16 @@ export const MAX_TOPPINGS = 2;
  * Calculate topping price based on product count
  * @param basePrice - Base topping price
  * @param count - Product count (6, 8, or 12)
+ * @param flat - If true, use base price only (packages)
  * @returns Calculated price
  */
 export const calculateToppingPrice = (
 	basePrice: number,
 	count: number,
+	flat: boolean = false,
 ): number => {
+	if (flat) return basePrice;
+
 	switch (count) {
 		case 6:
 			return basePrice;
@@ -104,16 +108,18 @@ export const getToppingById = (id: string): Topping | undefined => {
  * Calculate total price for selected toppings
  * @param toppingIds - Array of topping IDs
  * @param count - Product count (optional, defaults to 6 for base price)
+ * @param flat - If true, use base prices only (packages)
  * @returns Total price
  */
 export const calculateToppingsPrice = (
 	toppingIds: string[],
 	count: number = 6,
+	flat: boolean = false,
 ): number => {
 	return toppingIds.reduce((total, id) => {
 		const topping = getToppingById(id);
 		if (!topping) return total;
-		const price = calculateToppingPrice(topping.price, count);
+		const price = calculateToppingPrice(topping.price, count, flat);
 		return total + price;
 	}, 0);
 };

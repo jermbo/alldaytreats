@@ -276,9 +276,36 @@
 
 .checkout-modal__summary-subtotal,
 .checkout-modal__summary-delivery,
+.checkout-modal__summary-rush,
 .checkout-modal__summary-total {
 	font-weight: 700;
 	color: var(--color-accent-blue);
+}
+
+.checkout-modal__lead-note {
+	margin: var(--spacing-base) 0 0;
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	line-height: 1.4;
+}
+
+.checkout-modal__checkbox-label {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--spacing-sm);
+	font-size: var(--font-size-sm);
+	color: var(--color-text-dark);
+	cursor: pointer;
+	line-height: 1.4;
+}
+
+.checkout-modal__checkbox {
+	width: var(--size-icon-base);
+	height: var(--size-icon-base);
+	margin-top: 2px;
+	accent-color: var(--color-accent-blue);
+	flex-shrink: 0;
+	cursor: pointer;
 }
 
 /* ============================================

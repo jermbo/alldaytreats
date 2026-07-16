@@ -22,11 +22,38 @@ export const findProduct = (productId: string): Product | undefined => {
 };
 
 /**
- * Single source of truth: does this product belong to the chocolate category?
- * Chocolate products do not support toppings.
+ * Party / platter packages (named bundles)
+ */
+export const isPackage = (productId: string): boolean => {
+	return findProduct(productId)?.category === "platter";
+};
+
+/**
+ * A la carte chocolate products do not support toppings.
+ * Packages always support add-ons even when packageKind is chocolate.
  */
 export const isChocolateCovered = (productId: string): boolean => {
-	return findProduct(productId)?.category === "chocolate";
+	const product = findProduct(productId);
+	if (!product) return false;
+	return product.category === "chocolate";
+};
+
+/**
+ * Whether toppings/add-ons can be selected for this product
+ */
+export const supportsToppings = (productId: string): boolean => {
+	const product = findProduct(productId);
+	if (!product) return false;
+	if (product.category === "platter") return true;
+	if (product.category === "candy") return true;
+	return false;
+};
+
+/**
+ * Candy-fruit packages require at least one flavor
+ */
+export const requiresFlavor = (productId: string): boolean => {
+	return Boolean(findProduct(productId)?.requiresFlavor);
 };
 
 /**

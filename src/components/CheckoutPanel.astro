@@ -32,11 +32,18 @@ const businessEmail = siteConfig.contact.email;
               <span class="checkout-modal__summary-label">Delivery</span>
               <span class="checkout-modal__summary-delivery">--</span>
             </div>
+            <div class="checkout-modal__summary-row" data-rush-summary-row hidden>
+              <span>Rush Fee</span>
+              <span class="checkout-modal__summary-rush">$0.00</span>
+            </div>
             <div class="checkout-modal__summary-row checkout-modal__summary-row--total">
               <span>Total</span>
               <span class="checkout-modal__summary-total">$0.00</span>
             </div>
           </div>
+          <p class="checkout-modal__lead-note">
+            Orders need at least 1 week notice. A deposit is due when your order is placed.
+          </p>
         </section>
 
         <section class="checkout-modal__section checkout-modal__section--form">
@@ -182,6 +189,18 @@ const businessEmail = siteConfig.contact.email;
               <div class="checkout-modal__char-count">
                 <span class="checkout-modal__char-count-value">0</span> / 500
               </div>
+            </div>
+
+            <div class="checkout-modal__form-group">
+              <label class="checkout-modal__checkbox-label">
+                <input
+                  type="checkbox"
+                  id="checkout-rush"
+                  name="rush"
+                  class="checkout-modal__checkbox"
+                />
+                <span>Need it sooner than 1 week? (+$15 rush fee)</span>
+              </label>
             </div>
 
             <!-- Honeypot: visually hidden, no instructional text -->

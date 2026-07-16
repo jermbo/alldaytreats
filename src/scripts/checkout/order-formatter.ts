@@ -1,6 +1,9 @@
 import type { OrderData } from "@/scripts/types/index.ts";
 import { formatToppings } from "@/scripts/utils/toppings.ts";
+import { formatPackageOptions } from "@/scripts/utils/package-options.ts";
 import { formatCurrency } from "@/scripts/utils/format-currency.ts";
+import { isPackage } from "@/scripts/utils/product.ts";
+import { RUSH_FEE_SKU } from "@/config/order-fees.ts";
 
 /**
  * Format order data as a plain-text email body
@@ -17,6 +20,7 @@ export const formatOrderEmail = (orderData: OrderData): string => {
 		items,
 		subtotal,
 		deliveryFee,
+		rushFee,
 		total,
 	} = orderData;
 
@@ -39,8 +43,16 @@ export const formatOrderEmail = (orderData: OrderData): string => {
 
 	items.forEach((item, index) => {
 		const sku = item.sku ? ` [${item.sku}]` : "";
-		body += `${index + 1}. ${item.name}${sku} - ${item.count}ct × ${item.quantity}\n`;
+		const countLabel = isPackage(item.productId)
+			? `Package × ${item.quantity}`
+			: `${item.count}ct × ${item.quantity}`;
+		body += `${index + 1}. ${item.name}${sku} - ${countLabel}\n`;
 		body += `   Price: ${formatCurrency(item.unitPrice * item.quantity)}\n`;
+
+		const packageOpts = formatPackageOptions(item, "email");
+		if (packageOpts) {
+			body += `   ${packageOpts}\n`;
+		}
 
 		if (item.toppings) {
 			const toppingsText = formatToppings(
@@ -66,6 +78,9 @@ export const formatOrderEmail = (orderData: OrderData): string => {
 		body += `Pickup: ${formatCurrency(0)}\n`;
 	} else {
 		body += `Delivery: ${formatCurrency(deliveryFee)}\n`;
+	}
+	if (rushFee > 0) {
+		body += `Rush Fee [${RUSH_FEE_SKU}]: ${formatCurrency(rushFee)}\n`;
 	}
 	body += `------\n`;
 	body += `Total: ${formatCurrency(total)}\n`;
