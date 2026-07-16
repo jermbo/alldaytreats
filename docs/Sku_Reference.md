@@ -57,7 +57,7 @@ This document provides a complete reference of all product and topping SKUs for 
 | TCB08 | Tropical Candy Box | Pineapple + grapes (8ct each) | $75.00 |
 | CFD12 | Candy Fruit Deluxe | 12ct grapes, 12ct strawberries, 6ct pineapple | $100.00 |
 
-Candy fruit packages require at least one flavor. First flavor included; each additional flavor +$1 (`XFLV`).
+Candy fruit packages require at least one flavor. First flavor included; each additional flavor +$1 (`XFLV`). Maximum 2 extra flavors (3 total).
 
 ## Themes (Packages)
 

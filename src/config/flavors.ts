@@ -8,6 +8,12 @@ export interface Flavor {
 export const EXTRA_FLAVOR_FEE = 1;
 export const EXTRA_FLAVOR_SKU = "XFLV";
 
+/** Max additional flavors beyond the first included one */
+export const MAX_EXTRA_FLAVORS = 2;
+
+/** Max total flavor selections (1 included + MAX_EXTRA_FLAVORS) */
+export const MAX_FLAVORS = 1 + MAX_EXTRA_FLAVORS;
+
 export const flavors: Flavor[] = [
 	{ id: "strawberry", name: "Strawberry", sku: "FLST" },
 	{ id: "watermelon", name: "Watermelon", sku: "FLWM" },

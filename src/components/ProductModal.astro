@@ -39,10 +39,21 @@
 
     <section class="product-modal__section" data-flavor-section hidden>
       <label class="product-modal__section-label">
-        Flavors <span class="product-modal__required-hint">(required — 1 included, +$1 each extra)</span>
+        Choose Your Flavors <span class="product-modal__required-hint">(required — 1 included, +$1 each extra)</span>
       </label>
-      <div class="product-modal__flavor-options" data-flavor-options></div>
-      <p class="product-modal__flavor-fee" data-flavor-fee hidden></p>
+      <fieldset class="flavors-group">
+        <legend class="flavors-group__legend">
+          <span>Candy Flavors</span>
+          <span class="flavors-group__counter">
+            <span class="flavors-group__counter-current" data-flavor-counter>0</span> of 3
+          </span>
+        </legend>
+        <div class="flavors-group__options" data-flavor-options></div>
+      </fieldset>
+      <div class="product-modal__flavors-total">
+        <span class="product-modal__flavors-total-label">Extra flavors:</span>
+        <span class="product-modal__flavors-total-value" data-flavor-fee>+$0</span>
+      </div>
     </section>
 
     <section class="product-modal__section" data-toppings-section>

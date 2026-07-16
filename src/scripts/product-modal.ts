@@ -9,6 +9,7 @@ import { themes, THEME_PRICE } from "@/config/themes.ts";
 import {
 	flavors as allFlavors,
 	calculateExtraFlavorFee,
+	MAX_FLAVORS,
 } from "@/config/flavors.ts";
 import {
 	isPackage,
@@ -163,7 +164,9 @@ export const openProductModal = (
 	selectedPriceOption = null;
 	editingItemId = editData?.itemId || null;
 	selectedTheme = editData?.theme || null;
-	selectedFlavors = editData?.flavors ? [...editData.flavors] : [];
+	selectedFlavors = editData?.flavors
+		? [...editData.flavors].slice(0, MAX_FLAVORS)
+		: [];
 
 	const productIsPackage = isPackage(product.id);
 	const showToppings = supportsToppings(product.id);
@@ -507,27 +510,77 @@ const populateFlavors = (dialogElement: HTMLElement): void => {
 		const label = document.createElement("label");
 		label.className = "flavor-option";
 		const checked = selectedFlavors.includes(flavor.id);
-		label.innerHTML = `
-			<input type="checkbox" value="${flavor.id}" class="flavor-option__checkbox" ${checked ? "checked" : ""} />
-			<span class="flavor-option__label">${flavor.name}</span>
-		`;
-		const checkbox = label.querySelector("input")!;
+
+		const checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		checkbox.className = "flavor-option__checkbox";
+		checkbox.value = flavor.id;
+		checkbox.checked = checked;
+
+		const labelText = document.createElement("span");
+		labelText.className = "flavor-option__label";
+		labelText.textContent = flavor.name;
+
+		label.appendChild(checkbox);
+		label.appendChild(labelText);
+
 		checkbox.addEventListener("change", () => {
-			if (checkbox.checked) {
-				if (!selectedFlavors.includes(flavor.id)) {
-					selectedFlavors.push(flavor.id);
-				}
-			} else {
-				selectedFlavors = selectedFlavors.filter(
-					(id) => id !== flavor.id,
-				);
-			}
-			refreshAddButton(dialogElement);
+			handleFlavorChange(flavor.id, checkbox.checked, dialogElement);
 		});
 		container.appendChild(label);
 	});
 
+	updateFlavorsState(dialogElement);
 	updateFlavorFeeDisplay(dialogElement);
+};
+
+const handleFlavorChange = (
+	flavorId: string,
+	isChecked: boolean,
+	dialogElement: HTMLElement,
+): void => {
+	if (isChecked) {
+		if (selectedFlavors.length >= MAX_FLAVORS) {
+			const checkbox =
+				dialogElement.querySelector<HTMLInputElement>(
+					`input.flavor-option__checkbox[value="${flavorId}"]`,
+				);
+			if (checkbox) checkbox.checked = false;
+			return;
+		}
+		if (!selectedFlavors.includes(flavorId)) {
+			selectedFlavors.push(flavorId);
+		}
+	} else {
+		selectedFlavors = selectedFlavors.filter((id) => id !== flavorId);
+	}
+
+	updateFlavorsState(dialogElement);
+	updateFlavorFeeDisplay(dialogElement);
+	refreshAddButton(dialogElement);
+};
+
+const updateFlavorsState = (dialogElement: HTMLElement): void => {
+	const checkboxes = dialogElement.querySelectorAll<HTMLInputElement>(
+		"input.flavor-option__checkbox",
+	);
+	const counterCurrent = dialogElement.querySelector(
+		"[data-flavor-counter]",
+	);
+	const atLimit = selectedFlavors.length >= MAX_FLAVORS;
+
+	if (counterCurrent) {
+		counterCurrent.textContent = String(selectedFlavors.length);
+	}
+
+	checkboxes.forEach((checkbox) => {
+		if (checkbox.checked) return;
+		checkbox.disabled = atLimit;
+		const label = checkbox.closest(".flavor-option");
+		if (label) {
+			label.classList.toggle("flavor-option--disabled", atLimit);
+		}
+	});
 };
 
 const updateFlavorFeeDisplay = (dialogElement: HTMLElement): void => {
@@ -537,18 +590,15 @@ const updateFlavorFeeDisplay = (dialogElement: HTMLElement): void => {
 	if (!feeEl) return;
 
 	const fee = calculateExtraFlavorFee(selectedFlavors);
-	if (selectedFlavors.length === 0) {
-		feeEl.hidden = false;
-		feeEl.textContent = "Select at least one flavor";
-		feeEl.classList.add("product-modal__flavor-fee--error");
-	} else if (fee > 0) {
-		feeEl.hidden = false;
-		feeEl.textContent = `Extra flavors: +$${fee}`;
-		feeEl.classList.remove("product-modal__flavor-fee--error");
-	} else {
-		feeEl.hidden = true;
-		feeEl.textContent = "";
-		feeEl.classList.remove("product-modal__flavor-fee--error");
+	feeEl.textContent = `+$${fee}`;
+	feeEl.classList.toggle(
+		"product-modal__flavors-total-value--error",
+		selectedFlavors.length === 0,
+	);
+
+	if (fee > 0) {
+		feeEl.classList.add("has-extra");
+		setTimeout(() => feeEl.classList.remove("has-extra"), 300);
 	}
 };
 
