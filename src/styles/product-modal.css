@@ -172,6 +172,198 @@ body:has(.product-modal[open]) {
 	flex-shrink: 0;
 }
 
+.product-modal__includes {
+	color: var(--color-text-dark);
+	opacity: var(--opacity-secondary);
+	line-height: var(--line-height-base);
+	font-size: var(--font-size-sm);
+	margin: 0;
+	padding: var(--spacing-sm) var(--spacing-base);
+	background: var(--color-overlay-light);
+	border-radius: var(--radius-base);
+}
+
+.product-modal__package-price {
+	font-size: var(--font-size-xl);
+	font-weight: 700;
+	color: var(--color-accent-blue);
+	margin: 0;
+}
+
+.product-modal__optional,
+.product-modal__required-hint {
+	font-weight: 400;
+	font-size: var(--font-size-sm);
+	opacity: var(--opacity-secondary);
+}
+
+.product-modal__theme-options {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-sm);
+	max-height: 220px;
+	overflow-y: auto;
+	padding: var(--spacing-sm);
+	border: 1px solid var(--color-border-light);
+	border-radius: var(--radius-lg);
+	background: var(--color-overlay-light);
+}
+
+.theme-option {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	padding: var(--spacing-sm);
+	border-radius: var(--radius-base);
+	cursor: pointer;
+	transition: background-color var(--transition-fast);
+
+	&:hover {
+		background: var(--color-bg-elevated);
+	}
+}
+
+.theme-option__radio {
+	width: var(--size-icon-base);
+	height: var(--size-icon-base);
+	accent-color: var(--color-accent-blue);
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+.theme-option__label {
+	font-size: var(--font-size-sm);
+	color: var(--color-text-dark);
+	flex: 1;
+	user-select: none;
+}
+
+.theme-option__price {
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	color: var(--color-accent-blue);
+}
+
+/* ============================================
+   FLAVORS SECTION (mirrors toppings)
+   ============================================ */
+
+.flavors-group {
+	border: 1px solid var(--color-accent-blue);
+	border-radius: var(--radius-lg);
+	padding: var(--spacing-base);
+	margin-bottom: var(--spacing-base);
+	background: rgba(32, 166, 253, 0.1);
+}
+
+.flavors-group__legend {
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	color: var(--color-accent-blue-light);
+	padding: 0 var(--spacing-sm);
+	margin-bottom: var(--spacing-sm);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--spacing-sm);
+}
+
+.flavors-group__counter {
+	font-size: var(--font-size-xs);
+	font-weight: 500;
+	color: var(--color-accent-blue);
+	white-space: nowrap;
+}
+
+.flavors-group__counter-current {
+	font-weight: 700;
+	color: var(--color-accent-blue);
+}
+
+.flavors-group__options {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-sm);
+}
+
+.flavor-option {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	padding: var(--spacing-sm);
+	border-radius: var(--radius-base);
+	cursor: pointer;
+	transition: background-color var(--transition-fast);
+
+	&:hover {
+		background: var(--color-overlay-light);
+	}
+}
+
+.flavor-option--disabled {
+	opacity: var(--opacity-disabled);
+	cursor: not-allowed;
+
+	&:hover {
+		background: transparent;
+	}
+}
+
+.flavor-option__checkbox {
+	width: var(--size-icon-base);
+	height: var(--size-icon-base);
+	border: 2px solid var(--color-border-light);
+	border-radius: var(--radius-sm);
+	background: var(--color-bg-cream);
+	cursor: pointer;
+	flex-shrink: 0;
+	accent-color: var(--color-accent-blue);
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: var(--opacity-muted);
+	}
+}
+
+.flavor-option__label {
+	font-size: var(--font-size-sm);
+	color: var(--color-text-dark);
+	cursor: pointer;
+	flex: 1;
+	user-select: none;
+}
+
+.product-modal__flavors-total {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: var(--spacing-base);
+	background: var(--color-overlay-light);
+	border-radius: var(--radius-lg);
+	border: 1px solid var(--color-border-light);
+	margin-top: var(--spacing-sm);
+}
+
+.product-modal__flavors-total-label {
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	color: var(--color-text-dark);
+}
+
+.product-modal__flavors-total-value {
+	font-size: var(--font-size-base);
+	font-weight: 700;
+	color: var(--color-accent-blue);
+
+	&.has-extra {
+		animation: price-pulse var(--transition-base) ease-in-out;
+	}
+}
+
+.product-modal__flavors-total-value--error {
+	color: #b45309;
+}
+
 .product-modal__section {
 	flex-shrink: 0;
 }

@@ -5,7 +5,17 @@ import {
 	calculateToppingPrice,
 	MAX_TOPPINGS,
 } from "@/config/toppings.ts";
-import { isChocolateCovered } from "@/scripts/utils/product.ts";
+import { themes, THEME_PRICE } from "@/config/themes.ts";
+import {
+	flavors as allFlavors,
+	calculateExtraFlavorFee,
+	MAX_FLAVORS,
+} from "@/config/flavors.ts";
+import {
+	isPackage,
+	supportsToppings,
+	requiresFlavor,
+} from "@/scripts/utils/product.ts";
 import { normalizeToppingIds } from "@/scripts/utils/toppings.ts";
 import type { Product, ToppingsData } from "@/scripts/types/index.ts";
 
@@ -17,6 +27,8 @@ let selectedPriceOption: {
 } | null = null;
 let editingItemId: string | null = null;
 let selectedToppings: string[] = [];
+let selectedTheme: string | null = null;
+let selectedFlavors: string[] = [];
 
 interface EditData {
 	itemId: string;
@@ -24,6 +36,8 @@ interface EditData {
 	price: number;
 	specialInstructions?: string;
 	toppings?: ToppingsData;
+	theme?: string;
+	flavors?: string[];
 }
 
 /**
@@ -78,45 +92,58 @@ export const initProductModal = (dialogElement: HTMLDialogElement): void => {
 	if (addBtn) {
 		addBtn.addEventListener("click", () => {
 			if (!currentProduct || !selectedPriceOption) return;
+			if (!canAddToCart()) return;
 
 			const instructions = instructionsInput
 				? instructionsInput.value.trim().slice(0, 250)
 				: "";
 
-			const isChocolate = isChocolateCovered(currentProduct.id);
-			const toppingsPrice = isChocolate
-				? 0
-				: calculateToppingsPrice(
+			const showToppings = supportsToppings(currentProduct.id);
+			const flatToppings = isPackage(currentProduct.id);
+			const toppingsPrice = showToppings
+				? calculateToppingsPrice(
 						selectedToppings,
 						selectedPriceOption.count,
-					);
-			const totalPrice = selectedPriceOption.price + toppingsPrice;
+						flatToppings,
+					)
+				: 0;
+			const themePrice = selectedTheme ? THEME_PRICE : 0;
+			const flavorFee = calculateExtraFlavorFee(selectedFlavors);
+			const totalPrice =
+				selectedPriceOption.price +
+				toppingsPrice +
+				themePrice +
+				flavorFee;
 
 			const toppingsData =
-				isChocolate || selectedToppings.length === 0
+				!showToppings || selectedToppings.length === 0
 					? undefined
 					: [...selectedToppings];
 
+			const cartPayload = {
+				productId: currentProduct.id,
+				name: currentProduct.name,
+				count: selectedPriceOption.count,
+				specialInstructions: instructions,
+				toppings: toppingsData,
+				sku: selectedPriceOption.sku,
+				theme: selectedTheme || undefined,
+				flavors:
+					selectedFlavors.length > 0
+						? [...selectedFlavors]
+						: undefined,
+			};
+
 			if (editingItemId) {
 				updateCartItem(editingItemId, {
-					productId: currentProduct.id,
-					name: currentProduct.name,
-					count: selectedPriceOption.count,
+					...cartPayload,
 					unitPrice: totalPrice,
-					specialInstructions: instructions,
-					toppings: toppingsData,
-					sku: selectedPriceOption.sku,
 				});
 			} else {
 				addToCart({
-					productId: currentProduct.id,
-					name: currentProduct.name,
-					count: selectedPriceOption.count,
+					...cartPayload,
 					price: totalPrice,
-					specialInstructions: instructions,
 					quantity: 1,
-					toppings: toppingsData,
-					sku: selectedPriceOption.sku,
 				});
 			}
 
@@ -136,24 +163,45 @@ export const openProductModal = (
 	currentProduct = product;
 	selectedPriceOption = null;
 	editingItemId = editData?.itemId || null;
+	selectedTheme = editData?.theme || null;
+	selectedFlavors = editData?.flavors
+		? [...editData.flavors].slice(0, MAX_FLAVORS)
+		: [];
 
-	const isChocolate = isChocolateCovered(product.id);
+	const productIsPackage = isPackage(product.id);
+	const showToppings = supportsToppings(product.id);
+	const needsFlavor = requiresFlavor(product.id);
 
-	if (isChocolate) {
-		selectedToppings = [];
-	} else if (editData?.toppings) {
+	if (showToppings && editData?.toppings) {
 		selectedToppings = normalizeToppingIds(editData.toppings);
 	} else {
 		selectedToppings = [];
 	}
 
-	// Update modal content
 	const titleEl = dialogElement.querySelector(".product-modal__title");
 	const imageEl = dialogElement.querySelector<HTMLImageElement>(
 		".product-modal__image",
 	);
 	const descriptionEl = dialogElement.querySelector(
 		".product-modal__description",
+	);
+	const includesEl = dialogElement.querySelector<HTMLElement>(
+		"[data-includes]",
+	);
+	const quantitySection = dialogElement.querySelector<HTMLElement>(
+		"[data-quantity-section]",
+	);
+	const packagePriceSection = dialogElement.querySelector<HTMLElement>(
+		"[data-package-price-section]",
+	);
+	const packagePriceEl = dialogElement.querySelector<HTMLElement>(
+		"[data-package-price]",
+	);
+	const themeSection = dialogElement.querySelector<HTMLElement>(
+		"[data-theme-section]",
+	);
+	const flavorSection = dialogElement.querySelector<HTMLElement>(
+		"[data-flavor-section]",
 	);
 	const quantityOptionsContainer = dialogElement.querySelector(
 		".product-modal__quantity-options",
@@ -173,41 +221,80 @@ export const openProductModal = (
 	}
 	if (descriptionEl) descriptionEl.textContent = product.description;
 
-	// Generate quantity options
-	if (quantityOptionsContainer) {
-		quantityOptionsContainer.innerHTML = "";
-		product.priceOptions.forEach((option) => {
-			const button = document.createElement("button");
-			button.type = "button";
-			button.className = "product-modal__quantity-option";
-			button.textContent = `${option.count}ct $${option.price}`;
-			button.dataset.count = String(option.count);
-			button.dataset.price = String(option.price);
-			quantityOptionsContainer.appendChild(button);
-		});
+	if (includesEl) {
+		if (product.includes) {
+			includesEl.hidden = false;
+			includesEl.textContent = `Includes: ${product.includes}`;
+		} else {
+			includesEl.hidden = true;
+			includesEl.textContent = "";
+		}
 	}
 
-	// Toggle toppings section visibility
+	// Quantity vs fixed package price
+	if (productIsPackage) {
+		if (quantitySection) quantitySection.hidden = true;
+		if (packagePriceSection) packagePriceSection.hidden = false;
+		const option = product.priceOptions[0];
+		if (option) {
+			selectedPriceOption = {
+				count: option.count,
+				price: option.price,
+				sku: option.sku,
+			};
+			if (packagePriceEl) {
+				packagePriceEl.textContent = `$${option.price.toFixed(2)}`;
+			}
+		}
+	} else {
+		if (quantitySection) quantitySection.hidden = false;
+		if (packagePriceSection) packagePriceSection.hidden = true;
+		if (quantityOptionsContainer) {
+			quantityOptionsContainer.innerHTML = "";
+			product.priceOptions.forEach((option) => {
+				const button = document.createElement("button");
+				button.type = "button";
+				button.className = "product-modal__quantity-option";
+				button.textContent = `${option.count}ct $${option.price}`;
+				button.dataset.count = String(option.count);
+				button.dataset.price = String(option.price);
+				quantityOptionsContainer.appendChild(button);
+			});
+		}
+	}
+
+	// Themes (packages only)
+	if (themeSection) {
+		themeSection.hidden = !productIsPackage;
+		if (productIsPackage) populateThemes(dialogElement);
+	}
+
+	// Flavors (candy-fruit packages)
+	if (flavorSection) {
+		flavorSection.hidden = !needsFlavor;
+		if (needsFlavor) populateFlavors(dialogElement);
+	}
+
+	// Toppings
 	const toppingsSection = dialogElement.querySelector<HTMLElement>(
 		"[data-toppings-section]",
 	);
-	if (toppingsSection) toppingsSection.hidden = isChocolate;
+	if (toppingsSection) toppingsSection.hidden = !showToppings;
 
-	if (!isChocolate) {
+	if (showToppings) {
 		populateToppings(dialogElement);
 		if (selectedToppings.length > 0)
 			updateToppingsState(dialogElement);
 	}
 
-	// Pre-select option if editing
+	// Pre-select option if editing a la carte
 	let preSelectedOption: (typeof product.priceOptions)[0] | undefined;
-	if (editData) {
+	if (editData && !productIsPackage) {
 		preSelectedOption = product.priceOptions.find(
 			(opt) => opt.count === editData.count,
 		);
 	}
 
-	// Pre-fill instructions and update character count
 	const charCountValue = dialogElement.querySelector(
 		".product-modal__char-count-value",
 	);
@@ -240,97 +327,123 @@ export const openProductModal = (
 		}
 	}
 
-	// Attach quantity option click handlers
-	const quantityOptions = dialogElement.querySelectorAll<HTMLElement>(
-		".product-modal__quantity-option",
-	);
-	quantityOptions.forEach((option) => {
-		const count = parseInt(option.dataset.count || "0");
-		const price = parseFloat(option.dataset.price || "0");
+	if (!productIsPackage) {
+		const quantityOptions = dialogElement.querySelectorAll<HTMLElement>(
+			".product-modal__quantity-option",
+		);
+		quantityOptions.forEach((option) => {
+			const count = parseInt(option.dataset.count || "0");
+			const price = parseFloat(option.dataset.price || "0");
 
-		if (preSelectedOption && count === preSelectedOption.count) {
-			option.classList.add(
-				"product-modal__quantity-option--selected",
-			);
-			selectedPriceOption = {
-				count,
-				price,
-				sku: preSelectedOption.sku || "",
-			};
-		}
-
-		option.addEventListener("click", () => {
-			quantityOptions.forEach((opt) =>
-				opt.classList.remove(
+			if (preSelectedOption && count === preSelectedOption.count) {
+				option.classList.add(
 					"product-modal__quantity-option--selected",
-				),
-			);
-			option.classList.add(
-				"product-modal__quantity-option--selected",
-			);
-
-			const fullOption = currentProduct!.priceOptions.find(
-				(opt) => opt.count === count && opt.price === price,
-			);
-			selectedPriceOption = {
-				count,
-				price,
-				sku: fullOption?.sku || "",
-			};
-
-			if (!isChocolateCovered(currentProduct!.id)) {
-				populateToppings(dialogElement);
-				updateToppingsState(dialogElement);
+				);
+				selectedPriceOption = {
+					count,
+					price,
+					sku: preSelectedOption.sku || "",
+				};
 			}
 
-			const toppingsPrice = isChocolateCovered(currentProduct!.id)
-				? 0
-				: calculateToppingsPrice(selectedToppings, count);
-			updateAddButton(
-				addBtn,
-				price + toppingsPrice,
-				editingItemId !== null,
-			);
-		});
-	});
-
-	// Update add button state
-	if (preSelectedOption) {
-		const initialToppingsPrice = isChocolate
-			? 0
-			: calculateToppingsPrice(
-					selectedToppings,
-					preSelectedOption.count,
+			option.addEventListener("click", () => {
+				quantityOptions.forEach((opt) =>
+					opt.classList.remove(
+						"product-modal__quantity-option--selected",
+					),
 				);
-		updateAddButton(
-			addBtn,
-			preSelectedOption.price + initialToppingsPrice,
-			editingItemId !== null,
-		);
-	} else {
-		updateAddButton(addBtn, 0, false);
+				option.classList.add(
+					"product-modal__quantity-option--selected",
+				);
+
+				const fullOption = currentProduct!.priceOptions.find(
+					(opt) => opt.count === count && opt.price === price,
+				);
+				selectedPriceOption = {
+					count,
+					price,
+					sku: fullOption?.sku || "",
+				};
+
+				if (supportsToppings(currentProduct!.id)) {
+					populateToppings(dialogElement);
+					updateToppingsState(dialogElement);
+				}
+
+				refreshAddButton(dialogElement);
+			});
+		});
+
+		if (quantityOptions.length > 0) {
+			setTimeout(() => quantityOptions[0].focus(), 0);
+		}
 	}
 
+	refreshAddButton(dialogElement);
 	dialogElement.showModal();
 
-	if (quantityOptions.length > 0) {
-		setTimeout(() => quantityOptions[0].focus(), 0);
+	if (productIsPackage) {
+		const firstFocusable = dialogElement.querySelector<HTMLElement>(
+			"[data-theme-options] input, [data-flavor-options] input, .product-modal__add-btn",
+		);
+		if (firstFocusable) setTimeout(() => firstFocusable.focus(), 0);
 	}
+};
+
+const canAddToCart = (): boolean => {
+	if (!currentProduct || !selectedPriceOption) return false;
+	if (requiresFlavor(currentProduct.id) && selectedFlavors.length === 0) {
+		return false;
+	}
+	return true;
+};
+
+const getCurrentTotal = (): number => {
+	if (!currentProduct || !selectedPriceOption) return 0;
+
+	const showToppings = supportsToppings(currentProduct.id);
+	const flatToppings = isPackage(currentProduct.id);
+	const toppingsPrice = showToppings
+		? calculateToppingsPrice(
+				selectedToppings,
+				selectedPriceOption.count,
+				flatToppings,
+			)
+		: 0;
+	const themePrice = selectedTheme ? THEME_PRICE : 0;
+	const flavorFee = calculateExtraFlavorFee(selectedFlavors);
+
+	return (
+		selectedPriceOption.price + toppingsPrice + themePrice + flavorFee
+	);
+};
+
+const refreshAddButton = (dialogElement: HTMLElement): void => {
+	const addBtn = dialogElement.querySelector<HTMLButtonElement>(
+		".product-modal__add-btn",
+	);
+	updateAddButton(
+		addBtn,
+		getCurrentTotal(),
+		editingItemId !== null,
+		canAddToCart(),
+	);
+	updateFlavorFeeDisplay(dialogElement);
 };
 
 const updateAddButton = (
 	addBtn: HTMLButtonElement | null,
 	price: number,
 	isEditing: boolean,
+	enabled: boolean,
 ): void => {
 	if (!addBtn) return;
 
 	const textSpan = addBtn.querySelector(".product-modal__add-text");
 	const checkmark = addBtn.querySelector(".product-modal__checkmark");
 	const label = isEditing ? "Update Cart" : "Add to Cart";
-	const isEnabled = selectedPriceOption !== null && price > 0;
 
-	addBtn.disabled = !isEnabled;
+	addBtn.disabled = !enabled || price <= 0;
 
 	if (textSpan) {
 		textSpan.textContent = `${label} - $${price.toFixed(2)}`;
@@ -353,19 +466,161 @@ const closeModal = (dialogElement: HTMLDialogElement): void => {
 	}, 200);
 };
 
+const populateThemes = (dialogElement: HTMLElement): void => {
+	const container = dialogElement.querySelector("[data-theme-options]");
+	if (!container) return;
+
+	container.innerHTML = "";
+
+	const noneLabel = document.createElement("label");
+	noneLabel.className = "theme-option";
+	noneLabel.innerHTML = `
+		<input type="radio" name="package-theme" value="" class="theme-option__radio" ${!selectedTheme ? "checked" : ""} />
+		<span class="theme-option__label">No theme</span>
+	`;
+	container.appendChild(noneLabel);
+
+	themes.forEach((theme) => {
+		const label = document.createElement("label");
+		label.className = "theme-option";
+		const checked = selectedTheme === theme.id ? "checked" : "";
+		label.innerHTML = `
+			<input type="radio" name="package-theme" value="${theme.id}" class="theme-option__radio" ${checked} />
+			<span class="theme-option__label">${theme.name}</span>
+			<span class="theme-option__price">+$${THEME_PRICE}</span>
+		`;
+		container.appendChild(label);
+	});
+
+	container.querySelectorAll<HTMLInputElement>(".theme-option__radio").forEach((radio) => {
+		radio.addEventListener("change", () => {
+			selectedTheme = radio.value || null;
+			refreshAddButton(dialogElement);
+		});
+	});
+};
+
+const populateFlavors = (dialogElement: HTMLElement): void => {
+	const container = dialogElement.querySelector("[data-flavor-options]");
+	if (!container) return;
+
+	container.innerHTML = "";
+
+	allFlavors.forEach((flavor) => {
+		const label = document.createElement("label");
+		label.className = "flavor-option";
+		const checked = selectedFlavors.includes(flavor.id);
+
+		const checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		checkbox.className = "flavor-option__checkbox";
+		checkbox.value = flavor.id;
+		checkbox.checked = checked;
+
+		const labelText = document.createElement("span");
+		labelText.className = "flavor-option__label";
+		labelText.textContent = flavor.name;
+
+		label.appendChild(checkbox);
+		label.appendChild(labelText);
+
+		checkbox.addEventListener("change", () => {
+			handleFlavorChange(flavor.id, checkbox.checked, dialogElement);
+		});
+		container.appendChild(label);
+	});
+
+	updateFlavorsState(dialogElement);
+	updateFlavorFeeDisplay(dialogElement);
+};
+
+const handleFlavorChange = (
+	flavorId: string,
+	isChecked: boolean,
+	dialogElement: HTMLElement,
+): void => {
+	if (isChecked) {
+		if (selectedFlavors.length >= MAX_FLAVORS) {
+			const checkbox =
+				dialogElement.querySelector<HTMLInputElement>(
+					`input.flavor-option__checkbox[value="${flavorId}"]`,
+				);
+			if (checkbox) checkbox.checked = false;
+			return;
+		}
+		if (!selectedFlavors.includes(flavorId)) {
+			selectedFlavors.push(flavorId);
+		}
+	} else {
+		selectedFlavors = selectedFlavors.filter((id) => id !== flavorId);
+	}
+
+	updateFlavorsState(dialogElement);
+	updateFlavorFeeDisplay(dialogElement);
+	refreshAddButton(dialogElement);
+};
+
+const updateFlavorsState = (dialogElement: HTMLElement): void => {
+	const checkboxes = dialogElement.querySelectorAll<HTMLInputElement>(
+		"input.flavor-option__checkbox",
+	);
+	const counterCurrent = dialogElement.querySelector(
+		"[data-flavor-counter]",
+	);
+	const atLimit = selectedFlavors.length >= MAX_FLAVORS;
+
+	if (counterCurrent) {
+		counterCurrent.textContent = String(selectedFlavors.length);
+	}
+
+	checkboxes.forEach((checkbox) => {
+		if (checkbox.checked) return;
+		checkbox.disabled = atLimit;
+		const label = checkbox.closest(".flavor-option");
+		if (label) {
+			label.classList.toggle("flavor-option--disabled", atLimit);
+		}
+	});
+};
+
+const updateFlavorFeeDisplay = (dialogElement: HTMLElement): void => {
+	const feeEl = dialogElement.querySelector<HTMLElement>(
+		"[data-flavor-fee]",
+	);
+	if (!feeEl) return;
+
+	const fee = calculateExtraFlavorFee(selectedFlavors);
+	feeEl.textContent = `+$${fee}`;
+	feeEl.classList.toggle(
+		"product-modal__flavors-total-value--error",
+		selectedFlavors.length === 0,
+	);
+
+	if (fee > 0) {
+		feeEl.classList.add("has-extra");
+		setTimeout(() => feeEl.classList.remove("has-extra"), 300);
+	}
+};
+
 const populateToppings = (dialogElement: HTMLElement): void => {
 	const premiumContainer = dialogElement.querySelector(
 		'.toppings-group__options[data-category="premium"]',
 	);
-	if (!premiumContainer) return;
+	if (!premiumContainer || !currentProduct) return;
 
 	premiumContainer.innerHTML = "";
 	const available = allToppings.filter((t) => t.available);
 	const currentCount = selectedPriceOption?.count || 6;
+	const flat = isPackage(currentProduct.id);
 
 	available.forEach((topping) => {
 		premiumContainer.appendChild(
-			createToppingOption(topping, currentCount, dialogElement),
+			createToppingOption(
+				topping,
+				currentCount,
+				flat,
+				dialogElement,
+			),
 		);
 	});
 
@@ -375,6 +630,7 @@ const populateToppings = (dialogElement: HTMLElement): void => {
 const createToppingOption = (
 	topping: { id: string; name: string; price: number },
 	count: number,
+	flat: boolean,
 	dialogElement: HTMLElement,
 ): HTMLElement => {
 	const label = document.createElement("label");
@@ -394,7 +650,7 @@ const createToppingOption = (
 	label.appendChild(checkbox);
 	label.appendChild(labelText);
 
-	const price = calculateToppingPrice(topping.price, count);
+	const price = calculateToppingPrice(topping.price, count, flat);
 	if (price > 0) {
 		const priceSpan = document.createElement("span");
 		priceSpan.className = "topping-option__price";
@@ -414,7 +670,7 @@ const handleToppingChange = (
 	isChecked: boolean,
 	dialogElement: HTMLElement,
 ): void => {
-	if (isChocolateCovered(currentProduct?.id || "")) return;
+	if (!currentProduct || !supportsToppings(currentProduct.id)) return;
 
 	if (isChecked) {
 		if (selectedToppings.length >= MAX_TOPPINGS) {
@@ -436,21 +692,7 @@ const handleToppingChange = (
 
 	updateToppingsState(dialogElement);
 	updateToppingsTotal(dialogElement);
-
-	const addBtn = dialogElement.querySelector<HTMLButtonElement>(
-		".product-modal__add-btn",
-	);
-	if (selectedPriceOption) {
-		const toppingsPrice = calculateToppingsPrice(
-			selectedToppings,
-			selectedPriceOption.count,
-		);
-		updateAddButton(
-			addBtn,
-			selectedPriceOption.price + toppingsPrice,
-			editingItemId !== null,
-		);
-	}
+	refreshAddButton(dialogElement);
 };
 
 const updateToppingsState = (dialogElement: HTMLElement): void => {
@@ -480,12 +722,14 @@ const updateToppingsTotal = (dialogElement: HTMLElement): void => {
 	const toppingsTotalValue = dialogElement.querySelector(
 		".product-modal__toppings-total-value",
 	);
-	if (!toppingsTotalValue) return;
+	if (!toppingsTotalValue || !currentProduct) return;
 
 	const currentCount = selectedPriceOption?.count || 6;
+	const flat = isPackage(currentProduct.id);
 	const toppingsPrice = calculateToppingsPrice(
 		selectedToppings,
 		currentCount,
+		flat,
 	);
 	toppingsTotalValue.textContent = `+$${toppingsPrice}`;
 
@@ -503,4 +747,6 @@ const resetModal = (): void => {
 	selectedPriceOption = null;
 	editingItemId = null;
 	selectedToppings = [];
+	selectedTheme = null;
+	selectedFlavors = [];
 };

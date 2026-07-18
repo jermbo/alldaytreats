@@ -13,6 +13,9 @@ export interface Product {
 	priceOptions: PriceOption[];
 	extraAddOns: number;
 	description: string;
+	packageKind?: "chocolate" | "candy-fruit";
+	includes?: string;
+	requiresFlavor?: boolean;
 }
 
 export interface CartItem {
@@ -26,6 +29,8 @@ export interface CartItem {
 	specialInstructions: string;
 	toppings?: string[];
 	sku: string;
+	theme?: string;
+	flavors?: string[];
 }
 
 export interface ValidationResult {
@@ -52,6 +57,7 @@ export interface OrderData extends CheckoutFormData {
 	items: CartItem[];
 	subtotal: number;
 	deliveryFee: number;
+	rushFee: number;
 	total: number;
 }
 

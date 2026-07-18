@@ -2,7 +2,7 @@ import {
 	getToppingById,
 	calculateToppingPrice,
 } from "@/config/toppings.ts";
-import { isChocolateCovered } from "@/scripts/utils/product.ts";
+import { isPackage, supportsToppings } from "@/scripts/utils/product.ts";
 import { escapeHtml } from "@/scripts/utils/escape-html.ts";
 import type { ToppingsData } from "@/scripts/types/index.ts";
 
@@ -32,16 +32,18 @@ export const formatToppings = (
 	format: ToppingsFormat = "text",
 ): string => {
 	if (!toppings) return "";
-	if (isChocolateCovered(productId)) return "";
+	if (!supportsToppings(productId)) return "";
 
 	const allToppingIds = normalizeToppingIds(toppings);
 	if (allToppingIds.length === 0) return "";
+
+	const flat = isPackage(productId);
 
 	const toppingDetails = allToppingIds
 		.map((id) => {
 			const topping = getToppingById(id);
 			if (!topping) return null;
-			const price = calculateToppingPrice(topping.price, count);
+			const price = calculateToppingPrice(topping.price, count, flat);
 
 			if (format === "email") {
 				return price > 0

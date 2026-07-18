@@ -6,11 +6,13 @@ interface Props {
 }
 
 const { product } = Astro.props;
-const { name, image, priceFrom, category, id } = product.data;
+const { name, image, priceFrom, category, id, includes } = product.data;
 const description = product.body;
 const headingId = `product-${id}-heading`;
 const descriptionId = `product-${id}-description`;
 const priceId = `product-${id}-price`;
+const isPackage = category === 'platter';
+const displayDescription = includes || description;
 
 // Generate pastel background colors based on product index
 const pastelColors = [
@@ -24,7 +26,8 @@ const pastelColors = [
   '#F5F0E8', // Cream
 ];
 
-const bgColor = pastelColors[id % pastelColors.length];
+const colorIndex = [...String(id)].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+const bgColor = pastelColors[colorIndex % pastelColors.length];
 ---
 
 <article
@@ -53,8 +56,10 @@ const bgColor = pastelColors[id % pastelColors.length];
     </div>
     <div class="menu__item-content">
       <h3 id={headingId} class="menu__item-title">{name}</h3>
-      <p id={descriptionId} class="menu__item-description">{description}</p>
-      <p id={priceId} class="menu__item-price">From ${priceFrom}</p>
+      <p id={descriptionId} class="menu__item-description">{displayDescription}</p>
+      <p id={priceId} class="menu__item-price">
+        {isPackage ? `$${priceFrom}` : `From $${priceFrom}`}
+      </p>
     </div>
   </button>
 </article>

@@ -21,6 +21,9 @@ const productsData = products.map((p: any) => ({
   priceOptions: p.data.priceOptions,
   extraAddOns: p.data.extraAddOns,
   description: p.body,
+  packageKind: p.data.packageKind,
+  includes: p.data.includes,
+  requiresFlavor: p.data.requiresFlavor,
 }));
 ---
 
